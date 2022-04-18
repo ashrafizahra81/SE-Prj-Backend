@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from . import models
 from .serializers import UserRegisterSerializer
 from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
 
 @api_view(['POST',])
 def userRegister(request):
@@ -18,6 +19,8 @@ def userRegister(request):
             data ['USER_PHONE_NUM'] = user.USER_PHONE_NUM
             data ['USER_POSTAL_CODE'] = user.USER_POSTAL_CODE
             data ['USER_ADDRESS'] = user.USER_ADDRESS
+            token = Token.objects.get(user=user).key
+            data['token'] = token
         else:
             date = serializer.errors
         return Response(data)
