@@ -6,6 +6,5 @@ from . import views
 
 app_name = 'accounts'
 urlpatterns = [
-    path('register/', views.userRegister),
-    path('login/', obtain_auth_token, name= 'login'),
+    path('register/', views.UserRegister.as_view()),
 ]
