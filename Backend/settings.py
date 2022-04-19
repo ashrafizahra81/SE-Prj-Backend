@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 REST_FRAMEWORK = {
