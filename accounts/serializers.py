@@ -12,3 +12,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+
+class UserEditProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'username', 'user_phone_number', 'user_postal_code', 'user_address')
+
