@@ -15,6 +15,21 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', ]
 
 
+class Style(models.Model):
+    style_description = models.CharField(max_length=1000, null=True)
+    style_image_url = models.URLField(null=True)
+    style_param_1 = models.IntegerField(default=0)
+    style_param_2 = models.IntegerField(default=0)
+    style_param_3 = models.IntegerField(default=0)
+    style_param_4 = models.IntegerField(default=0)
+    style_param_5 = models.IntegerField(default=0)
+
+
+class UserStyle(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

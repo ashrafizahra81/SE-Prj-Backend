@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import *
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -19,3 +19,8 @@ class UserEditProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ('email', 'username', 'user_phone_number', 'user_postal_code', 'user_address')
 
+
+class StyleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Style
+        fields = ('style_description', 'style_image_url')
