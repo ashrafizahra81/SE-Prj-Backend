@@ -1,21 +1,16 @@
 from rest_framework import serializers
-
-from .models import Answer, Question
-
-
-class ChoiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Answer
-        fields = ('id', 'answer_text')
+from .models import Question, ListOfQuestion
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    choices = serializers.SerializerMethodField()
-
-    def get_choices(self, obj):
-        ordered_queryset = Answer.objects.filter(choices__id=obj.id).order_by('?')
-        return ChoiceSerializer(ordered_queryset, many=True, context=self.context).data
-
     class Meta:
         model = Question
-        fields = ('question_text', 'choices')
+        fields = ['question_id', 'answer']
+
+
+class ListOfQuestionSerializer(serializers.ModelSerializer):
+    question = QuestionSerializer(many=True , read_only=True)
+
+    class Meta:
+        model = ListOfQuestion
+        fields = ['question']
