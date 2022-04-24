@@ -4,9 +4,15 @@ from accounts.models import User
 
 class Question(models.Model):
     question_description = models.CharField(max_length=5000, null=False)
-    question_answer = models.IntegerField(null=False)
 
 
 class UserQuestions(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     question = models.ForeignKey(Question, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    answer_1 = models.IntegerField(default=0)
+    answer_2 = models.IntegerField(default=0)
+    answer_3 = models.IntegerField(default=0)
+    answer_4 = models.IntegerField(default=0)
+    answer_5 = models.IntegerField(default=0)
+    answer_6 = models.CharField(max_length=100, default='')
+    answer_7 = models.CharField(max_length=100, default='')
