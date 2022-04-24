@@ -47,3 +47,29 @@ class UserStyles(APIView):
             return JsonResponse(styles, safe=False)
         else:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShopsForUser(APIView):
+    def get(self, request, pk):
+        user_styles = list(UserStyle.objects.filter(user_id_id=pk).values())
+        print(user_styles)
+        style_id_list = list()
+        for item in user_styles:
+            style_id_list.append(item['style_id_id'])
+        print(style_id_list)
+        products = list(Product.objects.filter(style_id_id__in=style_id_list).values())
+        print(products)
+        shop_id_list = list()
+        for product in products:
+            shop_id_list.append(product['shop_id_id'])
+        print(shop_id_list)
+        shops = Shop.objects.filter(pk__in=shop_id_list)
+        print(shops)
+        serialized_data = ShopSerializer(instance=shops, many=True)
+        try:
+            if shops.count() > 0:
+                return Response(serialized_data.data, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)

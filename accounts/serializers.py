@@ -24,3 +24,9 @@ class StyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Style
         fields = ('style_description', 'style_image_url')
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ('id', 'shop_name', 'shop_description', 'shop_address', 'shop_phone_num')
