@@ -1,16 +1,14 @@
 from rest_framework import serializers
-from .models import Question, ListOfQuestion
+from .models import Question, UserQuestions
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ['question_id', 'answer']
+        fields = ['id', 'question_description' 'question_answer']
 
 
-class ListOfQuestionSerializer(serializers.ModelSerializer):
-    question = QuestionSerializer(many=True , read_only=True)
-
+class UserQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ListOfQuestion
-        fields = ['question']
+        model = UserQuestions
+        fields = ['id', 'user', 'question']

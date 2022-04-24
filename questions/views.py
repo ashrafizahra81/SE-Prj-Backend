@@ -1,20 +1,21 @@
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.views import APIView
-from .serializers import QuestionSerializer, ListOfQuestionSerializer
+from .serializers import QuestionSerializer, UserQuestionsSerializer
 from rest_framework.response import Response
-from .models import ListOfQuestion
+from .models import UserQuestions
 
 
 # Create your views here.
 class QuestionView(APIView):
-    def post(self,request):
-        data1=ListOfQuestion.objects.bulk_create(request.POST)
-        for i in data1 :
-            i.save()
-        data = ListOfQuestion.save(request.POST)
-        print(data)
-        ser_data = ListOfQuestionSerializer(data=request.POST , many=True , instance=data)
-        if ser_data.is_valid():
-            return Response(ser_data.data)
-        return Response(ser_data.errors)
-
+    def post(self, request):
+        print(request.data)
+        # data1 = UserQuestions.objects.bulk_create()
+        # print(data1)
+        # for i in data1:
+        #     i.save()
+        for i in request.data:
+            s = UserQuestions(question_id=i['question_id'], user_id=i['user_id'])
+            print(s)
+            s.save()
+        return Response(status=status.HTTP_201_CREATED)
