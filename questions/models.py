@@ -4,8 +4,8 @@ from accounts.models import User
 
 class Question(models.Model):
     question_description = models.CharField(max_length=5000, null=False)
-    value = models.FloatField(default=0)
-    question_id = models.IntegerField(default=0)
+    #value = models.FloatField(default=0)
+
 
 class UserQuestions(models.Model):
     question = models.ForeignKey(Question, on_delete=models.DO_NOTHING, default=1)

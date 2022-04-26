@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="add view for saving user_question relations from request data to database">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questions/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -74,6 +72,8 @@
       <workItem from="1650808674285" duration="13000" />
       <workItem from="1650810411562" duration="2723000" />
       <workItem from="1650952148775" duration="3592000" />
+      <workItem from="1650963243675" duration="62000" />
+      <workItem from="1650966484222" duration="6439000" />
     </task>
     <task id="LOCAL-00001" summary="add view for saving user_question relations from request data to database">
       <created>1650792784017</created>
