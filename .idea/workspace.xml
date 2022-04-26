@@ -6,11 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="add view for saving user_question relations from request data to database">
       <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/questions/migrations/0005_remove_question_question_answer_and_more.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,20 +56,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
-  },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
-    ]
-  }
-}</component>
+  <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="sqlite" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -82,6 +73,7 @@
       <workItem from="1650783174673" duration="3140000" />
       <workItem from="1650808674285" duration="13000" />
       <workItem from="1650810411562" duration="2723000" />
+      <workItem from="1650952148775" duration="3592000" />
     </task>
     <task id="LOCAL-00001" summary="add view for saving user_question relations from request data to database">
       <created>1650792784017</created>
