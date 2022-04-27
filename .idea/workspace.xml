@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="add view for saving user_question relations from request data to database">
+    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="improve model and view for user_questions">
+      <change afterPath="$PROJECT_DIR$/accounts/migrations/0006_remove_style_style_description.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/questions/ai_similarity.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/questions/migrations/0014_remove_clothes_image_url_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/questions/migrations/0015_remove_userquestions_count_1_and_more.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/views.py" afterDir="false" />
@@ -54,11 +60,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="DatabaseDriversLRU" value="sqlite" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "last_opened_file_path": "C:/Users/mrmos/PycharmProjects/SE-Prj-Backend",
+    "node.js.selected.package.tslint": "(autodetect)"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\mrmos\PycharmProjects\SE-Prj-Backend" />
+      <recent name="C:\Users\mrmos\PycharmProjects\SE-Prj-Backend\questions" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

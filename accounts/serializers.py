@@ -23,7 +23,7 @@ class UserEditProfileSerializer(serializers.ModelSerializer):
 class StyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Style
-        fields = ('style_description', 'style_image_url')
+        fields = ['style_image_url']
 
 
 class ShopSerializer(serializers.ModelSerializer):

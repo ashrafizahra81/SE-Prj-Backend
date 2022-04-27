@@ -16,7 +16,6 @@ class User(AbstractUser):
 
 
 class Style(models.Model):
-    style_description = models.CharField(max_length=1000, null=True)
     style_image_url = models.URLField(null=True)
     style_param_1 = models.IntegerField(default=0)
     style_param_2 = models.IntegerField(default=0)
