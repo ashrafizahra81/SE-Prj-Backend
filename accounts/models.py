@@ -9,8 +9,8 @@ from rest_framework.authtoken.models import Token
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     user_phone_number = models.CharField(max_length=20)
-    user_postal_code = models.CharField(max_length=20)
-    user_address = models.CharField(max_length=20)
+    # user_postal_code = models.CharField(max_length=20, null=True)
+    # user_address = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -55,7 +55,7 @@ class Product(models.Model):
     shop_id = models.ForeignKey(Shop, on_delete=models.DO_NOTHING)
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)

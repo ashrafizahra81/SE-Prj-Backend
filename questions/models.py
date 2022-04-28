@@ -12,12 +12,3 @@ class UserQuestions(models.Model):
     answer_5 = models.IntegerField(default=0)
     answer_6 = models.CharField(max_length=100, default='1,2,3')
     answer_7 = models.CharField(max_length=100, default='1,2,3')
-
-
-class Clothes(models.Model):
-    image = models.URLField(null=True)
-    feature_1 = models.IntegerField(null=True)
-    feature_2 = models.IntegerField(null=True)
-    feature_3 = models.IntegerField(null=True)
-    feature_4 = models.IntegerField(null=True)
-    feature_5 = models.IntegerField(null=True)
