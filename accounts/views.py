@@ -18,7 +18,7 @@ class UserRegister(APIView):
         data = {}
         if serialized_data.is_valid():
             account = serialized_data.save()
-            #data['response'] = "successfully registered"
+            # data['response'] = "successfully registered"
             data['username'] = account.username
             data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
@@ -56,12 +56,14 @@ class UserEditProfile(APIView):
 
 
 class UserStyles(APIView):
-    def get(self, request, pk):
-        user_styles = list(UserStyle.objects.filter(user_id=pk).values())
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        user_styles = list(UserStyle.objects.filter(user_id=request.user.id).values())
         style_id_list = list()
         for item in user_styles:
             style_id_list.append(item['style_id_id'])
-        styles = list(Style.objects.filter(pk__in=style_id_list).values('style_description', 'style_image_url'))
+        styles = list(Style.objects.filter(pk__in=style_id_list).values('style_image_url'))
         if styles:
             return JsonResponse(styles, safe=False)
         else:

@@ -10,9 +10,11 @@ from .ai_similarity import Similarity
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
 
+
 # Create your views here.
 class UserQuestionView(APIView):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
+
     def post(self, request):
 
         features = np.zeros((100, 5))
