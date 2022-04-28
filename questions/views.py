@@ -8,11 +8,11 @@ from .models import UserQuestions
 from accounts.models import Style, UserStyle
 from .ai_similarity import Similarity
 import numpy as np
-
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class UserQuestionView(APIView):
-
+    permission_classes = [IsAuthenticated,]
     def post(self, request):
 
         features = np.zeros((100, 5))
@@ -25,17 +25,17 @@ class UserQuestionView(APIView):
             lst = list(clothes[i].values())
             for j in range(5):
                 features[i][j] = lst[j]
-
-        s = UserQuestions(user_id=request.data['data'][0],
-                          answer_1=request.data['data'][1],
-                          answer_2=request.data['data'][2],
-                          answer_3=request.data['data'][3],
-                          answer_4=request.data['data'][4],
-                          answer_5=request.data['data'][5],
-                          answer_6=request.data['data'][6],
-                          answer_7=request.data['data'][7])
+        print(request.user.id)
+        s = UserQuestions(user_id=request.user.id,
+                          answer_1=request.data['data'][0],
+                          answer_2=request.data['data'][1],
+                          answer_3=request.data['data'][2],
+                          answer_4=request.data['data'][3],
+                          answer_5=request.data['data'][4],
+                          answer_6=request.data['data'][5],
+                          answer_7=request.data['data'][6])
         s.save()
-        first_feature = np.array([s.answer_1, s.answer_2, s.answer_3, s.answer_4, s.answer_5])
+        first_feature = np.array([int(s.answer_1), int(s.answer_2), int(s.answer_3), int(s.answer_4), int(s.answer_5)])
         values = np.array([0.8, 1, 0, 0, 0])
 
         answer_6_list = [int(x) for x in s.answer_6.split(',')]
@@ -64,7 +64,7 @@ class UserQuestionView(APIView):
         val = val + 1
 
         for st in val:
-            us = UserStyle(user_id_id=s.user_id, style_id_id=st)
+            us = UserStyle(user_id_id=request.user.id, style_id_id=st)
             us.save()
 
         a = Style.objects.filter(pk__in=list(val)).values('style_image_url')

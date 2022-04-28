@@ -8,9 +8,10 @@ from rest_framework.authtoken.models import Token
 
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
+    username = models.CharField(max_length=100)
     user_phone_number = models.CharField(max_length=20)
-    # user_postal_code = models.CharField(max_length=20, null=True)
-    # user_address = models.CharField(max_length=20, null=True)
+    user_postal_code = models.CharField(max_length=20, null=True)
+    user_address = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 

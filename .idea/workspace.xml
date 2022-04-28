@@ -9,10 +9,27 @@
       <change beforePath="$PROJECT_DIR$/Backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0002_remove_question_user_questions_question_questions.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0003_listofquestion_alter_question_questions_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0004_userquestions_rename_answer_question_question_answer_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0005_remove_question_question_answer_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0006_userquestions_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0007_remove_userquestions_question.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0008_userquestions_question.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0009_remove_userquestions_value_question_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0010_question_question_id.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0011_remove_question_question_id_remove_question_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0012_remove_userquestions_answer_6_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0014_remove_clothes_image_url_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0015_remove_userquestions_count_1_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0016_delete_clothes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/__init__.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/questions/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/questions/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,20 +75,6 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/mrmos/PycharmProjects/SE-Prj-Backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
-    ]
-  }
-}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\mrmos\PycharmProjects\SE-Prj-Backend" />

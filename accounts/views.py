@@ -17,9 +17,9 @@ class UserRegister(APIView):
         data = {}
         if serialized_data.is_valid():
             account = serialized_data.save()
-            data['response'] = "successfully registered"
-            data['email'] = account.email
+            #data['response'] = "successfully registered"
             data['username'] = account.username
+            data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
             # data['user_postal_code'] = account.user_postal_code
             # data['user_address'] = account.user_address
