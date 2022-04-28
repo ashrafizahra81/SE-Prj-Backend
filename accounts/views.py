@@ -23,15 +23,17 @@ class UserRegister(APIView):
             data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
             refresh = RefreshToken.for_user(account)
-            res = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
+            # res = {
+            #     'refresh': str(refresh),
+            #     'access': str(refresh.access_token),
+            # }
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
             # data['user_postal_code'] = account.user_postal_code
             # data['user_address'] = account.user_address
             # token = Token.objects.get(user=account).key
             # data['token'] = token
-            return Response(res)
+            return Response(data)
         return Response(serialized_data.errors)
 
 
