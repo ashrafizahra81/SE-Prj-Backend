@@ -38,7 +38,7 @@ class UserQuestionView(APIView):
                           answer_7=request.data['data'][6])
         s.save()
         first_feature = np.array([int(s.answer_1), int(s.answer_2), int(s.answer_3), int(s.answer_4), int(s.answer_5)])
-        values = np.array([0.8, 1, 0, 0, 0])
+        values = np.array([1, 1, 0, 0, 0])
 
         answer_6_list = [int(x) for x in s.answer_6.split(',')]
         answer_7_list = [int(x) for x in s.answer_7.split(',')]
@@ -47,9 +47,9 @@ class UserQuestionView(APIView):
         values[answer_6_list[1] + 1] = 0.6
         values[answer_6_list[2] + 1] = 0.4
 
-        image1 = Style.objects.get(id=answer_7_list[0])
-        image2 = Style.objects.get(id=answer_7_list[1])
-        image3 = Style.objects.get(id=answer_7_list[2])
+        image1 = Style.objects.get(id=answer_7_list[0] + 100)
+        image2 = Style.objects.get(id=answer_7_list[1] + 100)
+        image3 = Style.objects.get(id=answer_7_list[2] + 100)
 
         second_feature = np.array(
             [image1.style_param_1, image1.style_param_2, image1.style_param_3, image1.style_param_4,
