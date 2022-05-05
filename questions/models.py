@@ -1,18 +1,13 @@
 from django.db import models
+from accounts.models import User
 
 
-class Answer(models.Model):
-    answer_text = models.CharField(max_length=150)
-
-    def __str__(self):
-        return self.answer_text
-
-
-class Question(models.Model):
-    question_text = models.CharField(max_length=150)
-    answer = models.OneToOneField('Answer', on_delete=models.CASCADE,
-                                  related_name='correct_answer', null=True, blank=True)
-    choices = models.ManyToManyField(Answer, related_name='choices')
-
-    def __str__(self):
-        return self.question_text
+class UserQuestions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    answer_1 = models.CharField(max_length=100, default='')
+    answer_2 = models.CharField(max_length=100, default='')
+    answer_3 = models.CharField(max_length=100, default='')
+    answer_4 = models.CharField(max_length=100, default='')
+    answer_5 = models.CharField(max_length=100, default='')
+    answer_6 = models.CharField(max_length=100, default='1,2,3')
+    answer_7 = models.CharField(max_length=100, default='1,2,3')
