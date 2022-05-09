@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'questions.apps.QuestionsConfig',
-    'corsheaders'
+    'corsheaders',
+    'shop.apps.ShopConfig'
 ]
 
 REST_FRAMEWORK = {

@@ -28,11 +28,6 @@ class StyleSerializer(serializers.ModelSerializer):
         fields = ['style_image_url']
 
 
-class ShopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = ('id', 'shop_name', 'shop_description', 'shop_address', 'shop_phone_num')
-
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):

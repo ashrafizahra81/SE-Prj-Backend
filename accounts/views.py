@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from shop.models import Shop
+from shop.serializers import ShopSerializer
 from .serializers import *
 from django.core import serializers as srz
 from rest_framework.authtoken.models import Token
@@ -89,3 +91,20 @@ class ShopsForUser(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception:
             return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
+
+
+class AddToShoppingCartView(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def post(self, request):
+        print(request.data)
+        for product in Product.objects.all():
+            if product.pk == request.data['data'][0]:
+                if product.number>0:
+                    cart = UserShoppingCart(
+                        user = request.user,
+                        product = product
+                    )
+                cart.save()
+        return Response(status=status.HTTP_200_OK)
+
+
