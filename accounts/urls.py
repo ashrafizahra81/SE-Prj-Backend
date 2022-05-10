@@ -14,5 +14,5 @@ urlpatterns = [
     path('user_styles/', views.UserStyles.as_view(), name="user styles"),
     path('user_shops/<int:pk>/', views.ShopsForUser.as_view(), name="shops for user"),
     path('add_to_cart/', views.AddToShoppingCartView.as_view(), name="add to cart"),
-
+    path('delete_from_cart/', views.DeleteFromShoppingCart.as_view(), name="delete from cart"),
 ]

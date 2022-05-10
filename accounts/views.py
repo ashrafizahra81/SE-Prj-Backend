@@ -95,16 +95,23 @@ class ShopsForUser(APIView):
 
 class AddToShoppingCartView(APIView):
     permission_classes = [IsAuthenticated, ]
+
     def post(self, request):
         print(request.data)
         for product in Product.objects.all():
             if product.pk == request.data['data'][0]:
-                if product.number>0:
+                if product.number > 0:
                     cart = UserShoppingCart(
-                        user = request.user,
-                        product = product
+                        user=request.user,
+                        product=product
                     )
                 cart.save()
         return Response(status=status.HTTP_200_OK)
 
 
+class DeleteFromShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        UserShoppingCart.objects.filter(product_id=request.data['data'][0]).delete()
+        return Response(status=status.HTTP_200_OK)

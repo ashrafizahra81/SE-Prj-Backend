@@ -34,4 +34,3 @@ class UserStyle(models.Model):
 class UserShoppingCart(models.Model):
     user = models.ForeignKey(User , on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product , on_delete=models.DO_NOTHING)
-    
