@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from shop.models import Shop
-from shop.serializers import ShopSerializer
+from shop.serializers import ShopSerializer, ProductSerializer
 from .serializers import *
 from django.core import serializers as srz
 from rest_framework.authtoken.models import Token
@@ -115,3 +115,34 @@ class DeleteFromShoppingCart(APIView):
     def post(self, request):
         UserShoppingCart.objects.filter(product_id=request.data['data'][0]).delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class ShowUserShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self , request):
+        userCart = list(UserShoppingCart.objects.filter(user_id = request.user.id).values())
+        cartList=list()
+        for i in userCart:
+            cartList.append(Product.objects.filter(id = i["product_id"]))
+        s=cartList.pop()
+        print(s[0]['name'])
+
+        # for i in userCart:
+        #     list.append(UserShoppingCart(
+        #         product =
+        #     ))
+        # for i in UserShoppingCart.objects.all():
+        #     productList.append(i.Product)
+        # for i in cartList:
+        #     ser_data = ProductSerializer(
+        #         name = i["name"],
+        #         description = i["description"],
+        #         price = i["price"],
+        #         image = i["image"],
+        #         number = i["number"]
+        #     )
+        #     print(ser_data)
+        #print(cartList.pop()[0]['image'])
+        serialized_data = ProductSerializer(instance=cartList , many=True)
+        print(serialized_data.data)
+        return Response(serialized_data.data , status=status.HTTP_200_OK)
