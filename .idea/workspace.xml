@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="add view for receiving user answers and returning clothes image urls">
+    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/permissions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0002_remove_user_token.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0003_style_userstyle.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0004_rename_style_userstyle_style_id_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0005_category_shop_product.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0006_remove_style_style_description.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0007_remove_user_user_address_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0008_user_user_address_user_user_postal_code.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/migrations/0009_alter_user_username.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/questions/migrations/0013_clothes.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
-    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -24,11 +34,6 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -48,18 +53,16 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="281NhDU3ZGoTMD6Bmj2V8aaOBDq" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\mrmos\PycharmProjects\SE-Prj-Backend" />
-      <recent name="C:\Users\mrmos\PycharmProjects\SE-Prj-Backend\questions" />
-    </key>
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -69,32 +72,19 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1650380257579</updated>
-      <workItem from="1650783174673" duration="3140000" />
-      <workItem from="1650808674285" duration="13000" />
-      <workItem from="1650810411562" duration="2723000" />
-      <workItem from="1650952148775" duration="3592000" />
-      <workItem from="1650963243675" duration="62000" />
-      <workItem from="1650966484222" duration="6439000" />
-      <workItem from="1651068438068" duration="103000" />
-      <workItem from="1651129928287" duration="1396000" />
-      <workItem from="1651507988901" duration="596000" />
-      <workItem from="1651750699339" duration="330000" />
+      <workItem from="1651755839692" duration="5328000" />
+      <workItem from="1651815676205" duration="5454000" />
+      <workItem from="1652034964584" duration="1227000" />
+      <workItem from="1652072708442" duration="2800000" />
+      <workItem from="1652075555626" duration="906000" />
+      <workItem from="1652079040548" duration="79000" />
+      <workItem from="1652092213518" duration="794000" />
+      <workItem from="1652094112233" duration="4233000" />
+      <workItem from="1652110606807" duration="5219000" />
+      <workItem from="1652120347022" duration="1464000" />
+      <workItem from="1652159511229" duration="1375000" />
+      <workItem from="1652202484048" duration="4362000" />
     </task>
-    <task id="LOCAL-00001" summary="add view for saving user_question relations from request data to database">
-      <created>1650792784017</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1650792784017</updated>
-    </task>
-    <task id="LOCAL-00002" summary="add view for receiving user answers and returning clothes image urls">
-      <created>1651060736231</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1651060736231</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,11 +100,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="add models, url and view for retrieving suggested shops for user based on user's styles" />
-    <MESSAGE value="add view for saving user_question relations from request data to database" />
-    <MESSAGE value="add view for receiving user answers and returning clothes image urls" />
-    <option name="LAST_COMMIT_MESSAGE" value="add view for receiving user answers and returning clothes image urls" />
   </component>
 </project>

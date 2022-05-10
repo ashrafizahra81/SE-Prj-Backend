@@ -11,6 +11,10 @@ from rest_framework.authtoken.models import Token
 from .models import *
 from rest_framework import status
 
+from permissions import IsOwner
+
+from rest_framework.viewsets import ModelViewSet
+
 
 class UserRegister(APIView):
     def post(self, request):
@@ -89,3 +93,136 @@ class ShopsForUser(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception:
             return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
+
+
+##########################################Sprint3#########################################3
+
+class ShopManagerRegister(APIView):
+    def post(self, request):
+        serialized_data = ShopManagerRegisterSerializer(data=request.data)
+        data = {}
+        if serialized_data.is_valid():
+            shop_manager = serialized_data.save()
+            # data['response'] = "successfully registered"
+            data['username'] = shop_manager.username
+            data['email'] = shop_manager.email
+            data['user_phone_number'] = shop_manager.user_phone_number
+            data['shop_name'] = shop_manager.shop_name
+            data['shop_description'] = shop_manager.shop_description
+            data['shop_address'] = shop_manager.shop_address
+            data['shop_phone_num'] = shop_manager.shop_phone_num
+            refresh = RefreshToken.for_user(shop_manager)
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            return Response(data)
+        return Response(serialized_data.errors)
+
+class EditShop(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def put(self, request, pk):
+        user = User.objects.get(pk=pk)
+        serialized_data = EditShopSerializer(instance=user, data=request.data, partial=True)
+        if serialized_data.is_valid():
+            # print(request.user.email)
+            serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddProductsToShopViewSet(ModelViewSet):
+    queryset = Product.objects.none()
+    serializer_class = ProductsSerializer
+    permission_classes = (IsAuthenticated,)
+    http_method_names = ['post', ]
+
+    def create(self, request, *args, **kwargs):
+        _serializer = self.serializer_class(data=request.data)
+
+        if _serializer.is_valid():
+            _serializer.save(shop=request.user)
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)  # NOQA
+        else:
+            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
+
+class EditProduct(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def put(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
+        if serialized_data.is_valid():
+            # print(request.user.email)
+            serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteProduct(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def delete(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        product.delete()
+        return Response({'message': 'product deleted'})
+
+# class CreateShopViewSet(ModelViewSet):
+#     queryset = Shop.objects.none()
+#     serializer_class = CreateShopSerializer
+#     permission_classes = (IsAuthenticated,)
+#     http_method_names = ['post', ]
+#
+#     def create(self, request, *args, **kwargs):
+#         user = request.user
+#         _serializer = self.serializer_class(data=request.data)
+#
+#         if _serializer.is_valid():
+#             _serializer.save(user=user)
+#             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)  # NOQA
+#         else:
+#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
+
+
+
+# class ShopManagerRegistrationAndCreateShop(APIView):
+#     def post(self, request):
+#         serialized_data = ShopManagerRegistrationAndCreateShopSerializer(data=request.data)
+#         data = {}
+#         if serialized_data.is_valid():
+#             shop = serialized_data.save()
+#             data['username'] = shop.username
+#             data['email'] = shop.email
+#             data['password'] = shop.password
+#             data['user_phone_number'] = shop.user_phone_number
+#             data['shop_name'] = shop.shop_name
+#             data['shop_description'] = shop.shop_description
+#             data['shop_address'] = shop.shop_address
+#             data['shop_phone_num'] = shop.shop_phone_num
+#             refresh = RefreshToken.for_user(shop)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#
+#             user = User.objects.all()
+#             for u in user:
+#                 print(u.password)
+#             return Response(data)
+#         return Response(serialized_data.errors)
+#
+#
+#
+
+# class AddProductsToShopView(APIView):
+#     permission_classes = [IsAuthenticated,]
+#     data = {}
+#     def post(self, request):
+#         #shop = Shop.objects.get(shop_owner = request.user)
+#         serialized_data = ProductsSerializer(data = request.data)
+#         if serialized_data.is_valid():
+#             serialized_data.save()
+#             return Response(serialized_data.data , status=status.HTTP_201_CREATED)
+#         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#
+
+
+
+
+
