@@ -5,8 +5,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-from shop.models import Product
-
 
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
@@ -31,6 +29,28 @@ class UserStyle(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
+
+class Product(models.Model):
+    name = models.CharField(max_length=50, default='')
+    description = models.CharField(max_length=50, default='')
+    price = models.IntegerField(default=0)
+    image = models.URLField(null=True)
+    shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    number = models.IntegerField(default=0)
+
+
 class UserShoppingCart(models.Model):
-    user = models.ForeignKey(User , on_delete=models.DO_NOTHING)
-    product = models.ForeignKey(Product , on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+
+
+class Category(models.Model):
+    category_description = models.CharField(max_length=100, null=False)
+
+
+class Shop(models.Model):
+    shop_name = models.CharField(max_length=1000, null=False)
+    shop_description = models.CharField(max_length=5000, null=True)
+    shop_address = models.CharField(max_length=2000, null=True)
+    shop_phone_num = models.IntegerField(null=True)
+    shop_owner_id = models.CharField(max_length=20)

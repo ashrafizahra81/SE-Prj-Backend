@@ -4,9 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from shop.models import Shop
-from shop.serializers import ShopSerializer, ProductSerializer
 from .serializers import *
 from django.core import serializers as srz
 from rest_framework.authtoken.models import Token
@@ -125,7 +122,7 @@ class ShowUserShoppingCart(APIView):
         for i in userCart:
             cartList.append(Product.objects.filter(id = i["product_id"]))
         s=cartList.pop()
-        print(s[0]['name'])
+        print(s[0])
 
         # for i in userCart:
         #     list.append(UserShoppingCart(

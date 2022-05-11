@@ -28,7 +28,6 @@ class StyleSerializer(serializers.ModelSerializer):
         fields = ['style_image_url']
 
 
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         # The default result (access/refresh tokens)
@@ -38,3 +37,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # data.update({'email': self.user.email})
         # and everything else you want to send in the response
         return data
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('name', 'description', 'price', 'image', 'number')
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ('id', 'shop_name', 'shop_description', 'shop_address', 'shop_phone_num')
