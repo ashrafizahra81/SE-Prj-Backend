@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from .serializers import *
 from django.core import serializers as srz
 from rest_framework.authtoken.models import Token
@@ -89,3 +88,43 @@ class ShopsForUser(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception:
             return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
+
+
+class AddToShoppingCartView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        print(request.data)
+        for product in Product.objects.all():
+            if product.pk == request.data['data'][0]:
+                if product.number > 0:
+                    cart = UserShoppingCart(
+                        user=request.user,
+                        product=product
+                    )
+                cart.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class DeleteFromShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        UserShoppingCart.objects.filter(product_id=request.data['data'][0]).delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class ShowUserShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self, request):
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        product_list = list()
+        for i in user_cart:
+            product_list.append(Product.objects.filter(id=i["product_id"]).values())
+        data = {}
+        data['image'] = product_list[0][0]['image']
+        data['name'] = product_list[0][0]['name']
+        data['price'] = product_list[0][0]['price']
+        data['shop_id_id'] = product_list[0][0]['shop_id_id']
+        print(product_list[0][0]['name'])
+        return Response(data, status=status.HTTP_200_OK)

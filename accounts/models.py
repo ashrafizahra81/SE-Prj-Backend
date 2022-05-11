@@ -30,6 +30,20 @@ class UserStyle(models.Model):
     style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
 
+class Product(models.Model):
+    name = models.CharField(max_length=50, default='')
+    description = models.CharField(max_length=50, default='')
+    price = models.IntegerField(default=0)
+    image = models.URLField(null=True)
+    shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    number = models.IntegerField(default=0)
+
+
+class UserShoppingCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+
+
 class Category(models.Model):
     category_description = models.CharField(max_length=100, null=False)
 
@@ -39,24 +53,4 @@ class Shop(models.Model):
     shop_description = models.CharField(max_length=5000, null=True)
     shop_address = models.CharField(max_length=2000, null=True)
     shop_phone_num = models.IntegerField(null=True)
-    shop_owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-
-
-class Product(models.Model):
-    product_name = models.CharField(max_length=100, null=False)
-    product_description = models.CharField(max_length=2000, null=True)
-    product_brand = models.CharField(max_length=100, null=True)
-    product_color = models.CharField(max_length=100, null=False)
-    product_size = models.CharField(max_length=100, null=False)
-    product_price = models.BigIntegerField(null=False)
-    product_off_percent = models.IntegerField(null=False, default=0)
-    product_image = models.URLField(null=True)
-    style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
-    category_id = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
-    shop_id = models.ForeignKey(Shop, on_delete=models.DO_NOTHING)
-
-
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_auth_token(sender, instance=None, created=False, **kwargs):
-#     if created:
-#         Token.objects.create(user=instance)
+    shop_owner_id = models.CharField(max_length=20)
