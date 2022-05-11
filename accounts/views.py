@@ -116,21 +116,15 @@ class DeleteFromShoppingCart(APIView):
 
 class ShowUserShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
-
     def get(self, request):
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         product_list = list()
         for i in user_cart:
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         data = {}
-
-        # data['response'] = "successfully registered"
         data['image'] = product_list[0][0]['image']
         data['name'] = product_list[0][0]['name']
         data['price'] = product_list[0][0]['price']
-        #data['shop_id'] = product_list[0][0]['shop_id']
-        # data['email'] = account.email
-        # data['user_phone_number'] = account.user_phone_number
-        # refresh = RefreshToken.for_user(account)
-
+        data['shop_id_id'] = product_list[0][0]['shop_id_id']
+        print(product_list[0][0]['name'])
         return Response(data, status=status.HTTP_200_OK)
