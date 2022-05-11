@@ -128,3 +128,17 @@ class ShowUserShoppingCart(APIView):
         data['shop_id_id'] = product_list[0][0]['shop_id_id']
         print(product_list[0][0]['name'])
         return Response(data, status=status.HTTP_200_OK)
+
+class AddToFavoriteProduct(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        for product in Product.objects.all():
+            if product.pk == request.data['data'][0]:
+                favorite_product = UserFavoriteProduct(
+                    user=request.user,
+                    product=product
+                )
+                favorite_product.save()
+
+        return Response(status=status.HTTP_200_OK)
