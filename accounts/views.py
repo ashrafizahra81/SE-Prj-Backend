@@ -116,30 +116,21 @@ class DeleteFromShoppingCart(APIView):
 
 class ShowUserShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
-    def get(self , request):
-        userCart = list(UserShoppingCart.objects.filter(user_id = request.user.id).values())
-        cartList=list()
-        for i in userCart:
-            cartList.append(Product.objects.filter(id = i["product_id"]))
-        s=cartList.pop()
-        print(s[0])
 
-        # for i in userCart:
-        #     list.append(UserShoppingCart(
-        #         product =
-        #     ))
-        # for i in UserShoppingCart.objects.all():
-        #     productList.append(i.Product)
-        # for i in cartList:
-        #     ser_data = ProductSerializer(
-        #         name = i["name"],
-        #         description = i["description"],
-        #         price = i["price"],
-        #         image = i["image"],
-        #         number = i["number"]
-        #     )
-        #     print(ser_data)
-        #print(cartList.pop()[0]['image'])
-        serialized_data = ProductSerializer(instance=cartList , many=True)
-        print(serialized_data.data)
-        return Response(serialized_data.data , status=status.HTTP_200_OK)
+    def get(self, request):
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        product_list = list()
+        for i in user_cart:
+            product_list.append(Product.objects.filter(id=i["product_id"]).values())
+        data = {}
+
+        # data['response'] = "successfully registered"
+        data['image'] = product_list[0][0]['image']
+        data['name'] = product_list[0][0]['name']
+        data['price'] = product_list[0][0]['price']
+        #data['shop_id'] = product_list[0][0]['shop_id']
+        # data['email'] = account.email
+        # data['user_phone_number'] = account.user_phone_number
+        # refresh = RefreshToken.for_user(account)
+
+        return Response(data, status=status.HTTP_200_OK)
