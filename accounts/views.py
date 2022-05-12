@@ -158,11 +158,13 @@ class EditProduct(APIView):
 
 class DeleteProduct(APIView):
     permission_classes = [IsAuthenticated, ]
-
     def delete(self, request, pk):
         product = Product.objects.get(pk=pk)
         product.delete()
         return Response({'message': 'product deleted'})
+
+# class CheckoutShoppingCart
+
 
 # class CreateShopViewSet(ModelViewSet):
 #     queryset = Shop.objects.none()

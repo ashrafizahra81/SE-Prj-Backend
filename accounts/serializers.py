@@ -56,12 +56,12 @@ class ProductsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ('product_image', 'style_id', 'category_id')
+        exclude = ('shop',)
 
 class EditProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        exclude = ('product_image', 'style_id', 'category_id')
+        exclude = ('product_image')
 
 class ShopManagerRegisterSerializer(serializers.ModelSerializer):
     class Meta:
