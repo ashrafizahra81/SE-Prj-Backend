@@ -17,4 +17,5 @@ urlpatterns = [
     path('delete_from_cart/', views.DeleteFromShoppingCart.as_view(), name="delete from cart"),
     path('show-cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),
     path('add-to-favorite/', views.AddToFavoriteProduct.as_view(), name="add-to-favorite"),
+    path('show-favorite/', views.ShowFavoriteProduct.as_view(), name="show-favorite"),
 ]
