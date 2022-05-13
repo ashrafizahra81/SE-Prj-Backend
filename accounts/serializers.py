@@ -51,8 +51,13 @@ class ProductsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ('shop',)
+        fields = '__all__'
 
+
+class ProductInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['product_name', 'product_description', 'upload']
 
 class EditProductSerializer(serializers.ModelSerializer):
     class Meta:

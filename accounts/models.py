@@ -64,6 +64,11 @@ class Category(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, related_name='orders')
+    cost = models.IntegerField()
+    status = models.CharField(max_length=100, null=False)
+    order_date = models.DateTimeField(auto_now_add=True, null=False)
+    complete_date = models.DateTimeField(null=True)
+
 
 
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)

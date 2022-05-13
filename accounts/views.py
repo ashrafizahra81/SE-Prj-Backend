@@ -219,3 +219,39 @@ class DeleteProduct(APIView):
         product = Product.objects.get(pk=pk)
         product.delete()
         return Response({'message': 'product deleted'})
+
+
+class GetProductInfo(APIView):
+
+    def get(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        if product:
+            serialized_data = ProductsSerializer(instance=product, data=request.data, partial=True)
+            if serialized_data.is_valid():
+                return Response(serialized_data.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class GetUserOrders(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+
+        user_orders = list(Order.objects.filter(user_id=request.user.id).values())
+        data = list()
+        for o in user_orders:
+            print(o)
+            product = Product.objects.get(pk=o['product_id'])
+            serialized_product = ProductInfoSerializer(instance=product)
+            js = serialized_product.data
+            js['cost'] = o['cost']
+            js['order_date'] = o['order_date']
+            js['complete_date'] = o['complete_date']
+            js['status'] = o['status']
+            data.append(js)
+        if data:
+            return JsonResponse(data, safe=False)
+        else:
+            return HttpResponse(status=status.HTTP_204_NO_CONTENT)

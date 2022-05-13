@@ -28,5 +28,7 @@ urlpatterns = [
     path('edit_shop/<int:pk>/', views.EditShop.as_view(), name="edit shop"),
     path('edit_product/<int:pk>/', views.EditProduct.as_view(), name="edit product"),
     path('delete_product/<int:pk>/', views.DeleteProduct.as_view(), name="delete product"),
+    path('product_info/<int:pk>/', views.GetProductInfo.as_view(), name="get product info"),
+    path('user_orders/', views.GetUserOrders.as_view(), name="get user orders"),
 
 ]
