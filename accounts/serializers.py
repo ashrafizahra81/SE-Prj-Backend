@@ -39,7 +39,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
-#####################################sprint3###########################################33
 class ProductsSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
@@ -54,15 +53,18 @@ class ProductsSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ('shop',)
 
+
 class EditProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        exclude = ('product_image')
+        fields = '__all__'
+
 
 class ShopManagerRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'user_phone_number', 'password', 'shop_name', 'shop_description', 'shop_address', 'shop_phone_num')
+        fields = ('username', 'email', 'user_phone_number', 'password', 'shop_name', 'shop_description', 'shop_address',
+                  'shop_phone_number')
         extera_kwargs = {
             'password': {'write_only': True}
         }
@@ -70,52 +72,10 @@ class ShopManagerRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+
 class EditShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'username', 'user_phone_number', 'shop_name', 'shop_description', 'shop_address', 'shop_phone_num')
-
-
-
-
-
-
-
-
-#
-# class ShopManagerRegistrationAndCreateShopSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Shop
-#         #exclude = ('shop_owner', )
-#         fields = ('username', 'email', 'user_phone_number', 'password', 'shop_name', 'shop_description', 'shop_address','shop_phone_num')
-#         extera_kwargs = {
-#             'password': {'write_only': True}
-#         }
-#
-#         def create(self, validated_data):
-#             return Shop.objects.create_shop(**validated_data)
-#
-
-
-
-
-# class CreateShopSerializer(serializers.ModelSerializer):
-#     def validate(self, data):
-#         return data
-#
-#     def create(self, validated_data):
-#         shop_owner = validated_data.get('user', None)
-#         shop = Shop.objects.create(**validated_data)
-#         return shop
-#
-#     class Meta:
-#         model = Shop
-#         exclude = ('user', )
-
-
-
-
-
-
-
+        fields = (
+            'email', 'username', 'user_phone_number', 'shop_name', 'shop_description', 'shop_address',
+            'shop_phone_number')

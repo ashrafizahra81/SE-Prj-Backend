@@ -1,8 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
@@ -15,7 +12,7 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=1000, null=True)
     shop_description = models.CharField(max_length=5000, null=True)
     shop_address = models.CharField(max_length=2000, null=True)
-    shop_phone_num = models.IntegerField(null=True)
+    shop_phone_number = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -34,20 +31,13 @@ class UserStyle(models.Model):
     style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
 
-class UserShoppingCart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
-
-
-class Category(models.Model):
-    category_description = models.CharField(max_length=100, null=False)
-
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=False)
     product_description = models.CharField(max_length=2000, null=True)
     product_price = models.BigIntegerField(null=False)
     shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
+    inventory = models.IntegerField(default=0, null=False)
 
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
@@ -57,11 +47,24 @@ class Product(models.Model):
     # category_id = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null = True)
     # product_image = models.URLField(null=True)
     # file will be saved to MEDIA_ROOT / uploads / 2015 / 01 / 30
-   # upload = models.FileField(upload_to='uploads/% Y/% m/% d/')
+
+
+# upload = models.FileField(upload_to='uploads/% Y/% m/% d/')
+
+
+class UserShoppingCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+
+
+class Category(models.Model):
+    category_description = models.CharField(max_length=100, null=False)
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, related_name='orders')
+
 
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 # def create_auth_token(sender, instance=None, created=False, **kwargs):

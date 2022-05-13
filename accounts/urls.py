@@ -6,12 +6,10 @@ from . import views
 
 app_name = 'accounts'
 
-
 AddProductsToShop_list = views.AddProductsToShopViewSet.as_view({
     'get': 'list',
     'post': 'create'
 })
-
 
 urlpatterns = [
     path('register/', views.UserRegister.as_view()),
@@ -20,12 +18,11 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('edit_profile/<int:pk>/', views.UserEditProfile.as_view(), name="edit profile"),
     path('user_styles/', views.UserStyles.as_view(), name="user styles"),
-    path('user_shops/<int:pk>/', views.ShopsForUser.as_view(), name="shops for user"),
     path('add_to_cart/', views.AddToShoppingCartView.as_view(), name="add to cart"),
     path('delete_from_cart/', views.DeleteFromShoppingCart.as_view(), name="delete from cart"),
-    path('show-cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),
-    path('add-to-favorite/', views.AddToFavoriteProduct.as_view(), name="add-to-favorite"),
-    path('show-favorite/', views.ShowFavoriteProduct.as_view(), name="show-favorite"),
+    path('show_cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),
+    path('add_to_favorite/', views.AddToFavoriteProduct.as_view(), name="add-to-favorite"),
+    path('show_favorite/', views.ShowFavoriteProduct.as_view(), name="show-favorite"),
     path('add_products_to_shop/', AddProductsToShop_list, name="add products to shop"),
     path('create_shop/', views.ShopManagerRegister.as_view(), name="create shop"),
     path('edit_shop/<int:pk>/', views.EditShop.as_view(), name="edit shop"),
