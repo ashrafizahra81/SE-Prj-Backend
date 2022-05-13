@@ -80,7 +80,7 @@ class AddToShoppingCartView(APIView):
                         user=request.user,
                         product=product
                     )
-                cart.save()
+                    cart.save()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -102,11 +102,12 @@ class ShowUserShoppingCart(APIView):
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         if product_list:
             data = {}
-            data['upload'] = product_list[0][0]['upload']
             data['product_name'] = product_list[0][0]['product_name']
+            data['product_description'] = product_list[0][0]['product_description']
             data['product_price'] = product_list[0][0]['product_price']
-            data['shop_id'] = product_list[0][0]['shop_id']
             data['inventory'] = product_list[0][0]['inventory']
+            data['upload'] = product_list[0][0]['upload']
+            data['shop_id'] = product_list[0][0]['shop_id']
             print(product_list[0][0]['product_name'])
             return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -137,9 +138,11 @@ class ShowFavoriteProduct(APIView):
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         if product_list:
             data = {}
-            data['upload'] = product_list[0][0]['upload']
             data['product_name'] = product_list[0][0]['product_name']
+            data['product_description'] = product_list[0][0]['product_description']
             data['product_price'] = product_list[0][0]['product_price']
+            data['inventory'] = product_list[0][0]['inventory']
+            data['upload'] = product_list[0][0]['upload']
             data['shop_id'] = product_list[0][0]['shop_id']
             print(product_list[0][0]['product_name'])
             return Response(data, status=status.HTTP_200_OK)
