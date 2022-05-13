@@ -73,3 +73,6 @@ class UserQuestionView(APIView):
         resp = StyleSerializer(instance=a, many=True)
 
         return Response(data=resp.data, status=status.HTTP_201_CREATED)
+
+
+
