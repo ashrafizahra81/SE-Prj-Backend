@@ -16,6 +16,8 @@ from permissions import IsOwner
 from rest_framework.viewsets import ModelViewSet
 
 
+from datetime import datetime
+
 class UserRegister(APIView):
     def post(self, request):
         serialized_data = UserRegisterSerializer(data=request.data)
@@ -97,6 +99,26 @@ class ShopsForUser(APIView):
 
 ##########################################Sprint3#########################################3
 
+# class ShopManagerRegister(APIView):
+#     def post(self, request):
+#         serialized_data = ShopManagerRegisterSerializer(data=request.data)
+#         data = {}
+#         if serialized_data.is_valid():
+#             shop_manager = serialized_data.save()
+#             # data['response'] = "successfully registered"
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data)
+#         return Response(serialized_data.errors)
+
 class ShopManagerRegister(APIView):
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
@@ -110,12 +132,65 @@ class ShopManagerRegister(APIView):
             data['shop_name'] = shop_manager.shop_name
             data['shop_description'] = shop_manager.shop_description
             data['shop_address'] = shop_manager.shop_address
-            data['shop_phone_num'] = shop_manager.shop_phone_num
+            data['shop_phone_number'] = shop_manager.shop_phone_number
             refresh = RefreshToken.for_user(shop_manager)
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
             return Response(data)
         return Response(serialized_data.errors)
+
+# class ShopManagerRegister(APIView):
+#     queryset = User.objects.none()
+#     serializer_class = ShopManagerRegisterSerializer
+#     #permission_classes = (IsAuthenticated,)
+#     http_method_names = ['post', ]
+#
+#     def create(self, request, *args, **kwargs):
+#         user = request.user
+#         _serializer = self.serializer_class(data=request.data)
+#         data = {}
+#         if _serializer.is_valid():
+#             shop_manager = _serializer.save(is_staff=True)
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
+#         else:
+#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
+
+
+# class ShopManagerRegisterViewSet(ModelViewSet):
+#     queryset = User.objects.none()
+#     serializer_class = ShopManagerRegisterSerializer
+#     #permission_classes = (IsAuthenticated,)
+#     http_method_names = ['post', ]
+#
+#     def create(self, request, *args, **kwargs):
+#         user = request.user
+#         _serializer = self.serializer_class(data=request.data)
+#         data = {}
+#         if _serializer.is_valid():
+#             shop_manager = _serializer.save(is_staff=True)
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
+#         else:
+#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
 
 class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -139,7 +214,7 @@ class AddProductsToShopViewSet(ModelViewSet):
         _serializer = self.serializer_class(data=request.data)
 
         if _serializer.is_valid():
-            _serializer.save(shop=request.user)
+            _serializer.save(shop_id=request.user)
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)  # NOQA
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
@@ -163,7 +238,51 @@ class DeleteProduct(APIView):
         product.delete()
         return Response({'message': 'product deleted'})
 
-# class CheckoutShoppingCart
+class CheckoutShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self, request):
+        user_orders = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        data = list()
+        price = 0
+        date_of_buy = datetime.now()
+        user_buyer = {}
+        user_buyer["buyer"] = request.user.email
+        data.append(user_buyer)
+        for o in user_orders:
+            print(o)
+            product = Product.objects.get(pk=o['product_id'])
+            serialized_product = ProductInfoSerializer(instance=product)
+            c = Order(
+                user = request.user,
+                product = product,
+                cost = 10,
+                status = "Accepted",
+                # order_date = null,
+                # complete_date =null
+            )
+            c.save()
+            #print(o['cost'])
+            js = serialized_product.data
+            price += product.product_price
+            # date_of_buy = o['order_date']
+            js['product'] = product.product_price
+            # js['order_date'] = o['order_date']
+            # js['complete_date'] = o['complete_date']
+            # js['status'] = o['status']
+            data.append(js)
+
+        # data['user'] = request.user
+        print(price)
+        dict_price = {}
+        dict_price["total price"]= price
+        date = {}
+        date["date"] = date_of_buy
+        data.append(dict_price)
+        data.append(date)
+        if data:
+            return JsonResponse(data, safe=False)
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 
 # class CreateShopViewSet(ModelViewSet):
@@ -181,8 +300,6 @@ class DeleteProduct(APIView):
 #             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)  # NOQA
 #         else:
 #             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
-
-
 
 # class ShopManagerRegistrationAndCreateShop(APIView):
 #     def post(self, request):
@@ -207,9 +324,6 @@ class DeleteProduct(APIView):
 #                 print(u.password)
 #             return Response(data)
 #         return Response(serialized_data.errors)
-#
-#
-#
 
 # class AddProductsToShopView(APIView):
 #     permission_classes = [IsAuthenticated,]
@@ -221,7 +335,6 @@ class DeleteProduct(APIView):
 #             serialized_data.save()
 #             return Response(serialized_data.data , status=status.HTTP_201_CREATED)
 #         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
 #
 
 

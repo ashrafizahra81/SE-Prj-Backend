@@ -15,7 +15,7 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=1000, null=True)
     shop_description = models.CharField(max_length=5000, null=True)
     shop_address = models.CharField(max_length=2000, null=True)
-    shop_phone_num = models.IntegerField(null=True)
+    shop_phone_number = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -50,9 +50,8 @@ class Product(models.Model):
     product_name = models.CharField(max_length=100, null=False)
     product_description = models.CharField(max_length=2000, null=True)
     product_price = models.BigIntegerField(null=False)
-    shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
+    shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
-
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
     # product_size = models.CharField(max_length=100, null=False)
@@ -61,13 +60,27 @@ class Product(models.Model):
     # category_id = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null = True)
     # product_image = models.URLField(null=True)
     # file will be saved to MEDIA_ROOT / uploads / 2015 / 01 / 30
-   # upload = models.FileField(upload_to='uploads/% Y/% m/% d/')
+    # upload = models.FileField(upload_to='uploads/% Y/% m/% d/')
+
+
+
+class UserShoppingCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, related_name='orders')
-    
+    cost = models.IntegerField()
+    status = models.CharField(max_length=100, null=True, default="Accepted")
+    order_date = models.DateTimeField(auto_now_add=True, null=True)
+    complete_date = models.DateTimeField(null=True)
+
+
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_auth_token(sender, instance=None, created=False, **kwargs):
+# def create_auth_token
+# (sender, instance=None, created=False, **kwargs):
 #     if created:
 #         Token.objects.create(user=instance)
