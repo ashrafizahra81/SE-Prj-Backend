@@ -255,3 +255,23 @@ class GetUserOrders(APIView):
             return JsonResponse(data, safe=False)
         else:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShowProductsByShop(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        product_list= list(Product.objects.filter(shop=request.data['data'][0]).values())
+        data = {}
+        data1 = list()
+        for i in product_list:
+            data = {}
+            data['product_name'] = i['product_name']
+            data['product_description'] = i['product_description']
+            data['product_price'] = i['product_price']
+            data['inventory'] = i['inventory']
+            data['upload'] = i['upload']
+            data['shop_id'] = i['shop_id']
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
+        #return Response(status=status.HTTP_204_NO_CONTENT)
