@@ -266,6 +266,7 @@ class ShowProductsByShop(APIView):
         data1 = list()
         for i in product_list:
             data = {}
+            data['id'] = i['id']
             data['product_name'] = i['product_name']
             data['product_description'] = i['product_description']
             data['product_price'] = i['product_price']
