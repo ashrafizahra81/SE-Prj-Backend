@@ -15,8 +15,9 @@ from permissions import IsOwner
 
 from rest_framework.viewsets import ModelViewSet
 
-
 from datetime import datetime
+
+import json
 
 class UserRegister(APIView):
     def post(self, request):
@@ -139,59 +140,6 @@ class ShopManagerRegister(APIView):
             return Response(data)
         return Response(serialized_data.errors)
 
-# class ShopManagerRegister(APIView):
-#     queryset = User.objects.none()
-#     serializer_class = ShopManagerRegisterSerializer
-#     #permission_classes = (IsAuthenticated,)
-#     http_method_names = ['post', ]
-#
-#     def create(self, request, *args, **kwargs):
-#         user = request.user
-#         _serializer = self.serializer_class(data=request.data)
-#         data = {}
-#         if _serializer.is_valid():
-#             shop_manager = _serializer.save(is_staff=True)
-#             data['username'] = shop_manager.username
-#             data['email'] = shop_manager.email
-#             data['user_phone_number'] = shop_manager.user_phone_number
-#             data['shop_name'] = shop_manager.shop_name
-#             data['shop_description'] = shop_manager.shop_description
-#             data['shop_address'] = shop_manager.shop_address
-#             data['shop_phone_num'] = shop_manager.shop_phone_num
-#             refresh = RefreshToken.for_user(shop_manager)
-#             data['refresh'] = str(refresh)
-#             data['access'] = str(refresh.access_token)
-#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
-#         else:
-#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
-
-
-# class ShopManagerRegisterViewSet(ModelViewSet):
-#     queryset = User.objects.none()
-#     serializer_class = ShopManagerRegisterSerializer
-#     #permission_classes = (IsAuthenticated,)
-#     http_method_names = ['post', ]
-#
-#     def create(self, request, *args, **kwargs):
-#         user = request.user
-#         _serializer = self.serializer_class(data=request.data)
-#         data = {}
-#         if _serializer.is_valid():
-#             shop_manager = _serializer.save(is_staff=True)
-#             data['username'] = shop_manager.username
-#             data['email'] = shop_manager.email
-#             data['user_phone_number'] = shop_manager.user_phone_number
-#             data['shop_name'] = shop_manager.shop_name
-#             data['shop_description'] = shop_manager.shop_description
-#             data['shop_address'] = shop_manager.shop_address
-#             data['shop_phone_num'] = shop_manager.shop_phone_num
-#             refresh = RefreshToken.for_user(shop_manager)
-#             data['refresh'] = str(refresh)
-#             data['access'] = str(refresh.access_token)
-#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
-#         else:
-#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
-
 class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
@@ -240,45 +188,44 @@ class DeleteProduct(APIView):
 
 class CheckoutShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
+
     def get(self, request):
-        user_orders = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         data = list()
         price = 0
         date_of_buy = datetime.now()
         user_buyer = {}
         user_buyer["buyer"] = request.user.email
         data.append(user_buyer)
-        for o in user_orders:
-            print(o)
+
+        for o1 in user_cart:
+            product1 = Product.objects.get(pk=o1['product_id'])
+            price += product1.product_price
+
+        for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
             serialized_product = ProductInfoSerializer(instance=product)
+            js = serialized_product.data
             c = Order(
                 user = request.user,
                 product = product,
-                cost = 10,
+                cost = price,
                 status = "Accepted",
-                # order_date = null,
-                # complete_date =null
             )
             c.save()
-            #print(o['cost'])
-            js = serialized_product.data
-            price += product.product_price
-            # date_of_buy = o['order_date']
             js['product'] = product.product_price
-            # js['order_date'] = o['order_date']
-            # js['complete_date'] = o['complete_date']
-            # js['status'] = o['status']
             data.append(js)
+            UserShoppingCart.objects.filter(user_id=request.user.id).delete()
 
-        # data['user'] = request.user
-        print(price)
+        # print(price)
         dict_price = {}
         dict_price["total price"]= price
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)
         data.append(date)
+        # print(data)
         if data:
             return JsonResponse(data, safe=False)
         return Response(data, status=status.HTTP_201_CREATED)
@@ -337,6 +284,59 @@ class CheckoutShoppingCart(APIView):
 #         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 #
 
+
+# class ShopManagerRegister(APIView):
+#     queryset = User.objects.none()
+#     serializer_class = ShopManagerRegisterSerializer
+#     #permission_classes = (IsAuthenticated,)
+#     http_method_names = ['post', ]
+#
+#     def create(self, request, *args, **kwargs):
+#         user = request.user
+#         _serializer = self.serializer_class(data=request.data)
+#         data = {}
+#         if _serializer.is_valid():
+#             shop_manager = _serializer.save(is_staff=True)
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
+#         else:
+#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
+
+
+# class ShopManagerRegisterViewSet(ModelViewSet):
+#     queryset = User.objects.none()
+#     serializer_class = ShopManagerRegisterSerializer
+#     #permission_classes = (IsAuthenticated,)
+#     http_method_names = ['post', ]
+#
+#     def create(self, request, *args, **kwargs):
+#         user = request.user
+#         _serializer = self.serializer_class(data=request.data)
+#         data = {}
+#         if _serializer.is_valid():
+#             shop_manager = _serializer.save(is_staff=True)
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data=data, status=status.HTTP_201_CREATED)  # NOQA
+#         else:
+#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQ
 
 
 

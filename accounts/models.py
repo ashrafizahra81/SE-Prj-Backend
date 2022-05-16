@@ -67,6 +67,7 @@ class Product(models.Model):
 class UserShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    status = models.CharField(max_length=100, null=True, default="not Accepted")
 
 
 
@@ -74,8 +75,8 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     cost = models.IntegerField()
-    status = models.CharField(max_length=100, null=True, default="Accepted")
-    order_date = models.DateTimeField(auto_now_add=True, null=True)
+    status = models.CharField(max_length=100, default="Accepted", null=False)
+    order_date = models.DateTimeField(auto_now_add=True, null=False)
     complete_date = models.DateTimeField(null=True)
 
 

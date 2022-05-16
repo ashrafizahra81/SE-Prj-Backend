@@ -28,11 +28,11 @@ urlpatterns = [
     path('user_shops/<int:pk>/', views.ShopsForUser.as_view(), name="shops for user"),
     path('add_products_to_shop/', AddProductsToShop_list, name="add products to shop"),
     # path('create_shop/', createShopManagerRegister_list, name="create shop"),
-    path('checkout/', views.CheckoutShoppingCart.as_view(), name="checkout shopping cart"),
     path('create_shop/', views.ShopManagerRegister.as_view(), name="create shop"),
     path('edit_shop/<int:pk>/', views.EditShop.as_view(), name="edit shop"),
     path('edit_product/<int:pk>/', views.EditProduct.as_view(), name="edit product"),
     path('delete_product/<int:pk>/', views.DeleteProduct.as_view(), name="delete product"),
+    path('checkout/', views.CheckoutShoppingCart.as_view(), name="checkout shopping cart"),
 
 ]
 
