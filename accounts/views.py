@@ -75,7 +75,7 @@ class AddToShoppingCartView(APIView):
         print(request.data)
         for product in Product.objects.all():
             if product.pk == request.data['data'][0]:
-                if product.inventory > 0:
+                if product.inventory == 0:
                     cart = UserShoppingCart(
                         user=request.user,
                         product=product
@@ -100,17 +100,19 @@ class ShowUserShoppingCart(APIView):
         product_list = list()
         for i in user_cart:
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-        if product_list:
+        data1 = list()
+        for i in product_list:
             data = {}
-            data['product_name'] = product_list[0][0]['product_name']
-            data['product_description'] = product_list[0][0]['product_description']
-            data['product_price'] = product_list[0][0]['product_price']
-            data['inventory'] = product_list[0][0]['inventory']
-            data['upload'] = product_list[0][0]['upload']
-            data['shop_id'] = product_list[0][0]['shop_id']
-            print(product_list[0][0]['product_name'])
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            data['product_name'] = i[0]['product_name']
+            data['product_description'] = i[0]['product_description']
+            data['product_price'] = i[0]['product_price']
+            data['inventory'] = i[0]['inventory']
+            data['upload'] = i[0]['upload']
+            data['shop_id'] = i[0]['shop_id']
+            print(i[0]['product_name'])
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
+        #return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AddToFavoriteProduct(APIView):
@@ -136,17 +138,19 @@ class ShowFavoriteProduct(APIView):
         product_list = list()
         for i in user_favorite_product:
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-        if product_list:
+        data1=list()
+        for i in product_list:
             data = {}
-            data['product_name'] = product_list[0][0]['product_name']
-            data['product_description'] = product_list[0][0]['product_description']
-            data['product_price'] = product_list[0][0]['product_price']
-            data['inventory'] = product_list[0][0]['inventory']
-            data['upload'] = product_list[0][0]['upload']
-            data['shop_id'] = product_list[0][0]['shop_id']
-            print(product_list[0][0]['product_name'])
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            data['product_name'] = i[0]['product_name']
+            data['product_description'] = i[0]['product_description']
+            data['product_price'] = i[0]['product_price']
+            data['inventory'] =i[0]['inventory']
+            data['upload'] = i[0]['upload']
+            data['shop_id'] = i[0]['shop_id']
+            print(i[0]['product_name'])
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
+        #return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ShopManagerRegister(APIView):
