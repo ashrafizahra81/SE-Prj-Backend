@@ -93,7 +93,7 @@ class DeleteFromShoppingCart(APIView):
     def post(self, request):
         UserShoppingCart.objects.filter(product_id=request.data['data'][0]).delete()
         message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
-        return Response(status=status.HTTP_200_OK , data=message)
+        return Response(status=status.HTTP_200_OK, data=message)
 
 
 class ShowUserShoppingCart(APIView):
@@ -264,3 +264,12 @@ class GetUserOrders(APIView):
             return JsonResponse(data, safe=False)
         else:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class DeleteFromFavoriteProducts(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        UserFavoriteProduct.objects.filter(product_id=request.data['data'][0]).delete()
+        message = {"message": "محصول مورد نظر با موفقیت از لیست علاقه مندی حذف شد"}
+        return Response(status=status.HTTP_200_OK, data=message)
