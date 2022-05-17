@@ -261,7 +261,7 @@ class ShowProductsByShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        product_list= list(Product.objects.filter(shop=request.data['data'][0]).values())
+        product_list= list(Product.objects.filter(shop=request.data['data']).values())
         data = {}
         data1 = list()
         for i in product_list:
