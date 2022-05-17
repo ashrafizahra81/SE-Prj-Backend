@@ -100,26 +100,6 @@ class ShopsForUser(APIView):
 
 ##########################################Sprint3#########################################3
 
-# class ShopManagerRegister(APIView):
-#     def post(self, request):
-#         serialized_data = ShopManagerRegisterSerializer(data=request.data)
-#         data = {}
-#         if serialized_data.is_valid():
-#             shop_manager = serialized_data.save()
-#             # data['response'] = "successfully registered"
-#             data['username'] = shop_manager.username
-#             data['email'] = shop_manager.email
-#             data['user_phone_number'] = shop_manager.user_phone_number
-#             data['shop_name'] = shop_manager.shop_name
-#             data['shop_description'] = shop_manager.shop_description
-#             data['shop_address'] = shop_manager.shop_address
-#             data['shop_phone_num'] = shop_manager.shop_phone_num
-#             refresh = RefreshToken.for_user(shop_manager)
-#             data['refresh'] = str(refresh)
-#             data['access'] = str(refresh.access_token)
-#             return Response(data)
-#         return Response(serialized_data.errors)
-
 class ShopManagerRegister(APIView):
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
@@ -184,7 +164,8 @@ class DeleteProduct(APIView):
     def delete(self, request, pk):
         product = Product.objects.get(pk=pk)
         product.delete()
-        return Response({'message': 'product deleted'})
+        return Response({'message': 'product deleted'}, status=status.HTTP_200_OK)
+
 
 class CheckoutShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -231,6 +212,27 @@ class CheckoutShoppingCart(APIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
 
+
+
+# class ShopManagerRegister(APIView):
+#     def post(self, request):
+#         serialized_data = ShopManagerRegisterSerializer(data=request.data)
+#         data = {}
+#         if serialized_data.is_valid():
+#             shop_manager = serialized_data.save()
+#             # data['response'] = "successfully registered"
+#             data['username'] = shop_manager.username
+#             data['email'] = shop_manager.email
+#             data['user_phone_number'] = shop_manager.user_phone_number
+#             data['shop_name'] = shop_manager.shop_name
+#             data['shop_description'] = shop_manager.shop_description
+#             data['shop_address'] = shop_manager.shop_address
+#             data['shop_phone_num'] = shop_manager.shop_phone_num
+#             refresh = RefreshToken.for_user(shop_manager)
+#             data['refresh'] = str(refresh)
+#             data['access'] = str(refresh.access_token)
+#             return Response(data)
+#         return Response(serialized_data.errors)
 
 # class CreateShopViewSet(ModelViewSet):
 #     queryset = Shop.objects.none()

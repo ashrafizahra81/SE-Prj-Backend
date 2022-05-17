@@ -29,18 +29,7 @@ class User(AbstractUser):
 #     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='shop')
 
 
-class Style(models.Model):
-    style_image_url = models.URLField(null=True)
-    style_param_1 = models.IntegerField(default=0)
-    style_param_2 = models.IntegerField(default=0)
-    style_param_3 = models.IntegerField(default=0)
-    style_param_4 = models.IntegerField(default=0)
-    style_param_5 = models.IntegerField(default=0)
 
-
-class UserStyle(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
 
 class Category(models.Model):
@@ -48,10 +37,18 @@ class Category(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=False)
-    product_description = models.CharField(max_length=2000, null=True)
     product_price = models.BigIntegerField(null=False)
     shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
+
+    product_size = models.CharField(max_length=100, null=True)
+    product_height = models.IntegerField(default=0)
+    product_design = models.CharField(max_length=100, null=True)
+    product_material = models.CharField(max_length=100, null=True)
+    product_country = models.CharField(max_length=100, null=True)
+    inventory = models.IntegerField(default=0, null=True)
+
+    # product_description = models.CharField(max_length=2000, null=True)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
     # product_size = models.CharField(max_length=100, null=False)
@@ -62,6 +59,20 @@ class Product(models.Model):
     # file will be saved to MEDIA_ROOT / uploads / 2015 / 01 / 30
     # upload = models.FileField(upload_to='uploads/% Y/% m/% d/')
 
+
+class Style(models.Model):
+    style_image_url = models.URLField(null=True)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    style_param_1 = models.IntegerField(default=0)
+    style_param_2 = models.IntegerField(default=0)
+    style_param_3 = models.IntegerField(default=0)
+    style_param_4 = models.IntegerField(default=0)
+    style_param_5 = models.IntegerField(default=0)
+
+
+class UserStyle(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
 
 class UserShoppingCart(models.Model):

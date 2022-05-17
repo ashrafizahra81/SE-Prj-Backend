@@ -61,7 +61,7 @@ class ProductsSerializer(serializers.ModelSerializer):
 class EditProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        exclude = ('product_image')
+        exclude = ('shop_id', 'upload')
 
 # class ShopManagerRegisterSerializer(serializers.ModelSerializer):
 #     class Meta:
