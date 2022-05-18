@@ -23,6 +23,7 @@ urlpatterns = [
     path('show_cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),
     path('add_to_favorite/', views.AddToFavoriteProduct.as_view(), name="add-to-favorite"),
     path('show_favorite/', views.ShowFavoriteProduct.as_view(), name="show-favorite"),
+    path('delete_from_favorite/', views.DeleteFromFavoriteProducts.as_view(), name="delete-from-favorite"),
     path('add_products_to_shop/', AddProductsToShop_list, name="add products to shop"),
     path('create_shop/', views.ShopManagerRegister.as_view(), name="create shop"),
     path('edit_shop/<int:pk>/', views.EditShop.as_view(), name="edit shop"),
