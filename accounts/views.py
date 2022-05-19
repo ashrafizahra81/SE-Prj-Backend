@@ -8,6 +8,7 @@ from .serializers import *
 from .models import *
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
+from datetime import datetime
 
 
 class UserRegister(APIView):
@@ -73,23 +74,28 @@ class AddToShoppingCartView(APIView):
 
     def post(self, request):
         print(request.data)
+        message = ""
         for product in Product.objects.all():
-            if product.pk == request.data['data'][0]:
+            if product.pk == request.data['data']:
                 if product.inventory > 0:
                     cart = UserShoppingCart(
                         user=request.user,
                         product=product
                     )
+                    message = {"message": "محصول مورد نظر به سبد خرید اضافه شد"}
                     cart.save()
-        return Response(status=status.HTTP_200_OK)
+                else:
+                    message = {"message": "محصول مورد نظر موجود نیست"}
+        return Response(status=status.HTTP_200_OK, data=message)
 
 
 class DeleteFromShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        UserShoppingCart.objects.filter(product_id=request.data['data'][0]).delete()
-        return Response(status=status.HTTP_200_OK)
+        UserShoppingCart.objects.filter(product_id=request.data['data']).delete()
+        message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
+        return Response(status=status.HTTP_200_OK, data=message)
 
 
 class ShowUserShoppingCart(APIView):
@@ -100,32 +106,42 @@ class ShowUserShoppingCart(APIView):
         product_list = list()
         for i in user_cart:
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-        if product_list:
+        data1 = list()
+        total_price = 0
+        for i in product_list:
             data = {}
-            data['product_name'] = product_list[0][0]['product_name']
-            data['product_description'] = product_list[0][0]['product_description']
-            data['product_price'] = product_list[0][0]['product_price']
-            data['inventory'] = product_list[0][0]['inventory']
-            data['upload'] = product_list[0][0]['upload']
-            data['shop_id'] = product_list[0][0]['shop_id']
-            print(product_list[0][0]['product_name'])
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            data['id'] = i[0]['id']
+            data['product_name'] = i[0]['product_name']
+            data['product_description'] = i[0]['product_description']
+            data['product_price'] = i[0]['product_price']
+            if int(i[0]['inventory']) > 0:
+                data['is_available'] = True
+            else:
+                data['is_available'] = False
+            # data['inventory'] = i[0]['inventory']
+            data['upload'] = i[0]['upload']
+            data['shop_id'] = i[0]['shop_id']
+            total_price += i[0]['product_price']
+            data1.append(data)
+        data1.append({"total_price": total_price})
+        return Response(data1, status=status.HTTP_200_OK)
 
 
 class AddToFavoriteProduct(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
+        message = ""
         for product in Product.objects.all():
-            if product.pk == request.data['data'][0]:
+            if product.pk == request.data['data']:
                 favorite_product = UserFavoriteProduct(
                     user=request.user,
                     product=product
                 )
                 favorite_product.save()
+                message = {"message": "محصول مورد نظر به لیست علاقه مندی ها اضافه شد"}
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data=message)
 
 
 class ShowFavoriteProduct(APIView):
@@ -136,17 +152,20 @@ class ShowFavoriteProduct(APIView):
         product_list = list()
         for i in user_favorite_product:
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-        if product_list:
+        data1 = list()
+        for i in product_list:
             data = {}
-            data['product_name'] = product_list[0][0]['product_name']
-            data['product_description'] = product_list[0][0]['product_description']
-            data['product_price'] = product_list[0][0]['product_price']
-            data['inventory'] = product_list[0][0]['inventory']
-            data['upload'] = product_list[0][0]['upload']
-            data['shop_id'] = product_list[0][0]['shop_id']
-            print(product_list[0][0]['product_name'])
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            data['id'] = i[0]['id']
+            data['product_name'] = i[0]['product_name']
+            data['product_description'] = i[0]['product_description']
+            data['product_price'] = i[0]['product_price']
+            data['is_available'] = i[0]['is_available']
+            data['upload'] = i[0]['upload']
+            data['shop_id'] = i[0]['shop_id']
+            print(i[0]['product_name'])
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
+        # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ShopManagerRegister(APIView):
@@ -257,6 +276,60 @@ class GetUserOrders(APIView):
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
+class DeleteFromFavoriteProducts(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        UserFavoriteProduct.objects.filter(product_id=request.data['data']).delete()
+        message = {"message": "محصول مورد نظر با موفقیت از لیست علاقه مندی حذف شد"}
+        return Response(status=status.HTTP_200_OK, data=message)
+
+
+class CheckoutShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        data = list()
+        price = 0
+        date_of_buy = datetime.now()
+        user_buyer = {}
+        user_buyer["buyer"] = request.user.email
+        data.append(user_buyer)
+
+        for o1 in user_cart:
+            product1 = Product.objects.get(pk=o1['product_id'])
+            price += product1.product_price
+
+        for o in user_cart:
+            product = Product.objects.get(pk=o['product_id'])
+            serialized_product = ProductInfoSerializer(instance=product)
+            js = serialized_product.data
+            c = Order(
+                user=request.user,
+                product=product,
+                cost=price,
+                status="Accepted",
+            )
+            c.save()
+            js['product'] = product.product_price
+            data.append(js)
+            UserShoppingCart.objects.filter(user_id=request.user.id).delete()
+
+        # print(price)
+        dict_price = {}
+        dict_price["total price"] = price
+        date = {}
+        date["date"] = date_of_buy
+        data.append(dict_price)
+        data.append(date)
+        # print(data)
+        if data:
+            return JsonResponse(data, safe=False)
+        return Response(data, status=status.HTTP_201_CREATED)
+      
+      
 class ShowProductsByShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
