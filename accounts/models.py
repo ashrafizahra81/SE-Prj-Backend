@@ -38,6 +38,11 @@ class Product(models.Model):
     shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
     inventory = models.IntegerField(default=0, null=False)
+    product_size = models.CharField(max_length=100, null=True)
+    product_height = models.IntegerField(default=0)
+    product_design = models.CharField(max_length=100, null=True)
+    product_material = models.CharField(max_length=100, null=True)
+    product_country = models.CharField(max_length=100, null=True)
     is_available = models.BooleanField(default=False)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
@@ -55,6 +60,7 @@ class Product(models.Model):
 class UserShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    status = models.CharField(max_length=100, null=True, default="not Accepted")
 
 
 class Category(models.Model):
@@ -68,7 +74,6 @@ class Order(models.Model):
     status = models.CharField(max_length=100, null=False)
     order_date = models.DateTimeField(auto_now_add=True, null=False)
     complete_date = models.DateTimeField(null=True)
-
 
 
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)

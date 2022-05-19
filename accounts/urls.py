@@ -13,7 +13,6 @@ AddProductsToShop_list = views.AddProductsToShopViewSet.as_view({
 
 urlpatterns = [
     path('register/', views.UserRegister.as_view()),
-    path('shop_manager_register/', views.ShopManagerRegister.as_view()),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('edit_profile/<int:pk>/', views.UserEditProfile.as_view(), name="edit profile"),
@@ -31,5 +30,6 @@ urlpatterns = [
     path('delete_product/<int:pk>/', views.DeleteProduct.as_view(), name="delete product"),
     path('product_info/<int:pk>/', views.GetProductInfo.as_view(), name="get product info"),
     path('user_orders/', views.GetUserOrders.as_view(), name="get user orders"),
+    path('checkout/', views.CheckoutShoppingCart.as_view(), name="checkout shopping cart"),
 
 ]
