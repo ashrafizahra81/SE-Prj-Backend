@@ -31,5 +31,6 @@ urlpatterns = [
     path('product_info/<int:pk>/', views.GetProductInfo.as_view(), name="get product info"),
     path('user_orders/', views.GetUserOrders.as_view(), name="get user orders"),
     path('checkout/', views.CheckoutShoppingCart.as_view(), name="checkout shopping cart"),
+    path('show_products_of_shop/', views.ShowProductsByShop.as_view(), name="show shops' product"),
 
 ]
