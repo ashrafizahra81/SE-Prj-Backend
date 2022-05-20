@@ -10,7 +10,6 @@ class User(AbstractUser):
     user_postal_code = models.CharField(max_length=20, null=True)
     user_address = models.CharField(max_length=20, null=True)
     shop_name = models.CharField(max_length=1000, null=True)
-    shop_description = models.CharField(max_length=5000, null=True)
     shop_address = models.CharField(max_length=2000, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'

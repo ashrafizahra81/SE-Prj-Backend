@@ -179,7 +179,6 @@ class ShopManagerRegister(APIView):
             data['email'] = shop_manager.email
             data['user_phone_number'] = shop_manager.user_phone_number
             data['shop_name'] = shop_manager.shop_name
-            data['shop_description'] = shop_manager.shop_description
             data['shop_address'] = shop_manager.shop_address
             data['shop_phone_number'] = shop_manager.shop_phone_number
             refresh = RefreshToken.for_user(shop_manager)
@@ -194,11 +193,50 @@ class EditShop(APIView):
 
     def put(self, request, pk):
         user = User.objects.get(pk=pk)
-        serialized_data = EditShopSerializer(instance=user, data=request.data, partial=True)
+        data1 = {}
+        data1['username'] = user.username
+        data1['user_phone_number'] = user.user_phone_number
+        data1['email'] = user.email
+        data1['shop_address'] = user.shop_address
+        data1['shop_name'] = user.shop_name
+        data1['shop_phone_number'] = user.shop_phone_number
+        serialized_data = EditShopSerializer(data=request.data, instance=user, partial=True)
+        data = {}
         if serialized_data.is_valid():
-            # print(request.user.email)
-            serialized_data.save()
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+            edited_shop = serialized_data.save()
+
+            if data1['username'] != edited_shop.username:
+                data['username'] = edited_shop.username
+            else :
+                data['username'] = ""
+
+            if data1['user_phone_number'] != edited_shop.user_phone_number:
+                data['user_phone_number'] = edited_shop.user_phone_number
+            else :
+                data['user_phone_number'] = ""
+
+            if data1['email'] != edited_shop.email:
+                data['email'] = edited_shop.email
+            else :
+                data['email'] = ""
+
+            if data1['shop_address'] != edited_shop.shop_address:
+                data['shop_address'] = edited_shop.shop_address
+            else :
+                data['shop_address'] = ""
+
+            if data1['shop_name'] != edited_shop.shop_name:
+                data['shop_name'] = edited_shop.shop_name
+            else :
+                data['shop_name'] = ""
+
+            if data1['shop_phone_number'] != edited_shop.shop_phone_number:
+                data['shop_phone_number'] = edited_shop.shop_phone_number
+            else :
+                data['shop_phone_number'] = ""
+
+            return Response(data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
