@@ -85,3 +85,8 @@ class EditShopSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'username', 'user_phone_number', 'shop_name', 'shop_address',
             'shop_phone_number')
+
+class ProductAndStyleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductAndStyle
+        exclude = ['shop_id', 'product']
