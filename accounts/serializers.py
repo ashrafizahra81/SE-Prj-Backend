@@ -57,7 +57,7 @@ class ProductsSerializer(serializers.ModelSerializer):
 class ProductInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['product_name', 'product_description', 'upload']
+        fields = ['product_name', 'upload']
 
 
 class EditProductSerializer(serializers.ModelSerializer):

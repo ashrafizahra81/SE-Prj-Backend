@@ -112,7 +112,8 @@ class ShowUserShoppingCart(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            data['product_description'] = i[0]['product_description']
+            data['product_size'] = i[0]['product_size']
+            data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
             if int(i[0]['inventory']) > 0:
                 data['is_available'] = True
@@ -157,7 +158,8 @@ class ShowFavoriteProduct(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            data['product_description'] = i[0]['product_description']
+            data['product_size'] = i[0]['product_size']
+            data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
             data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
@@ -379,7 +381,8 @@ class ShowProductsByShop(APIView):
             data = {}
             data['id'] = i['id']
             data['product_name'] = i['product_name']
-            data['product_description'] = i['product_description']
+            data['product_size'] = i['product_size']
+            data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
             data['inventory'] = i['inventory']
             data['upload'] = i['upload']
