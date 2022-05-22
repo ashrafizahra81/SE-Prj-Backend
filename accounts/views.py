@@ -210,37 +210,36 @@ class EditShop(APIView):
 
             if data1['username'] != edited_shop.username:
                 data['username'] = edited_shop.username
-            else :
+            else:
                 data['username'] = ""
 
             if data1['user_phone_number'] != edited_shop.user_phone_number:
                 data['user_phone_number'] = edited_shop.user_phone_number
-            else :
+            else:
                 data['user_phone_number'] = ""
 
             if data1['email'] != edited_shop.email:
                 data['email'] = edited_shop.email
-            else :
+            else:
                 data['email'] = ""
 
             if data1['shop_address'] != edited_shop.shop_address:
                 data['shop_address'] = edited_shop.shop_address
-            else :
+            else:
                 data['shop_address'] = ""
 
             if data1['shop_name'] != edited_shop.shop_name:
                 data['shop_name'] = edited_shop.shop_name
-            else :
+            else:
                 data['shop_name'] = ""
 
             if data1['shop_phone_number'] != edited_shop.shop_phone_number:
                 data['shop_phone_number'] = edited_shop.shop_phone_number
-            else :
+            else:
                 data['shop_phone_number'] = ""
 
             return Response(data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class AddProductsToShopViewSet(ModelViewSet):
@@ -257,20 +256,20 @@ class AddProductsToShopViewSet(ModelViewSet):
         if _serializer.is_valid():
             data = request.data
             print(data['upload'])
-            #print(p.shop_id)
+            # print(p.shop_id)
             data1 = {}
             product = Product(
-                shop_id = request.user,
-                product_name = data['product_name'],
-                product_price = data['product_price'],
-                product_size = data['product_size'],
-                product_height = data['product_height'],
-                product_design = data['product_design'],
-                product_material = data['product_material'],
-                product_country = data['product_country'],
-                product_off_percent = data['product_off_percent'],
-                inventory = data['inventory'],
-                upload = data['upload'],
+                shop_id=request.user,
+                product_name=data['product_name'],
+                product_price=data['product_price'],
+                product_size=data['product_size'],
+                product_height=data['product_height'],
+                product_design=data['product_design'],
+                product_material=data['product_material'],
+                product_country=data['product_country'],
+                product_off_percent=data['product_off_percent'],
+                inventory=data['inventory'],
+                upload=data['upload'],
             )
             product.save()
             data1['product_name'] = data['product_name']
@@ -281,12 +280,12 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_material'] = data['product_material']
             data1['product_country'] = data['product_country']
             data1['inventory'] = data['inventory']
-            s = Style(product = product,
-                              style_param_1=data['style_param_1'],
-                              style_param_2=data['style_param_2'],
-                              style_param_3=data['style_param_3'],
-                              style_param_4=data['style_param_4'],
-                              style_param_5=data['style_param_5']
+            s = Style(product=product,
+                      style_param_1=data['style_param_1'],
+                      style_param_2=data['style_param_2'],
+                      style_param_3=data['style_param_3'],
+                      style_param_4=data['style_param_4'],
+                      style_param_5=data['style_param_5']
                       )
             s.save()
             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
@@ -404,13 +403,13 @@ class CheckoutShoppingCart(APIView):
         if data:
             return JsonResponse(data, safe=False)
         return Response(data, status=status.HTTP_201_CREATED)
-      
-      
+
+
 class ShowProductsByShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        product_list= list(Product.objects.filter(shop=request.data['data']).values())
+        product_list = list(Product.objects.filter(shop=request.data['data']).values())
         data = {}
         data1 = list()
         for i in product_list:
@@ -425,4 +424,4 @@ class ShowProductsByShop(APIView):
             data['shop_id'] = i['shop_id']
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
-        #return Response(status=status.HTTP_204_NO_CONTENT)
+        # return Response(status=status.HTTP_204_NO_CONTENT)

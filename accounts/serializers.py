@@ -86,6 +86,7 @@ class EditShopSerializer(serializers.ModelSerializer):
             'email', 'username', 'user_phone_number', 'shop_name', 'shop_address',
             'shop_phone_number')
 
+
 class ProductAndStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAndStyle

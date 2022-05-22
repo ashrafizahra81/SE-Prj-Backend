@@ -5,4 +5,4 @@ class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        return obj.shop_id.shop_owner == request.user
+        return obj.shop.shop_owner == request.user

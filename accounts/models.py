@@ -15,6 +15,7 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
+
 class Category(models.Model):
     category_description = models.CharField(max_length=100, null=False)
 
@@ -22,7 +23,7 @@ class Category(models.Model):
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=False)
     product_price = models.BigIntegerField(null=False)
-    shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
+    shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
     inventory = models.IntegerField(default=0, null=False)
     product_size = models.CharField(max_length=100, null=True)
@@ -47,12 +48,13 @@ class Product(models.Model):
 
 class Style(models.Model):
     style_image_url = models.URLField(null=True)
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True)
     style_param_1 = models.CharField(max_length=100, default='')
     style_param_2 = models.CharField(max_length=100, default='')
     style_param_3 = models.CharField(max_length=100, default='')
     style_param_4 = models.CharField(max_length=100, default='')
     style_param_5 = models.CharField(max_length=100, default='')
+
 
 class UserStyle(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -63,6 +65,7 @@ class UserShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=100, null=True, default="not Accepted")
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
@@ -81,11 +84,12 @@ class UserFavoriteProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
 
+
 class ProductAndStyle(models.Model):
     product_name = models.CharField(max_length=100, null=True)
     product_price = models.BigIntegerField(null=True)
     shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products1')
-    upload= models.FileField(upload_to='uploads/', null=True)
+    upload = models.FileField(upload_to='uploads/', null=True)
 
     product_size = models.CharField(max_length=100, null=True)
     product_height = models.IntegerField(default=0)
