@@ -112,7 +112,8 @@ class ShowUserShoppingCart(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            data['product_description'] = i[0]['product_description']
+            data['product_size'] = i[0]['product_size']
+            data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
             if int(i[0]['inventory']) > 0:
                 data['is_available'] = True
@@ -157,7 +158,8 @@ class ShowFavoriteProduct(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            data['product_description'] = i[0]['product_description']
+            data['product_size'] = i[0]['product_size']
+            data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
             data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
@@ -179,7 +181,6 @@ class ShopManagerRegister(APIView):
             data['email'] = shop_manager.email
             data['user_phone_number'] = shop_manager.user_phone_number
             data['shop_name'] = shop_manager.shop_name
-            data['shop_description'] = shop_manager.shop_description
             data['shop_address'] = shop_manager.shop_address
             data['shop_phone_number'] = shop_manager.shop_phone_number
             refresh = RefreshToken.for_user(shop_manager)
@@ -194,26 +195,101 @@ class EditShop(APIView):
 
     def put(self, request, pk):
         user = User.objects.get(pk=pk)
-        serialized_data = EditShopSerializer(instance=user, data=request.data, partial=True)
+        data1 = {}
+        data1['username'] = user.username
+        data1['user_phone_number'] = user.user_phone_number
+        data1['email'] = user.email
+        data1['shop_address'] = user.shop_address
+        data1['shop_name'] = user.shop_name
+        data1['shop_phone_number'] = user.shop_phone_number
+        serialized_data = EditShopSerializer(data=request.data, instance=user, partial=True)
+        data = {}
         if serialized_data.is_valid():
-            # print(request.user.email)
-            serialized_data.save()
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+            edited_shop = serialized_data.save()
+
+            if data1['username'] != edited_shop.username:
+                data['username'] = edited_shop.username
+            else :
+                data['username'] = ""
+
+            if data1['user_phone_number'] != edited_shop.user_phone_number:
+                data['user_phone_number'] = edited_shop.user_phone_number
+            else :
+                data['user_phone_number'] = ""
+
+            if data1['email'] != edited_shop.email:
+                data['email'] = edited_shop.email
+            else :
+                data['email'] = ""
+
+            if data1['shop_address'] != edited_shop.shop_address:
+                data['shop_address'] = edited_shop.shop_address
+            else :
+                data['shop_address'] = ""
+
+            if data1['shop_name'] != edited_shop.shop_name:
+                data['shop_name'] = edited_shop.shop_name
+            else :
+                data['shop_name'] = ""
+
+            if data1['shop_phone_number'] != edited_shop.shop_phone_number:
+                data['shop_phone_number'] = edited_shop.shop_phone_number
+            else :
+                data['shop_phone_number'] = ""
+
+            return Response(data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class AddProductsToShopViewSet(ModelViewSet):
     queryset = Product.objects.none()
-    serializer_class = ProductsSerializer
+    serializer_class = ProductAndStyleSerializer
     permission_classes = (IsAuthenticated,)
     http_method_names = ['post', ]
 
     def create(self, request, *args, **kwargs):
         _serializer = self.serializer_class(data=request.data)
+        data = {}
 
+        print(_serializer)
         if _serializer.is_valid():
-            _serializer.save(shop=request.user)
-            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)  # NOQA
+            data = request.data
+            print(data['upload'])
+            #print(p.shop_id)
+            data1 = {}
+            product = Product(
+                shop_id = request.user,
+                product_name = data['product_name'],
+                product_price = data['product_price'],
+                product_size = data['product_size'],
+                product_height = data['product_height'],
+                product_design = data['product_design'],
+                product_material = data['product_material'],
+                product_country = data['product_country'],
+                product_off_percent = data['product_off_percent'],
+                inventory = data['inventory'],
+                upload = data['upload'],
+            )
+            product.save()
+            data1['product_name'] = data['product_name']
+            data1['product_price'] = data['product_price']
+            data1['product_size'] = data['product_size']
+            data1['product_height'] = data['product_height']
+            data1['product_design'] = data['product_design']
+            data1['product_material'] = data['product_material']
+            data1['product_country'] = data['product_country']
+            data1['inventory'] = data['inventory']
+            s = Style(product = product,
+                              style_param_1=data['style_param_1'],
+                              style_param_2=data['style_param_2'],
+                              style_param_3=data['style_param_3'],
+                              style_param_4=data['style_param_4'],
+                              style_param_5=data['style_param_5']
+                      )
+            s.save()
+            return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
 
@@ -341,7 +417,8 @@ class ShowProductsByShop(APIView):
             data = {}
             data['id'] = i['id']
             data['product_name'] = i['product_name']
-            data['product_description'] = i['product_description']
+            data['product_size'] = i['product_size']
+            data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
             data['inventory'] = i['inventory']
             data['upload'] = i['upload']
