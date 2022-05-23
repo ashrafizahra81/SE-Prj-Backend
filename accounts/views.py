@@ -425,3 +425,26 @@ class ShowProductsByShop(APIView):
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShowAllProducts(APIView):
+    def get(self, request):
+        product_list = list(Product.objects.all().values())
+        data = {}
+        data1 = list()
+        print(product_list)
+        for i in product_list:
+            data = {}
+            print(i['id'])
+            data['id'] = i['id']
+            data['product_name'] = i['product_name']
+            data['product_price'] = i['product_price']
+            price_off = 0
+            if int(i['product_off_percent']) > 0:
+                price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
+            data['product_off_percent'] = price_off
+            data['inventory'] = i['inventory']
+            data['upload'] = i['upload']
+            data['shop_id'] = i['shop_id']
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
