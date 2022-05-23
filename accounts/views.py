@@ -179,7 +179,7 @@ class ShopManagerRegister(APIView):
             # data['response'] = "successfully registered"
             data['username'] = shop_manager.username
             data['email'] = shop_manager.email
-            data['user_phone_number'] = shop_manager.user_phone_number
+            # data['user_phone_number'] = shop_manager.user_phone_number
             data['shop_name'] = shop_manager.shop_name
             data['shop_address'] = shop_manager.shop_address
             data['shop_phone_number'] = shop_manager.shop_phone_number

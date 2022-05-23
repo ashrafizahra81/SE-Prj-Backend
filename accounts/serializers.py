@@ -69,7 +69,7 @@ class EditProductSerializer(serializers.ModelSerializer):
 class ShopManagerRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'user_phone_number', 'password', 'shop_name', 'shop_address',
+        fields = ('username', 'email', 'password', 'shop_name', 'shop_address',
                   'shop_phone_number')
         extera_kwargs = {
             'password': {'write_only': True}
