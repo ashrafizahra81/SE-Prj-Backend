@@ -161,6 +161,10 @@ class ShowFavoriteProduct(APIView):
             data['product_size'] = i[0]['product_size']
             data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
+            price_off=0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent']))/100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
             data['shop_id'] = i[0]['shop_id']
@@ -419,6 +423,10 @@ class ShowProductsByShop(APIView):
             data['product_size'] = i['product_size']
             data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
+            price_off = 0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             data['inventory'] = i['inventory']
             data['upload'] = i['upload']
             data['shop_id'] = i['shop_id']
