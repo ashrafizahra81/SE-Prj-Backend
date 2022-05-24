@@ -428,3 +428,7 @@ class ShowProductsByShop(APIView):
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+class ChangePasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ChangePasswordSerializer
