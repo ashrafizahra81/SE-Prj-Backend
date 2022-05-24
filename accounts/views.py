@@ -259,7 +259,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             # print(p.shop_id)
             data1 = {}
             product = Product(
-                shop_id=request.user,
+                shop=request.user,
                 product_name=data['product_name'],
                 product_price=data['product_price'],
                 product_size=data['product_size'],
