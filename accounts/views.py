@@ -259,7 +259,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             # print(p.shop_id)
             data1 = {}
             product = Product(
-                shop_id=request.user,
+                shop=request.user,
                 product_name=data['product_name'],
                 product_price=data['product_price'],
                 product_size=data['product_size'],
@@ -435,7 +435,9 @@ class ShowAllProducts(APIView):
         print(product_list)
         for i in product_list:
             data = {}
+            print(1)
             print(i['id'])
+            print(2)
             data['id'] = i['id']
             data['product_name'] = i['product_name']
             data['product_price'] = i['product_price']
