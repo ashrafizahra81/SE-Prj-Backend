@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="show more data in getting product info">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0002_product_product_off_percent.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0003_rename_shop_product_shop_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0004_rename_shop_id_product_shop.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0005_alter_style_product.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-    </list>
+    <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="show more data in getting product info" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,7 +78,7 @@
       <workItem from="1653128801267" duration="1961000" />
       <workItem from="1653149118388" duration="1975000" />
       <workItem from="1653397621481" duration="1656000" />
-      <workItem from="1653415828237" duration="1102000" />
+      <workItem from="1653415828237" duration="1439000" />
     </task>
     <task id="LOCAL-00001" summary="fix issues in views">
       <created>1652449524540</created>
