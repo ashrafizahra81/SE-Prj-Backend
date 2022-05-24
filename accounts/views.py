@@ -263,6 +263,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_name=data['product_name'],
                 product_price=data['product_price'],
                 product_size=data['product_size'],
+                product_color=data['product_color'],
                 product_height=data['product_height'],
                 product_design=data['product_design'],
                 product_material=data['product_material'],
@@ -275,6 +276,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_name'] = data['product_name']
             data1['product_price'] = data['product_price']
             data1['product_size'] = data['product_size']
+            data1['product_color'] = data['product_color']
             data1['product_height'] = data['product_height']
             data1['product_design'] = data['product_design']
             data1['product_material'] = data['product_material']
