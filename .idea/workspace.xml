@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="show more data in getting product info">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/permissions.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +88,7 @@
       <workItem from="1653321912988" duration="1607000" />
       <workItem from="1653325539002" duration="1065000" />
       <workItem from="1653379824521" duration="202000" />
+      <workItem from="1653498381840" duration="2345000" />
     </task>
     <task id="LOCAL-00001" summary="fix issues in views">
       <created>1652449524540</created>
