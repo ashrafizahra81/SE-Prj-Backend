@@ -442,7 +442,7 @@ class ShowOrdersToShop(APIView):
                 print(product['id'])
                 if product['id']== order['product_id']:
 
-                    if product['shop_id_id'] == request.user.id:
+                    if product['shop_id'] == request.user.id:
                         data = {}
                         data['id'] = product['id']
                         data['product_name'] = product['product_name']
@@ -451,6 +451,6 @@ class ShowOrdersToShop(APIView):
                         data['product_price'] = product['product_price']
                         data['inventory'] = product['inventory']
                         data['upload'] = product['upload']
-                        data['shop_id'] = product['shop_id_id']
+                        data['shop_id'] = product['shop_id']
                         product_list.append(data)
         return Response(product_list, status=status.HTTP_200_OK)

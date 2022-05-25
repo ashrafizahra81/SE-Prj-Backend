@@ -23,7 +23,7 @@ class Category(models.Model):
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=False)
     product_price = models.BigIntegerField(null=False)
-    shop_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
+    shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
     inventory = models.IntegerField(default=0, null=False)
     product_size = models.CharField(max_length=100, null=True)
