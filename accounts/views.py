@@ -428,3 +428,29 @@ class ShowProductsByShop(APIView):
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShowOrdersToShop(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        order_list = list(Order.objects.all().values())
+        product_list = list()
+        for order in order_list:
+            #print(order)
+            for product in Product.objects.all().values() :
+                print(product['id'])
+                if product['id']== order['product_id']:
+
+                    if product['shop_id_id'] == request.user.id:
+                        data = {}
+                        data['id'] = product['id']
+                        data['product_name'] = product['product_name']
+                        data['product_size'] = product['product_size']
+                        data['product_color'] = product['product_color']
+                        data['product_price'] = product['product_price']
+                        data['inventory'] = product['inventory']
+                        data['upload'] = product['upload']
+                        data['shop_id'] = product['shop_id_id']
+                        product_list.append(data)
+        return Response(product_list, status=status.HTTP_200_OK)
