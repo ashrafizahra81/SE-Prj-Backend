@@ -9,6 +9,7 @@ from .models import *
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
+from permissions import IsShopOwner
 
 
 class UserRegister(APIView):
@@ -297,10 +298,11 @@ class AddProductsToShopViewSet(ModelViewSet):
 
 
 class EditProduct(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopOwner]
 
     def put(self, request, pk):
         product = Product.objects.get(pk=pk)
+        self.check_object_permissions(request, product)
         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
