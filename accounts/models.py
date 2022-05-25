@@ -32,7 +32,7 @@ class Product(models.Model):
     product_design = models.CharField(max_length=100, null=True)
     product_material = models.CharField(max_length=100, null=True)
     product_country = models.CharField(max_length=100, null=True)
-    product_off_percent = models.IntegerField(null=True, default=0)
+    product_off_percent = models.IntegerField(default=0)
     is_available = models.BooleanField(default=False)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
