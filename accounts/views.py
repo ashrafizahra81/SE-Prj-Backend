@@ -342,9 +342,7 @@ class EditProduct(APIView):
 
     def put(self, request, pk):
         product = Product.objects.get(pk=pk)
-<<<<<<< HEAD
         self.check_object_permissions(request, product)
-=======
 
         data1 = {}
         data1['product_name'] = product.product_name
@@ -361,7 +359,6 @@ class EditProduct(APIView):
 
         data = {}
 
->>>>>>> main
         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
