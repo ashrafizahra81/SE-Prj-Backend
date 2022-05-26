@@ -550,3 +550,26 @@ class ChangePasswordView(generics.UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated, ]
     serializer_class = ChangePasswordSerializer
+
+class ShowUserInfo(APIView):
+    permission_classes = [IsAuthenticated ,]
+    def get(self, request):
+        user = User.objects.get(id = request.user.id)
+        print(user.username)
+        data = {}
+        if user.shop_name == None :
+            data['id'] = user.pk
+            data['email'] = user.email
+            data['username'] = user.username
+            data['user_phone_number'] = user.user_phone_number
+            data['user_postal_code'] = user.user_postal_code
+            data['user_address'] = user.user_address
+        else:
+            data['id'] = user.pk
+            data['username'] = user.username
+            data['shop_name'] = user.shop_name
+            data['shop_phone_number'] = user.shop_phone_number
+            data['user_phone_number'] = user.user_phone_number
+            data['shop_address'] = user.shop_address
+
+        return Response(data, status=status.HTTP_200_OK)
