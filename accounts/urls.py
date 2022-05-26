@@ -32,7 +32,7 @@ urlpatterns = [
     path('user_orders/', views.GetUserOrders.as_view(), name="get user orders"),
     path('checkout/', views.CheckoutShoppingCart.as_view(), name="checkout shopping cart"),
     path('show_products_of_shop/', views.ShowProductsByShop.as_view(), name="show shops' product"),
-    path('change_password/<int:pk>/', views.ChangePasswordView.as_view(), name="change password"),
+    path('change_password/', views.ChangePasswordView.as_view(), name="change password"),
     path('show_user_info/', views.ShowUserInfo.as_view(), name="show user info"),
 
 ]

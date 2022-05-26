@@ -45,7 +45,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request):
+    def post(self, request):
         user = User.objects.get(id = request.user.id)
         print(user.username)
         data1 = {}
@@ -235,7 +235,7 @@ class ShopManagerRegister(APIView):
 class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request):
+    def post(self, request):
         user = User.objects.get(id = request.user.id)
         data1 = {}
         data1['username'] = user.username
