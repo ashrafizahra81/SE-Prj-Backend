@@ -22,7 +22,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserEditProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'username', 'user_phone_number')
+        fields = ('email', 'username', 'user_phone_number', 'user_postal_code', 'user_address')
 
 
 class StyleSerializer(serializers.ModelSerializer):
