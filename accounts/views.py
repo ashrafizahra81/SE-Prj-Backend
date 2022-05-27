@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
 from permissions import IsShopOwner
+import json
 
 
 class UserRegister(APIView):
@@ -602,3 +603,30 @@ class ShowUserInfo(APIView):
             data['shop_address'] = user.shop_address
 
         return Response(data, status=status.HTTP_200_OK)
+
+class PopularProducts(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        # user = User.objects.get(id=request.user.id)
+        product = Product.objects.get(pk=request.data['data'][0])
+        product_score = request.data['data'][1]
+        print(product_score)
+        score = product_score + product.score
+        print(score)
+        # product_number_of_votes = request.data['data'][1],
+        nums_of_votes = product.number_of_votes + 1
+        data = {}
+        data['score'] = score
+        data['number_of_votes'] = nums_of_votes
+        print (data)
+        print("**********")
+        json_object = json.dumps(data, indent=4)
+        print(json_object)
+        print("///////////////////")
+        serialized_data = EditProductSerializer(data=data, instance=product, partial=True)
+        print(serialized_data)
+        if serialized_data.is_valid():
+            edited_shop = serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
