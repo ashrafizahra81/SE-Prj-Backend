@@ -3,6 +3,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
 
+import django.contrib.auth.password_validation as validators
+from rest_framework import generics
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,7 +22,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserEditProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'username', 'user_phone_number')
+        fields = ('email', 'username', 'user_phone_number', 'user_postal_code', 'user_address')
 
 
 class StyleSerializer(serializers.ModelSerializer):
@@ -34,7 +37,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include
         # data.clear()
-        # data.update({'email': self.user.email})
+        if self.user.shop_name == None :
+            data.update({'type':'user'})
+            data.update({'username':self.user.username})
+            data.update({'user_phone_number':self.user.user_phone_number})
+        else:
+            data.update({'type': 'seller'})
+            data.update({'shop_name': self.user.shop_name})
+            data.update({'shop_phone_number': self.user.shop_phone_number})
+
         # and everything else you want to send in the response
         return data
 
@@ -69,7 +80,7 @@ class EditProductSerializer(serializers.ModelSerializer):
 class ShopManagerRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'user_phone_number', 'password', 'shop_name', 'shop_address',
+        fields = ('username', 'email', 'password', 'shop_name', 'shop_address',
                   'shop_phone_number')
         extera_kwargs = {
             'password': {'write_only': True}
@@ -90,4 +101,18 @@ class EditShopSerializer(serializers.ModelSerializer):
 class ProductAndStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAndStyle
+<<<<<<< HEAD
         exclude = ['shop_id', 'product']
+=======
+        exclude = ['shop_id', 'product']
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+>>>>>>> main

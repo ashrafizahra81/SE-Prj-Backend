@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
@@ -6,9 +7,15 @@
   <component name="ChangeListManager">
     <list default="true" id="7cb18f89-2d0c-4567-b008-dc29e379c9ff" name="Changes" comment="show more data in getting product info">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/accounts/migrations/0001_initial.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/permissions.py" beforeDir="false" afterPath="$PROJECT_DIR$/permissions.py" afterDir="false" />
+>>>>>>> main
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,9 +88,22 @@
       <workItem from="1652328313884" duration="1605000" />
       <workItem from="1653038620671" duration="815000" />
       <workItem from="1653128801267" duration="1961000" />
+<<<<<<< HEAD
       <workItem from="1653149118388" duration="1975000" />
       <workItem from="1653397621481" duration="1656000" />
       <workItem from="1653415828237" duration="2864000" />
+=======
+      <workItem from="1653149118388" duration="3951000" />
+      <workItem from="1653199011395" duration="72000" />
+      <workItem from="1653236192271" duration="2608000" />
+      <workItem from="1653286462100" duration="1015000" />
+      <workItem from="1653321912988" duration="1607000" />
+      <workItem from="1653325539002" duration="1065000" />
+      <workItem from="1653379824521" duration="1369000" />
+      <workItem from="1653468272854" duration="1229000" />
+      <workItem from="1653475649932" duration="217000" />
+      <workItem from="1653478988618" duration="1968000" />
+>>>>>>> main
     </task>
     <task id="LOCAL-00001" summary="fix issues in views">
       <created>1652449524540</created>
@@ -122,3 +142,5 @@
     <option name="LAST_COMMIT_MESSAGE" value="show more data in getting product info" />
   </component>
 </project>
+=======
+>>>>>>> main

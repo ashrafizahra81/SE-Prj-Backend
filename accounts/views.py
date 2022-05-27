@@ -9,6 +9,7 @@ from .models import *
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
+from permissions import IsShopOwner
 
 
 class UserRegister(APIView):
@@ -44,12 +45,49 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request, pk):
-        user = User.objects.get(pk=pk)
+    def post(self, request):
+        user = User.objects.get(id = request.user.id)
+        print(user.username)
+        data1 = {}
+
+        data1['email'] = user.email
+        data1['username'] = user.username
+        data1['user_phone_number'] = user.user_phone_number
+        data1['user_postal_code'] = user.user_postal_code
+        data1['user_address'] = user.user_address
+
+        data = {}
+
         serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
-            serialized_data.save()
+            edited_user = serialized_data.save()
+
+            if data1['email'] != edited_user.email:
+                data['email'] = edited_user.email
+            else:
+                data['email'] = ""
+
+            if data1['username'] != edited_user.username:
+                data['username'] = edited_user.username
+            else:
+                data['username'] = ""
+
+            if data1['user_phone_number'] != edited_user.user_phone_number:
+                data['user_phone_number'] = edited_user.user_phone_number
+            else:
+                data['user_phone_number'] = ""
+
+            if data1['user_postal_code'] != edited_user.user_postal_code:
+                data['user_postal_code'] = edited_user.user_postal_code
+            else:
+                data['user_postal_code'] = ""
+
+            if data1['user_address'] != edited_user.user_address:
+                data['user_address'] = edited_user.user_address
+            else:
+                data['user_address'] = ""
+
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -161,6 +199,10 @@ class ShowFavoriteProduct(APIView):
             data['product_size'] = i[0]['product_size']
             data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
+            price_off=0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent']))/100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
             data['shop_id'] = i[0]['shop_id']
@@ -179,7 +221,7 @@ class ShopManagerRegister(APIView):
             # data['response'] = "successfully registered"
             data['username'] = shop_manager.username
             data['email'] = shop_manager.email
-            data['user_phone_number'] = shop_manager.user_phone_number
+            # data['user_phone_number'] = shop_manager.user_phone_number
             data['shop_name'] = shop_manager.shop_name
             data['shop_address'] = shop_manager.shop_address
             data['shop_phone_number'] = shop_manager.shop_phone_number
@@ -193,8 +235,8 @@ class ShopManagerRegister(APIView):
 class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request, pk):
-        user = User.objects.get(pk=pk)
+    def post(self, request):
+        user = User.objects.get(id = request.user.id)
         data1 = {}
         data1['username'] = user.username
         data1['user_phone_number'] = user.user_phone_number
@@ -238,7 +280,7 @@ class EditShop(APIView):
             else:
                 data['shop_phone_number'] = ""
 
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -271,6 +313,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_off_percent=data['product_off_percent'],
                 inventory=data['inventory'],
                 upload=data['upload'],
+                is_available=True,
             )
             product.save()
             data1['product_name'] = data['product_name']
@@ -296,15 +339,88 @@ class AddProductsToShopViewSet(ModelViewSet):
 
 
 class EditProduct(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopOwner]
 
     def put(self, request, pk):
         product = Product.objects.get(pk=pk)
+        self.check_object_permissions(request, product)
+
+        data1 = {}
+        data1['product_name'] = product.product_name
+        data1['product_price'] = product.product_price
+        data1['inventory'] = product.inventory
+        data1['product_size'] = product.product_size
+        data1['product_color'] = product.product_color
+        data1['product_height'] = product.product_height
+        data1['product_design'] = product.product_design
+        data1['product_material'] = product.product_material
+        data1['product_country'] = product.product_country
+        data1['product_off_percent'] = product.product_off_percent
+        data1['is_available'] = product.is_available
+
+        data = {}
+
         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
-            serialized_data.save()
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+            edited_product = serialized_data.save()
+
+            if data1['product_name'] != edited_product.product_name:
+                data['product_name'] = edited_product.product_name
+            else:
+                data['product_name'] = ""
+
+            if data1['product_price'] != edited_product.product_price:
+                data['product_price'] = edited_product.product_price
+            else:
+                data['product_price'] = ""
+
+            if data1['inventory'] != edited_product.inventory:
+                data['inventory'] = edited_product.inventory
+            else:
+                data['inventory'] = ""
+
+            if data1['product_size'] != edited_product.product_size:
+                data['product_size'] = edited_product.product_size
+            else:
+                data['product_size'] = ""
+
+            if data1['product_color'] != edited_product.product_color:
+                data['product_color'] = edited_product.product_color
+            else:
+                data['product_color'] = ""
+
+            if data1['product_height'] != edited_product.product_height:
+                data['product_height'] = edited_product.product_height
+            else:
+                data['product_height'] = ""
+
+            if data1['product_design'] != edited_product.product_design:
+                data['product_design'] = edited_product.product_design
+            else:
+                data['product_design'] = ""
+
+            if data1['product_material'] != edited_product.product_material:
+                data['product_material'] = edited_product.product_material
+            else:
+                data['product_material'] = ""
+
+            if data1['product_country'] != edited_product.product_country:
+                data['product_country'] = edited_product.product_country
+            else:
+                data['product_country'] = ""
+
+            if data1['product_off_percent'] != edited_product.product_off_percent:
+                data['product_off_percent'] = edited_product.product_off_percent
+            else:
+                data['product_off_percent'] = ""
+
+            if data1['is_available'] != edited_product.is_available:
+                data['is_available'] = edited_product.is_available
+            else:
+                data['is_available'] = ""
+
+            return Response(data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -421,6 +537,10 @@ class ShowProductsByShop(APIView):
             data['product_size'] = i['product_size']
             data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
+            price_off = 0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             data['inventory'] = i['inventory']
             data['upload'] = i['upload']
             data['shop_id'] = i['shop_id']
@@ -428,6 +548,7 @@ class ShowProductsByShop(APIView):
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
+<<<<<<< HEAD
 
 class ShowAllProducts(APIView):
     def get(self, request):
@@ -452,3 +573,59 @@ class ShowAllProducts(APIView):
             data['shop_id'] = i['shop_id']
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
+=======
+class ChangePasswordView(generics.UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ShowUserInfo(APIView):
+    permission_classes = [IsAuthenticated ,]
+    def get(self, request):
+        user = User.objects.get(id = request.user.id)
+        print(user.username)
+        data = {}
+        if user.shop_name == None :
+            data['email'] = user.email
+            data['username'] = user.username
+            data['user_phone_number'] = user.user_phone_number
+            data['user_postal_code'] = user.user_postal_code
+            data['user_address'] = user.user_address
+        else:
+            data['email'] = user.email
+            data['username'] = user.username
+            data['shop_name'] = user.shop_name
+            data['shop_phone_number'] = user.shop_phone_number
+            data['user_phone_number'] = user.user_phone_number
+            data['shop_address'] = user.shop_address
+
+        return Response(data, status=status.HTTP_200_OK)
+>>>>>>> main
