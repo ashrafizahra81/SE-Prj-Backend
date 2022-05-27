@@ -5,13 +5,13 @@ from rest_framework.authtoken.models import Token
 
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
-    username = models.CharField(max_length=100)
-    user_phone_number = models.CharField(max_length=2000, null=True)
-    user_postal_code = models.CharField(max_length=20, null=True)
-    user_address = models.CharField(max_length=20, null=True)
-    shop_name = models.CharField(max_length=1000, null=True)
-    shop_address = models.CharField(max_length=20, null=True)
-    shop_phone_number = models.CharField(max_length=20, null=True)
+    username = models.CharField(max_length=200)
+    user_phone_number = models.CharField(max_length=100, null=True)
+    user_postal_code = models.CharField(max_length=100, null=True)
+    user_address = models.CharField(max_length=200, null=True)
+    shop_name = models.CharField(max_length=200, null=True)
+    shop_address = models.CharField(max_length=200, null=True)
+    shop_phone_number = models.CharField(max_length=100, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -70,6 +70,8 @@ class UserShoppingCart(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, related_name='orders')
+    total_cost = models.IntegerField()
+    off_cost = models.IntegerField()
     cost = models.IntegerField()
     status = models.CharField(max_length=100, null=False)
     order_date = models.DateTimeField(auto_now_add=True, null=False)

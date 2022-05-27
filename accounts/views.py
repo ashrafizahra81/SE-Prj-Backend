@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
 from permissions import IsShopOwner
-
+import json
 
 class UserRegister(APIView):
     def post(self, request):
@@ -486,13 +486,27 @@ class CheckoutShoppingCart(APIView):
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         data = list()
         price = 0
+        off_price = 0
+        product_inventory = 0
         date_of_buy = datetime.now()
         user_buyer = {}
         user_buyer["buyer"] = request.user.email
         data.append(user_buyer)
+        p_data = {}
 
         for o1 in user_cart:
             product1 = Product.objects.get(pk=o1['product_id'])
+            product_inventory = product1.inventory - 1
+            print(product_inventory)
+            p_data['inventory'] = product_inventory
+            json_object = json.dumps(p_data, indent=4)
+            print(json_object)
+            serialized_data = EditProductSerializer(instance=product1, data=json_object, partial=True)
+            off_price += ((100-product1.product_off_percent)/100)*product1.product_price
+            if serialized_data.is_valid():
+                edited_product = serialized_data.save()
+            else :
+                print("not valid")
             price += product1.product_price
 
         for o in user_cart:
@@ -502,7 +516,9 @@ class CheckoutShoppingCart(APIView):
             c = Order(
                 user=request.user,
                 product=product,
-                cost=price,
+                cost=product.product_price,
+                total_cost=price,
+                off_cost=off_price,
                 status="Accepted",
             )
             c.save()
@@ -513,6 +529,7 @@ class CheckoutShoppingCart(APIView):
         # print(price)
         dict_price = {}
         dict_price["total price"] = price
+        dict_price["total off_price"] = off_price
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)
