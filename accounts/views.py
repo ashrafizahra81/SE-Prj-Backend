@@ -88,7 +88,7 @@ class UserEditProfile(APIView):
             else:
                 data['user_address'] = ""
 
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -280,7 +280,7 @@ class EditShop(APIView):
             else:
                 data['shop_phone_number'] = ""
 
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
