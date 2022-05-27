@@ -37,7 +37,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include
         # data.clear()
-        # data.update({'email': self.user.email})
+        if self.user.shop_name == None :
+            data.update({'type':'user'})
+        else:
+            data.update({'type': 'seller'})
+
         # and everything else you want to send in the response
         return data
 
