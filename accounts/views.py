@@ -547,12 +547,6 @@ class ShowProductsByShop(APIView):
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
-from rest_framework import status
-from rest_framework import generics
-from rest_framework.response import Response
-from django.contrib.auth.models import User
-from .serializers import ChangePasswordSerializer
-from rest_framework.permissions import IsAuthenticated
 
 class ChangePasswordView(generics.UpdateAPIView):
     """
@@ -587,7 +581,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class ShowUserInfo(APIView):
     permission_classes = [IsAuthenticated ,]
     def get(self, request):
