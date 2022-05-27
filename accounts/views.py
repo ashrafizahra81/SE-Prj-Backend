@@ -548,7 +548,7 @@ class ShowProductsByShop(APIView):
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
-<<<<<<< HEAD
+
 
 class ShowAllProducts(APIView):
     def get(self, request):
@@ -573,7 +573,7 @@ class ShowAllProducts(APIView):
             data['shop_id'] = i['shop_id']
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
-=======
+
 class ChangePasswordView(generics.UpdateAPIView):
     """
     An endpoint for changing password.
@@ -628,4 +628,4 @@ class ShowUserInfo(APIView):
             data['shop_address'] = user.shop_address
 
         return Response(data, status=status.HTTP_200_OK)
->>>>>>> main
+
