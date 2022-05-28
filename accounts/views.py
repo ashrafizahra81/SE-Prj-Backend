@@ -322,7 +322,12 @@ class GetProductInfo(APIView):
         if product:
             serialized_data = ProductsSerializer(instance=product, data=request.data, partial=True)
             if serialized_data.is_valid():
-                return Response(serialized_data.data, status=status.HTTP_200_OK)
+                ret_val = serialized_data.data
+                is_fav = UserFavoriteProduct.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
+                in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
+                ret_val['is_favorite'] = is_fav
+                ret_val['is_in_cart'] = in_cart
+                return Response(ret_val, status=status.HTTP_200_OK)
             else:
                 return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -425,3 +430,39 @@ class ShowProductsByShop(APIView):
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AddOrDeleteFavoriteView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        is_fav = UserFavoriteProduct.objects.filter(user_id=request.user.id, product_id=request.data['data']).exists()
+        print(is_fav)
+        if is_fav:
+            user_product = UserFavoriteProduct.objects.get(user_id=request.user, product_id=request.data['data'])
+            user_product.delete()
+            message = "محصول مورد نظر از لیست علاقه مندی ها حذف شد"
+        else:
+            to_save = UserFavoriteProduct(user=request.user, product=Product.objects.get(pk=request.data['data']))
+            to_save.save()
+            message = "محصول مورد نظر به لیست علاقه مندی ها اضافه شد"
+
+        return Response(status=status.HTTP_200_OK, data=message)
+
+
+class AddOrRemoveShoppingCartView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=request.data['data']).exists()
+        if in_cart:
+            user_product = UserShoppingCart.objects.get(user_id=request.user.id, product_id=request.data['data'])
+            user_product.delete()
+            message = "محصول مورد نظر از سبد خرید حذف شد"
+        else:
+            to_save = UserShoppingCart(user=request.user, product=Product.objects.get(pk=request.data['data']),
+                                       status="NOT PAID")
+            to_save.save()
+            message = "محصول مورد نظر به سبد خرید اضافه شد"
+
+        return Response(status=status.HTTP_200_OK, data=message)

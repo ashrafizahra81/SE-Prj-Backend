@@ -56,6 +56,15 @@ class Style(models.Model):
     style_param_5 = models.CharField(max_length=100, default='')
 
 
+class ConstantStyles(models.Model):
+    style_image_url = models.URLField(null=True)
+    style_param_1 = models.CharField(max_length=100, default='')
+    style_param_2 = models.CharField(max_length=100, default='')
+    style_param_3 = models.CharField(max_length=100, default='')
+    style_param_4 = models.CharField(max_length=100, default='')
+    style_param_5 = models.CharField(max_length=100, default='')
+
+
 class UserStyle(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
@@ -105,3 +114,13 @@ class ProductAndStyle(models.Model):
     style_param_3 = models.CharField(max_length=100, default='')
     style_param_4 = models.CharField(max_length=100, default='')
     style_param_5 = models.CharField(max_length=100, default='')
+
+
+class ProductInUserFav(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+
+
+class ProductInUserCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
