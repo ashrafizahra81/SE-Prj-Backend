@@ -11,6 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
 from permissions import IsShopOwner
 import json
+from questions import ai_similarity
 
 
 class UserRegister(APIView):
@@ -47,7 +48,7 @@ class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         print(user.username)
         data1 = {}
 
@@ -200,9 +201,9 @@ class ShowFavoriteProduct(APIView):
             data['product_size'] = i[0]['product_size']
             data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
-            price_off=0
+            price_off = 0
             if int(i[0]['product_off_percent']) > 0:
-                price_off = ((100 - int(i[0]['product_off_percent']))/100) * int(i[0]['product_price'])
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
             data['product_off_percent'] = price_off
             data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
@@ -237,7 +238,7 @@ class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         data1 = {}
         data1['username'] = user.username
         data1['user_phone_number'] = user.user_phone_number
@@ -549,6 +550,7 @@ class ShowProductsByShop(APIView):
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ChangePasswordView(generics.UpdateAPIView):
     """
     An endpoint for changing password.
@@ -582,13 +584,16 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ShowUserInfo(APIView):
-    permission_classes = [IsAuthenticated ,]
+    permission_classes = [IsAuthenticated, ]
+
     def get(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         print(user.username)
         data = {}
-        if user.shop_name == None :
+        if user.shop_name == None:
             data['email'] = user.email
             data['username'] = user.username
             data['user_phone_number'] = user.user_phone_number
@@ -603,6 +608,7 @@ class ShowUserInfo(APIView):
             data['shop_address'] = user.shop_address
 
         return Response(data, status=status.HTTP_200_OK)
+
 
 class PopularProducts(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -619,7 +625,7 @@ class PopularProducts(APIView):
         data = {}
         data['score'] = score
         data['number_of_votes'] = nums_of_votes
-        print (data)
+        print(data)
         print("**********")
         json_object = json.dumps(data, indent=4)
         print(json_object)
@@ -631,19 +637,40 @@ class PopularProducts(APIView):
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ShowPopularProduct(APIView):
-    def get(self , request):
-        row=0
+    def get(self, request):
+        row = 0
         for i in Product.objects.all():
-            row=row+1
+            row = row + 1
         table = [[0 for c in range(3)] for r in range(row)]
-        j=0
+        j = 0
         for i in Product.objects.all().values():
             table[j][0] = i['id']
             if int(i['number_of_votes']) != 0:
-                table[j][1] = float(i['score'])/int(i['number_of_votes'])
+                table[j][1] = float(i['score']) / int(i['number_of_votes'])
             else:
                 table[j][1] = 0
             table[j][2] = int(i['number_of_votes'])
-            j=j+1
-        print(table)
+            j = j + 1
+        data1 = list()
+        j=0
+        for i in ai_similarity.RecommendationSystem.favorite_items(table):
+            product = Product.objects.get(pk = i[0])
+            data = {}
+            data['id'] = product.pk
+            print(product.pk)
+            data['product_name'] = product.product_name
+            #data['product_size'] = product['product_size']
+            #data['product_color'] = product['product_color']
+            data['product_price'] = product.product_price
+            price_off = 0
+            if product.product_off_percent > 0:
+                price_off = ((100 - product.product_off_percent) / 100) * product.product_price
+            data['product_off_percent'] = price_off
+            #data['inventory'] = i['inventory']
+            #data['upload'] = product.upload
+            data['shop_id'] = product.shop.id
+            data1.append(data)
+        print(data1)
+        return Response(data1, status=status.HTTP_200_OK)

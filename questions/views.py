@@ -6,7 +6,7 @@ from accounts.serializers import StyleSerializer
 from rest_framework.response import Response
 from .models import UserQuestions
 from accounts.models import Style, UserStyle
-from .ai_similarity import Similarity
+from .ai_similarity import RecommendationSystem
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
 
@@ -61,7 +61,7 @@ class UserQuestionView(APIView):
             [image3.style_param_1, image3.style_param_2, image3.style_param_3, image3.style_param_4,
              image3.style_param_5])
 
-        simil = Similarity(features)
+        simil = RecommendationSystem(features)
         val = simil.recommend(values, first_feature, second_feature, third_feature, fourth_feature)
         val = val + 1
 
