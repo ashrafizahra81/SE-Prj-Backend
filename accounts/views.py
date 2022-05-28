@@ -62,11 +62,19 @@ class UserStyles(APIView):
         style_id_list = list()
         for item in user_styles:
             style_id_list.append(item['style_id_id'])
-        styles = list(Style.objects.filter(pk__in=style_id_list).values('style_image_url'))
-        if styles:
-            return JsonResponse(styles, safe=False)
-        else:
-            return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+        a = Style.objects.filter(pk__in=style_id_list).values()
+        products = []
+        for i in list(a):
+            if i['product_id']:
+                product = Product.objects.get(pk=i['product_id'])
+                ser = ProductsSerializer(instance=product).data
+                ser['upload'] = i['style_image_url']
+                products.append(ser)
+            else:
+                products.append({'upload': i['style_image_url']})
+
+        return Response(data=products, status=status.HTTP_200_OK)
 
 
 class AddToShoppingCartView(APIView):

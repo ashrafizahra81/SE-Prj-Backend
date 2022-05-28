@@ -126,7 +126,7 @@ class SimilarClothesView(APIView):
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
-                ser = ProductInfoSerializer(instance=product).data
+                ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
                 products.append(ser)
             else:
