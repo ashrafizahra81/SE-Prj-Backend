@@ -25,6 +25,7 @@ class Product(models.Model):
     product_price = models.BigIntegerField(null=False)
     shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
+    image = models.CharField(max_length=100, null=True)
     inventory = models.IntegerField(default=0, null=False)
     product_size = models.CharField(max_length=100, null=True)
     product_color = models.CharField(max_length=100, null=True)
