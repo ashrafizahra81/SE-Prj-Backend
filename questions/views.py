@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from .serializers import UserQuestionsSerializer
-from accounts.serializers import StyleSerializer
+from accounts.serializers import StyleSerializer, ProductInfoSerializer
 from rest_framework.response import Response
 from .models import UserQuestions
-from accounts.models import Style, UserStyle
+from accounts.models import Style, UserStyle, Product
 from .ai_similarity import RecommendationSystem
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
@@ -119,7 +119,16 @@ class SimilarClothesView(APIView):
         val = simil.recommend_based_on_clothes(selectedClothes=features, values=[1, 1, 1, 1, 1], anomaly=20)
         val = val + 1
 
-        a = Style.objects.filter(pk__in=list(val)).values('style_image_url')
-        resp = StyleSerializer(instance=a, many=True)
+        a = Style.objects.filter(pk__in=list(val)).values()
+        products = []
+        for i in list(a):
+            if i['product_id']:
+                product = Product.objects.get(pk=i['product_id'])
+                ser = ProductInfoSerializer(instance=product).data
+                ser['upload'] = i['style_image_url']
+                products.append(ser)
+            else:
+                products.append({'upload': i['style_image_url']})
 
-        return Response(data=resp.data, status=status.HTTP_200_OK)
+        return Response(data=products, status=status.HTTP_200_OK)
+
