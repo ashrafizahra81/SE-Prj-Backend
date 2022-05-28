@@ -6,11 +6,11 @@ from rest_framework.authtoken.models import Token
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=100)
-    user_phone_number = models.CharField(max_length=20, null=True)
+    user_phone_number = models.CharField(max_length=2000, null=True)
     user_postal_code = models.CharField(max_length=20, null=True)
     user_address = models.CharField(max_length=20, null=True)
     shop_name = models.CharField(max_length=1000, null=True)
-    shop_address = models.CharField(max_length=2000, null=True)
+    shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
@@ -32,8 +32,10 @@ class Product(models.Model):
     product_design = models.CharField(max_length=100, null=True)
     product_material = models.CharField(max_length=100, null=True)
     product_country = models.CharField(max_length=100, null=True)
-    product_off_percent = models.IntegerField(null=True, default=0)
+    product_off_percent = models.IntegerField(default=0)
     is_available = models.BooleanField(default=False)
+    score = models.FloatField(default=0, null=True)
+    number_of_votes = models.IntegerField(default=0, null=True)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
     # product_size = models.CharField(max_length=100, null=False)

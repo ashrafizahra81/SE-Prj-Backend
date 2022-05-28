@@ -9,6 +9,11 @@ from .models import *
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
+from permissions import IsShopOwner
+from django.core.files.storage import FileSystemStorage
+import requests
+import json
+import string
 
 
 class UserRegister(APIView):
@@ -44,12 +49,49 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request, pk):
-        user = User.objects.get(pk=pk)
+    def post(self, request):
+        user = User.objects.get(id = request.user.id)
+        print(user.username)
+        data1 = {}
+
+        data1['email'] = user.email
+        data1['username'] = user.username
+        data1['user_phone_number'] = user.user_phone_number
+        data1['user_postal_code'] = user.user_postal_code
+        data1['user_address'] = user.user_address
+
+        data = {}
+
         serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
-            serialized_data.save()
+            edited_user = serialized_data.save()
+
+            if data1['email'] != edited_user.email:
+                data['email'] = edited_user.email
+            else:
+                data['email'] = ""
+
+            if data1['username'] != edited_user.username:
+                data['username'] = edited_user.username
+            else:
+                data['username'] = ""
+
+            if data1['user_phone_number'] != edited_user.user_phone_number:
+                data['user_phone_number'] = edited_user.user_phone_number
+            else:
+                data['user_phone_number'] = ""
+
+            if data1['user_postal_code'] != edited_user.user_postal_code:
+                data['user_postal_code'] = edited_user.user_postal_code
+            else:
+                data['user_postal_code'] = ""
+
+            if data1['user_address'] != edited_user.user_address:
+                data['user_address'] = edited_user.user_address
+            else:
+                data['user_address'] = ""
+
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -116,6 +158,7 @@ class ShowUserShoppingCart(APIView):
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         data1 = list()
         total_price = 0
+        total_price_with_discount = 0
         for i in product_list:
             data = {}
             data['id'] = i[0]['id']
@@ -130,9 +173,15 @@ class ShowUserShoppingCart(APIView):
             # data['inventory'] = i[0]['inventory']
             data['upload'] = i[0]['upload']
             data['shop_id'] = i[0]['shop_id']
+            price_off = 0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             total_price += i[0]['product_price']
+            total_price_with_discount += price_off
             data1.append(data)
         data1.append({"total_price": total_price})
+        data1.append({"total_price_with_discount": total_price_with_discount})
         return Response(data1, status=status.HTTP_200_OK)
 
 
@@ -166,12 +215,16 @@ class ShowFavoriteProduct(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            data['product_size'] = i[0]['product_size']
-            data['product_color'] = i[0]['product_color']
+            #data['product_size'] = i[0]['product_size']
+            #data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
-            data['is_available'] = i[0]['is_available']
+            price_off=0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent']))/100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
+            #data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
-            data['shop_id'] = i[0]['shop_id']
+            #data['shop_id'] = i[0]['shop_id']
             print(i[0]['product_name'])
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
@@ -187,7 +240,7 @@ class ShopManagerRegister(APIView):
             # data['response'] = "successfully registered"
             data['username'] = shop_manager.username
             data['email'] = shop_manager.email
-            data['user_phone_number'] = shop_manager.user_phone_number
+            # data['user_phone_number'] = shop_manager.user_phone_number
             data['shop_name'] = shop_manager.shop_name
             data['shop_address'] = shop_manager.shop_address
             data['shop_phone_number'] = shop_manager.shop_phone_number
@@ -201,8 +254,8 @@ class ShopManagerRegister(APIView):
 class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def put(self, request, pk):
-        user = User.objects.get(pk=pk)
+    def post(self, request):
+        user = User.objects.get(id = request.user.id)
         data1 = {}
         data1['username'] = user.username
         data1['user_phone_number'] = user.user_phone_number
@@ -246,7 +299,7 @@ class EditShop(APIView):
             else:
                 data['shop_phone_number'] = ""
 
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -262,38 +315,66 @@ class AddProductsToShopViewSet(ModelViewSet):
 
         print(_serializer)
         if _serializer.is_valid():
-            data = request.data
-            print(data['upload'])
+            data2 = request.data
+            print(data2['upload'])
+
+            m = request.FILES['upload']
+            fs = FileSystemStorage('uploads/')
+            filename = fs.save(m.name, m)
+            upload_url_file = fs.url(filename)
+            print(upload_url_file)
+
+
+            with open(f'./uploads{upload_url_file}', 'rb') as f:
+                data = f.read()
+            r = requests.post("https://api.nft.storage/upload", headers={
+                'accept': 'application/json',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
+                'Content-Type': 'image/*'},
+                data=data)
+            print(json.loads(r.text))
+            str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
+            print(str)
+            str2 = "https://ipfs.io/ipfs/"+str
+            print(str2)
+
+
+
             # print(p.shop_id)
             data1 = {}
             product = Product(
-                shop_id=request.user,
-                product_name=data['product_name'],
-                product_price=data['product_price'],
-                product_size=data['product_size'],
-                product_height=data['product_height'],
-                product_design=data['product_design'],
-                product_material=data['product_material'],
-                product_country=data['product_country'],
-                product_off_percent=data['product_off_percent'],
-                inventory=data['inventory'],
-                upload=data['upload'],
+                shop=request.user,
+                product_name=data2['product_name'],
+                product_price=data2['product_price'],
+                product_size=data2['product_size'],
+                product_color=data2['product_color'],
+                product_height=data2['product_height'],
+                product_design=data2['product_design'],
+                product_material=data2['product_material'],
+                product_country=data2['product_country'],
+                # product_off_percent=data2['product_off_percent'],
+                inventory=data2['inventory'],
+                upload=str2,
+                is_available=True,
             )
             product.save()
-            data1['product_name'] = data['product_name']
-            data1['product_price'] = data['product_price']
-            data1['product_size'] = data['product_size']
-            data1['product_height'] = data['product_height']
-            data1['product_design'] = data['product_design']
-            data1['product_material'] = data['product_material']
-            data1['product_country'] = data['product_country']
-            data1['inventory'] = data['inventory']
+            data1['product_name'] = data2['product_name']
+            data1['product_price'] = data2['product_price']
+            data1['product_size'] = data2['product_size']
+            data1['product_color'] = data2['product_color']
+            data1['product_height'] = data2['product_height']
+            data1['product_design'] = data2['product_design']
+            data1['product_material'] = data2['product_material']
+            data1['product_country'] = data2['product_country']
+            data1['inventory'] = data2['inventory']
+            data1['upload'] = str2
             s = Style(product=product,
-                      style_param_1=data['style_param_1'],
-                      style_param_2=data['style_param_2'],
-                      style_param_3=data['style_param_3'],
-                      style_param_4=data['style_param_4'],
-                      style_param_5=data['style_param_5']
+                      style_image_url = str2,
+                      style_param_1=data2['style_param_1'],
+                      style_param_2=data2['style_param_2'],
+                      style_param_3=data2['style_param_3'],
+                      style_param_4=data2['style_param_4'],
+                      style_param_5=data2['style_param_5']
                       )
             s.save()
             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
@@ -302,15 +383,88 @@ class AddProductsToShopViewSet(ModelViewSet):
 
 
 class EditProduct(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopOwner]
 
     def put(self, request, pk):
         product = Product.objects.get(pk=pk)
+        self.check_object_permissions(request, product)
+
+        data1 = {}
+        data1['product_name'] = product.product_name
+        data1['product_price'] = product.product_price
+        data1['inventory'] = product.inventory
+        data1['product_size'] = product.product_size
+        data1['product_color'] = product.product_color
+        data1['product_height'] = product.product_height
+        data1['product_design'] = product.product_design
+        data1['product_material'] = product.product_material
+        data1['product_country'] = product.product_country
+        data1['product_off_percent'] = product.product_off_percent
+        data1['is_available'] = product.is_available
+
+        data = {}
+
         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
         if serialized_data.is_valid():
             # print(request.user.email)
-            serialized_data.save()
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+            edited_product = serialized_data.save()
+
+            if data1['product_name'] != edited_product.product_name:
+                data['product_name'] = edited_product.product_name
+            else:
+                data['product_name'] = ""
+
+            if data1['product_price'] != edited_product.product_price:
+                data['product_price'] = edited_product.product_price
+            else:
+                data['product_price'] = ""
+
+            if data1['inventory'] != edited_product.inventory:
+                data['inventory'] = edited_product.inventory
+            else:
+                data['inventory'] = ""
+
+            if data1['product_size'] != edited_product.product_size:
+                data['product_size'] = edited_product.product_size
+            else:
+                data['product_size'] = ""
+
+            if data1['product_color'] != edited_product.product_color:
+                data['product_color'] = edited_product.product_color
+            else:
+                data['product_color'] = ""
+
+            if data1['product_height'] != edited_product.product_height:
+                data['product_height'] = edited_product.product_height
+            else:
+                data['product_height'] = ""
+
+            if data1['product_design'] != edited_product.product_design:
+                data['product_design'] = edited_product.product_design
+            else:
+                data['product_design'] = ""
+
+            if data1['product_material'] != edited_product.product_material:
+                data['product_material'] = edited_product.product_material
+            else:
+                data['product_material'] = ""
+
+            if data1['product_country'] != edited_product.product_country:
+                data['product_country'] = edited_product.product_country
+            else:
+                data['product_country'] = ""
+
+            if data1['product_off_percent'] != edited_product.product_off_percent:
+                data['product_off_percent'] = edited_product.product_off_percent
+            else:
+                data['product_off_percent'] = ""
+
+            if data1['is_available'] != edited_product.is_available:
+                data['is_available'] = edited_product.is_available
+            else:
+                data['is_available'] = ""
+
+            return Response(data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -432,12 +586,17 @@ class ShowProductsByShop(APIView):
             data['product_size'] = i['product_size']
             data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
+            price_off = 0
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            data['product_off_percent'] = price_off
             data['inventory'] = i['inventory']
             data['upload'] = i['upload']
             data['shop_id'] = i['shop_id']
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class AddOrDeleteFavoriteView(APIView):
@@ -474,3 +633,93 @@ class AddOrRemoveShoppingCartView(APIView):
             message = "محصول مورد نظر به سبد خرید اضافه شد"
 
         return Response(status=status.HTTP_200_OK, data=message)
+      
+
+class ShowAllProducts(APIView):
+    def get(self, request):
+        product_list = list(Product.objects.all().values())
+        data = {}
+        data1 = list()
+        print(product_list)
+        for i in product_list:
+            data = {}
+            print(1)
+            print(i['id'])
+            print(2)
+            data['id'] = i['id']
+            data['product_name'] = i['product_name']
+            data['product_price'] = i['product_price']
+            price_off = 0
+            if int(i['product_off_percent']) > 0:
+                price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
+            data['product_off_percent'] = price_off
+            data['inventory'] = i['inventory']
+            data['upload'] = i['upload']
+            data['shop_id'] = i['shop_id']
+            data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
+
+class ChangePasswordView(generics.UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ShowUserInfo(APIView):
+    permission_classes = [IsAuthenticated ,]
+    def get(self, request):
+        user = User.objects.get(id = request.user.id)
+        print(user.username)
+        data = {}
+        if user.shop_name == None :
+            data['email'] = user.email
+            data['username'] = user.username
+            data['user_phone_number'] = user.user_phone_number
+            data['user_postal_code'] = user.user_postal_code
+            data['user_address'] = user.user_address
+        else:
+            data['email'] = user.email
+            data['username'] = user.username
+            data['shop_name'] = user.shop_name
+            data['shop_phone_number'] = user.shop_phone_number
+            data['user_phone_number'] = user.user_phone_number
+            data['shop_address'] = user.shop_address
+
+        return Response(data, status=status.HTTP_200_OK)
+
+class Logout(APIView):
+    serializer_class = LogoutSerializer
+    permission_classes = [IsAuthenticated ,]
+    def post(self , request):
+        serializer = self.serializer_class(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        serializer.save()
+        return  Response(status=status.HTTP_204_NO_CONTENT)
+
