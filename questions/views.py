@@ -2,11 +2,11 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from .serializers import UserQuestionsSerializer
-from accounts.serializers import StyleSerializer
+from accounts.serializers import StyleSerializer, ProductInfoSerializer
 from rest_framework.response import Response
 from .models import UserQuestions
-from accounts.models import Style, UserStyle
-from .ai_similarity import Similarity
+from accounts.models import Style, UserStyle, Product
+from .ai_similarity import RecommendationSystem
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
 
@@ -17,17 +17,19 @@ class UserQuestionView(APIView):
 
     def post(self, request):
 
-        features = np.zeros((100, 5))
+        features = np.zeros((100, 5, 3))
 
-        cls = Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-                                         'style_param_5')
+        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                              'style_param_5'))
 
         clothes = [item for item in cls]
         for i in range(100):
             lst = list(clothes[i].values())
             for j in range(5):
-                features[i][j] = lst[j]
-        print(request.user.id)
+                val = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    features[i][j][k] = val[k]
+
         s = UserQuestions(user_id=request.user.id,
                           answer_1=request.data['data'][0],
                           answer_2=request.data['data'][1],
@@ -52,17 +54,27 @@ class UserQuestionView(APIView):
         image3 = Style.objects.get(id=answer_7_list[2] + 100)
 
         second_feature = np.array(
-            [image1.style_param_1, image1.style_param_2, image1.style_param_3, image1.style_param_4,
-             image1.style_param_5])
+            [int(image1.style_param_1[0:1]), int(image1.style_param_2[0:1]), int(image1.style_param_3[0:1]),
+             int(image1.style_param_4[0:1]),
+             int(image1.style_param_5[0:1])])
         third_feature = np.array(
-            [image2.style_param_1, image2.style_param_2, image2.style_param_3, image2.style_param_4,
-             image2.style_param_5])
+            [int(image2.style_param_1[0:1]), int(image2.style_param_2[0:1]), int(image2.style_param_3[0:1]),
+             int(image2.style_param_4[0:1]),
+             int(image2.style_param_5[0:1])])
         fourth_feature = np.array(
-            [image3.style_param_1, image3.style_param_2, image3.style_param_3, image3.style_param_4,
-             image3.style_param_5])
+            [int(image3.style_param_1[0:1]), int(image3.style_param_2[0:1]), int(image3.style_param_3[0:1]),
+             int(image3.style_param_4[0:1]),
+             int(image3.style_param_5[0:1])])
 
-        simil = Similarity(features)
-        val = simil.recommend(values, first_feature, second_feature, third_feature, fourth_feature)
+        print(features)
+        print(values)
+        print(first_feature)
+        print(second_feature)
+        print(third_feature)
+        print(fourth_feature)
+
+        simil = RecommendationSystem(features)
+        val = simil.recommend_based_on_questions(values, first_feature, second_feature, third_feature, fourth_feature)
         val = val + 1
 
         for st in val:
@@ -75,4 +87,48 @@ class UserQuestionView(APIView):
         return Response(data=resp.data, status=status.HTTP_201_CREATED)
 
 
+class SimilarClothesView(APIView):
+
+    def get(self, request, pk):
+
+        clothes_features = np.zeros((100, 5, 3))
+
+        all_cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                                  'style_param_5'))
+
+        all_clothes = [item for item in all_cls]
+        for i in range(100):
+            lst = list(all_clothes[i].values())
+            for j in range(5):
+                val = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    clothes_features[i][j][k] = val[k]
+
+        features = np.zeros((5, 3))
+
+        cls = Style.objects.get(pk=pk)
+
+        lst = [cls.style_param_1, cls.style_param_2, cls.style_param_3, cls.style_param_4, cls.style_param_5]
+
+        for i in range(5):
+            val = [int(x) for x in lst[i].split(',')]
+            for j in range(3):
+                features[i][j] = val[j]
+
+        simil = RecommendationSystem(clothes_features)
+        val = simil.recommend_based_on_clothes(selectedClothes=features, values=[1, 1, 1, 1, 1], anomaly=20)
+        val = val + 1
+
+        a = Style.objects.filter(pk__in=list(val)).values()
+        products = []
+        for i in list(a):
+            if i['product_id']:
+                product = Product.objects.get(pk=i['product_id'])
+                ser = ProductInfoSerializer(instance=product).data
+                ser['upload'] = i['style_image_url']
+                products.append(ser)
+            else:
+                products.append({'upload': i['style_image_url']})
+
+        return Response(data=products, status=status.HTTP_200_OK)
 
