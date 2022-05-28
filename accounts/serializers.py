@@ -101,8 +101,7 @@ class EditShopSerializer(serializers.ModelSerializer):
 class ProductAndStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAndStyle
-        exclude = ['shop_id', 'product']
-        exclude = ['shop_id', 'product']
+        exclude = ['shop_id', 'product', 'product_off_percent']
 
 
 class ChangePasswordSerializer(serializers.Serializer):

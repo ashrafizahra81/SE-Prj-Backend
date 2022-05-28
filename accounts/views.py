@@ -10,6 +10,10 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
 from permissions import IsShopOwner
+from django.core.files.storage import FileSystemStorage
+import requests
+import json
+import string
 
 
 class UserRegister(APIView):
@@ -303,41 +307,66 @@ class AddProductsToShopViewSet(ModelViewSet):
 
         print(_serializer)
         if _serializer.is_valid():
-            data = request.data
-            print(data['upload'])
+            data2 = request.data
+            print(data2['upload'])
+
+            m = request.FILES['upload']
+            fs = FileSystemStorage('uploads/')
+            filename = fs.save(m.name, m)
+            upload_url_file = fs.url(filename)
+            print(upload_url_file)
+
+
+            with open(f'./uploads{upload_url_file}', 'rb') as f:
+                data = f.read()
+            r = requests.post("https://api.nft.storage/upload", headers={
+                'accept': 'application/json',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
+                'Content-Type': 'image/*'},
+                data=data)
+            print(json.loads(r.text))
+            str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
+            print(str)
+            str2 = "https://ipfs.io/ipfs/"+str
+            print(str2)
+
+
+
             # print(p.shop_id)
             data1 = {}
             product = Product(
                 shop=request.user,
-                product_name=data['product_name'],
-                product_price=data['product_price'],
-                product_size=data['product_size'],
-                product_color=data['product_color'],
-                product_height=data['product_height'],
-                product_design=data['product_design'],
-                product_material=data['product_material'],
-                product_country=data['product_country'],
-                product_off_percent=data['product_off_percent'],
-                inventory=data['inventory'],
-                upload=data['upload'],
+                product_name=data2['product_name'],
+                product_price=data2['product_price'],
+                product_size=data2['product_size'],
+                product_color=data2['product_color'],
+                product_height=data2['product_height'],
+                product_design=data2['product_design'],
+                product_material=data2['product_material'],
+                product_country=data2['product_country'],
+                # product_off_percent=data2['product_off_percent'],
+                inventory=data2['inventory'],
+                upload=str2,
                 is_available=True,
             )
             product.save()
-            data1['product_name'] = data['product_name']
-            data1['product_price'] = data['product_price']
-            data1['product_size'] = data['product_size']
-            data1['product_color'] = data['product_color']
-            data1['product_height'] = data['product_height']
-            data1['product_design'] = data['product_design']
-            data1['product_material'] = data['product_material']
-            data1['product_country'] = data['product_country']
-            data1['inventory'] = data['inventory']
+            data1['product_name'] = data2['product_name']
+            data1['product_price'] = data2['product_price']
+            data1['product_size'] = data2['product_size']
+            data1['product_color'] = data2['product_color']
+            data1['product_height'] = data2['product_height']
+            data1['product_design'] = data2['product_design']
+            data1['product_material'] = data2['product_material']
+            data1['product_country'] = data2['product_country']
+            data1['inventory'] = data2['inventory']
+            data1['upload'] = str2
             s = Style(product=product,
-                      style_param_1=data['style_param_1'],
-                      style_param_2=data['style_param_2'],
-                      style_param_3=data['style_param_3'],
-                      style_param_4=data['style_param_4'],
-                      style_param_5=data['style_param_5']
+                      style_image_url = str2,
+                      style_param_1=data2['style_param_1'],
+                      style_param_2=data2['style_param_2'],
+                      style_param_3=data2['style_param_3'],
+                      style_param_4=data2['style_param_4'],
+                      style_param_5=data2['style_param_5']
                       )
             s.save()
             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
