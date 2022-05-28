@@ -547,6 +547,7 @@ class ShowProductsByShop(APIView):
             data['upload'] = i['upload']
             data['shop_id'] = i['shop_id']
             data1.append(data)
+        print(data1)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -656,21 +657,21 @@ class ShowPopularProduct(APIView):
         data1 = list()
         j=0
         for i in ai_similarity.RecommendationSystem.favorite_items(table):
-            product = Product.objects.get(pk = i[0])
+            product = Product.objects.filter(id = i[0]).values()
             data = {}
-            data['id'] = product.pk
-            print(product.pk)
-            data['product_name'] = product.product_name
+            data['id'] = product[0]['id']
+            #print(product.pk)
+            data['product_name'] = product[0]['product_name']
             #data['product_size'] = product['product_size']
             #data['product_color'] = product['product_color']
-            data['product_price'] = product.product_price
+            data['product_price'] = product[0]['product_price']
             price_off = 0
-            if product.product_off_percent > 0:
-                price_off = ((100 - product.product_off_percent) / 100) * product.product_price
+            if product[0]['product_off_percent'] > 0:
+                price_off = ((100 - product[0]['product_off_percent']) / 100) * product[0]['product_price']
             data['product_off_percent'] = price_off
             #data['inventory'] = i['inventory']
-            #data['upload'] = product.upload
-            data['shop_id'] = product.shop.id
+            data['upload'] = product[0]['upload']
+            data['shop_id'] = product[0]['shop_id']
             data1.append(data)
         print(data1)
         return Response(data1, status=status.HTTP_200_OK)
