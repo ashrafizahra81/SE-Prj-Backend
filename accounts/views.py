@@ -13,6 +13,7 @@ from permissions import IsShopOwner
 import json
 import requests
 import string
+from django.core.files.storage import FileSystemStorage
 
 
 class UserRegister(APIView):
@@ -296,13 +297,16 @@ class AddProductsToShopViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         _serializer = self.serializer_class(data=request.data)
         data = {}
-
+        m = request.FILES['upload']
+        fs = FileSystemStorage('uploads/')
+        filename = fs.save(m.name, m)
+        upload_file_url = fs.url(filename)
         print(_serializer)
         if _serializer.is_valid():
             data2 = request.data
-            print(data2['upload'])
+            print(data2)
 
-            with open('./uploads/ax1.jpg', 'rb') as f:
+            with open(f'./uploads{upload_file_url}', 'rb') as f:
                 data = f.read()
             r = requests.post("https://api.nft.storage/upload", headers={
                 'accept': 'application/json',
@@ -331,8 +335,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_country=data2['product_country'],
                 product_off_percent=data2['product_off_percent'],
                 inventory=data2['inventory'],
-                upload=data2['upload'],
-                image=str2,
+                upload=str2,
                 is_available=True,
             )
             product.save()
@@ -345,7 +348,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_material'] = data2['product_material']
             data1['product_country'] = data2['product_country']
             data1['inventory'] = data2['inventory']
-            data1['image'] = str2
+            data1['upload'] = str2
             s = Style(product=product,
                       style_param_1=data2['style_param_1'],
                       style_param_2=data2['style_param_2'],
