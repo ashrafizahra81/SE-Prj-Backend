@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from .models import *
 
 import django.contrib.auth.password_validation as validators
@@ -37,10 +37,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include
         # data.clear()
-        if self.user.shop_name == None :
-            data.update({'type':'user'})
-            data.update({'username':self.user.username})
-            data.update({'user_phone_number':self.user.user_phone_number})
+        if self.user.shop_name == None:
+            data.update({'type': 'user'})
+            data.update({'username': self.user.username})
+            data.update({'user_phone_number': self.user.user_phone_number})
         else:
             data.update({'type': 'seller'})
             data.update({'shop_name': self.user.shop_name})
@@ -113,3 +113,16 @@ class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            self.fail('bad token')

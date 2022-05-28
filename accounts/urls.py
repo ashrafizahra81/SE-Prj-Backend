@@ -15,6 +15,7 @@ urlpatterns = [
     path('register/', views.UserRegister.as_view()),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', views.Logout.as_view(), name='logout'),
     path('edit_profile/', views.UserEditProfile.as_view(), name="edit profile"),
     path('user_styles/', views.UserStyles.as_view(), name="user styles"),
     path('add_to_cart/', views.AddToShoppingCartView.as_view(), name="add to cart"),
