@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from .serializers import UserQuestionsSerializer
-from accounts.serializers import StyleSerializer, ProductInfoSerializer
+from accounts.serializers import StyleSerializer, ProductsSerializer, ProductInfoSerializer
 from rest_framework.response import Response
 from .models import UserQuestions
 from accounts.models import Style, UserStyle, Product
@@ -124,7 +124,7 @@ class SimilarClothesView(APIView):
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
-                ser = ProductInfoSerializer(instance=product).data
+                ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
                 products.append(ser)
             else:
