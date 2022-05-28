@@ -630,3 +630,20 @@ class PopularProducts(APIView):
             edited_shop = serialized_data.save()
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ShowPopularProduct(APIView):
+    def get(self , request):
+        row=0
+        for i in Product.objects.all():
+            row=row+1
+        table = [[0 for c in range(3)] for r in range(row)]
+        j=0
+        for i in Product.objects.all().values():
+            table[j][0] = i['id']
+            if int(i['number_of_votes']) != 0:
+                table[j][1] = float(i['score'])/int(i['number_of_votes'])
+            else:
+                table[j][1] = 0
+            table[j][2] = int(i['number_of_votes'])
+            j=j+1
+        print(table)
