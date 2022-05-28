@@ -50,7 +50,7 @@ class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         print(user.username)
         data1 = {}
 
@@ -215,16 +215,16 @@ class ShowFavoriteProduct(APIView):
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
-            #data['product_size'] = i[0]['product_size']
-            #data['product_color'] = i[0]['product_color']
+            # data['product_size'] = i[0]['product_size']
+            # data['product_color'] = i[0]['product_color']
             data['product_price'] = i[0]['product_price']
-            price_off=0
+            price_off = 0
             if int(i[0]['product_off_percent']) > 0:
-                price_off = ((100 - int(i[0]['product_off_percent']))/100) * int(i[0]['product_price'])
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
             data['product_off_percent'] = price_off
-            #data['is_available'] = i[0]['is_available']
+            # data['is_available'] = i[0]['is_available']
             data['upload'] = i[0]['upload']
-            #data['shop_id'] = i[0]['shop_id']
+            # data['shop_id'] = i[0]['shop_id']
             print(i[0]['product_name'])
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
@@ -255,7 +255,7 @@ class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         data1 = {}
         data1['username'] = user.username
         data1['user_phone_number'] = user.user_phone_number
@@ -324,21 +324,18 @@ class AddProductsToShopViewSet(ModelViewSet):
             upload_url_file = fs.url(filename)
             print(upload_url_file)
 
-
             with open(f'./uploads{upload_url_file}', 'rb') as f:
                 data = f.read()
             r = requests.post("https://api.nft.storage/upload", headers={
                 'accept': 'application/json',
                 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
                 'Content-Type': 'image/*'},
-                data=data)
+                              data=data)
             print(json.loads(r.text))
             str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
             print(str)
-            str2 = "https://ipfs.io/ipfs/"+str
+            str2 = "https://ipfs.io/ipfs/" + str
             print(str2)
-
-
 
             # print(p.shop_id)
             data1 = {}
@@ -369,7 +366,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['inventory'] = data2['inventory']
             data1['upload'] = str2
             s = Style(product=product,
-                      style_image_url = str2,
+                      style_image_url=str2,
                       style_param_1=data2['style_param_1'],
                       style_param_2=data2['style_param_2'],
                       style_param_3=data2['style_param_3'],
@@ -598,7 +595,6 @@ class ShowProductsByShop(APIView):
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class AddOrDeleteFavoriteView(APIView):
     permission_classes = [IsAuthenticated, ]
 
@@ -633,7 +629,7 @@ class AddOrRemoveShoppingCartView(APIView):
             message = "محصول مورد نظر به سبد خرید اضافه شد"
 
         return Response(status=status.HTTP_200_OK, data=message)
-      
+
 
 class ShowAllProducts(APIView):
     def get(self, request):
@@ -658,6 +654,7 @@ class ShowAllProducts(APIView):
             data['shop_id'] = i['shop_id']
             data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
     """
@@ -692,13 +689,16 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ShowUserInfo(APIView):
-    permission_classes = [IsAuthenticated ,]
+    permission_classes = [IsAuthenticated, ]
+
     def get(self, request):
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         print(user.username)
         data = {}
-        if user.shop_name == None :
+        if user.shop_name == None:
             data['email'] = user.email
             data['username'] = user.username
             data['user_phone_number'] = user.user_phone_number
@@ -714,12 +714,39 @@ class ShowUserInfo(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
+
 class Logout(APIView):
     serializer_class = LogoutSerializer
-    permission_classes = [IsAuthenticated ,]
-    def post(self , request):
-        serializer = self.serializer_class(data = request.data)
-        serializer.is_valid(raise_exception = True)
-        serializer.save()
-        return  Response(status=status.HTTP_204_NO_CONTENT)
+    permission_classes = [IsAuthenticated, ]
 
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShowOrdersToShop(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        order_list = list(Order.objects.all().values())
+        product_list = list()
+        for order in order_list:
+            # print(order)
+            for product in Product.objects.all().values():
+                print(product['id'])
+                if product['id'] == order['product_id']:
+
+                    if product['shop_id'] == request.user.id:
+                        data = {}
+                        data['id'] = product['id']
+                        data['product_name'] = product['product_name']
+                        data['product_size'] = product['product_size']
+                        data['product_color'] = product['product_color']
+                        data['product_price'] = product['product_price']
+                        data['inventory'] = product['inventory']
+                        data['upload'] = product['upload']
+                        data['shop_id'] = product['shop_id']
+                        product_list.append(data)
+        return Response(product_list, status=status.HTTP_200_OK)
