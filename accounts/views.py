@@ -316,7 +316,6 @@ class AddProductsToShopViewSet(ModelViewSet):
         print(_serializer)
         if _serializer.is_valid():
             data2 = request.data
-            print(data2['upload'])
 
             m = request.FILES['upload']
             fs = FileSystemStorage('uploads/')
