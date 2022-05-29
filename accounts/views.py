@@ -624,8 +624,11 @@ class PopularProducts(APIView):
         # product_number_of_votes = request.data['data'][1],
         nums_of_votes = product.number_of_votes + 1
         data = {}
-        data['score'] = score
         data['number_of_votes'] = nums_of_votes
+        if nums_of_votes != 0:
+            data['score'] = float(score/nums_of_votes)
+        else:
+            data['score']=0.0
         print(data)
         print("**********")
         json_object = json.dumps(data, indent=4)
@@ -648,10 +651,7 @@ class ShowPopularProduct(APIView):
         j = 0
         for i in Product.objects.all().values():
             table[j][0] = i['id']
-            if int(i['number_of_votes']) != 0:
-                table[j][1] = float(i['score']) / int(i['number_of_votes'])
-            else:
-                table[j][1] = 0
+            table[j][1] = float(i['score'])
             table[j][2] = int(i['number_of_votes'])
             j = j + 1
         data1 = list()
