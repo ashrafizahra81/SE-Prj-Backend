@@ -15,6 +15,33 @@ import requests
 import json
 import string
 from questions import ai_similarity
+import numpy as np
+
+
+class CreateRecSystem(APIView):
+    rec_system = None
+
+    def post(self, request):
+
+        if self.rec_system is None:
+            features = np.zeros((100, 5, 3))
+
+            cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                                  'style_param_5'))
+
+            clothes = [item for item in cls]
+            for i in range(100):
+                lst = list(clothes[i].values())
+                for j in range(5):
+                    val = [int(x) for x in lst[j].split(',')]
+                    for k in range(3):
+                        features[i][j][k] = val[k]
+
+            self.rec_system = ai_similarity.RecommendationSystem(features)
+        else:
+            pass
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserRegister(APIView):
