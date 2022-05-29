@@ -42,4 +42,5 @@ urlpatterns = [
     path('vote_for_product/', views.PopularProducts.as_view(), name="vote for product"),
     path('show_popular_product/', views.ShowPopularProduct.as_view(), name="show popular product"),
     path('initialze_recom/', views.CreateRecSystem.as_view(), name="initialize recommendation system"),
+    path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
 ]

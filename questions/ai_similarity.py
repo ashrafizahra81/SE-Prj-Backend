@@ -158,7 +158,7 @@ class RecommendationSystem:
     def __flatten(self, t):
         return [item for sublist in t for item in sublist]
 
-    def update_cluster_taste(self, prev_cluster_taste, comment, clothesInd, alpha=0.1):
+    def update_cluster_taste(self, prev_cluster_taste, comment, clothesInd, alpha=0.3):
         # find the class number of clothes
         # clusterNumber = self.which_cluster(clothesInd)
         clusterNumber = 3

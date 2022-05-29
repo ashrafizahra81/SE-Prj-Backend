@@ -126,3 +126,13 @@ class LogoutSerializer(serializers.Serializer):
             RefreshToken(self.token).blacklist()
         except TokenError:
             self.fail('bad token')
+
+class MoreQuestionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductScore
+        fields = '__all__'
+
+class EditMoreQuestionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'

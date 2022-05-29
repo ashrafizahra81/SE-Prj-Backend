@@ -15,6 +15,7 @@ import requests
 import json
 import string
 from questions import ai_similarity
+from questions.models import UserMoreQuestions
 import numpy as np
 
 
@@ -367,6 +368,7 @@ class AddProductsToShopViewSet(ModelViewSet):
             # print(p.shop_id)
             data1 = {}
             product = Product(
+
                 shop=request.user,
                 product_name=data2['product_name'],
                 product_price=data2['product_price'],
@@ -382,6 +384,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 is_available=True,
             )
             product.save()
+            data1['product_id'] = product.id
             data1['product_name'] = data2['product_name']
             data1['product_price'] = data2['product_price']
             data1['product_size'] = data2['product_size']
@@ -559,13 +562,28 @@ class CheckoutShoppingCart(APIView):
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         data = list()
         price = 0
+        off_price = 0
+        product_inventory = 0
         date_of_buy = datetime.now()
         user_buyer = {}
         user_buyer["buyer"] = request.user.email
-        data.append(user_buyer)
+        # data.append(user_buyer)
+        p_data = {}
 
         for o1 in user_cart:
             product1 = Product.objects.get(pk=o1['product_id'])
+            product_inventory = product1.inventory - 1
+            print(product_inventory)
+            p_data['inventory'] = product_inventory
+            json_object = json.dumps(p_data, indent=4)
+            print(p_data)
+            serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
+            if product1.product_off_percent != 0:
+                off_price += ((100-product1.product_off_percent)/100)*product1.product_price
+            if serialized_data.is_valid():
+                edited_product = serialized_data.save()
+            else :
+                print("not valid")
             price += product1.product_price
 
         for o in user_cart:
@@ -575,7 +593,9 @@ class CheckoutShoppingCart(APIView):
             c = Order(
                 user=request.user,
                 product=product,
-                cost=price,
+                cost=product.product_price,
+                total_cost=price,
+                off_cost=off_price,
                 status="Accepted",
             )
             c.save()
@@ -586,6 +606,7 @@ class CheckoutShoppingCart(APIView):
         # print(price)
         dict_price = {}
         dict_price["total price"] = price
+        dict_price["total off_price"] = off_price
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)
@@ -594,6 +615,7 @@ class CheckoutShoppingCart(APIView):
         if data:
             return JsonResponse(data, safe=False)
         return Response(data, status=status.HTTP_201_CREATED)
+
 
 
 class ShowProductsByShop(APIView):
@@ -788,6 +810,13 @@ class PopularProducts(APIView):
         product_score = request.data['data'][1]
         print(product_score)
         score = product_score + product.score
+
+        s = ProductScore( user_id=request.user.id,
+                          product=product,
+                          score=score
+                          )
+        s.save()
+
         print(score)
         # product_number_of_votes = request.data['data'][1],
         nums_of_votes = product.number_of_votes + 1
@@ -843,3 +872,40 @@ class ShowPopularProduct(APIView):
             data1.append(data)
         print(data1)
         return Response(data1, status=status.HTTP_200_OK)
+
+class MoreQuestions(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        user_more_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values()
+        new_list = list()
+
+        new_list.append(float(user_more_questions[0]['answer_1']))
+        new_list.append(float(user_more_questions[0]['answer_2']))
+        new_list.append(float(user_more_questions[0]['answer_3']))
+        new_list.append(float(user_more_questions[0]['answer_4']))
+        new_list.append(float(user_more_questions[0]['answer_5']))
+        new_list.append(float(user_more_questions[0]['answer_6']))
+
+        product_id = request.data['data'][0]
+
+
+        product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
+        for o1 in product_score:
+            product1 = Product.objects.get(pk=product_id)
+            user_score_for_product = o1['score']
+
+        print(new_list[0])
+        new_cluster_taste = list()
+        new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
+        p_data = {}
+        p_data['answer_1'] = str(new_cluster_taste[0])
+        p_data['answer_2'] = str(new_cluster_taste[1])
+        p_data['answer_3'] = str(new_cluster_taste[2])
+        p_data['answer_4'] = str(new_cluster_taste[3])
+        p_data['answer_5'] = str(new_cluster_taste[4])
+        p_data['answer_6'] = str(new_cluster_taste[5])
+        serialized_data = EditMoreQuestionsSerializer(instance=user_more_questions, data=p_data, partial=True)
+        if serialized_data.is_valid():
+            edited_product = serialized_data.save()
+
