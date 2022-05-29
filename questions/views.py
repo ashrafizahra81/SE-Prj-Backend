@@ -138,17 +138,32 @@ class SimilarClothesView(APIView):
 
 class MoreQuestionsView(APIView):
     def post(self, request):
-        if request.data:
-            s = UserMoreQuestions(user_id=request.user.id,
-                                  answer_1=request.data['data'][0],
-                                  answer_2=request.data['data'][1],
-                                  answer_3=request.data['data'][2],
-                                  answer_4=request.data['data'][3],
-                                  answer_5=request.data['data'][4],
-                                  answer_6=request.data['data'][5])
+
+        answered = UserMoreQuestions.objects.filter(user_id=request.user.id).exists()
+        if answered:
+            user_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values('answer_1', 'answer_2',
+                                                                                              'answer_3', 'answer_4',
+                                                                                              'answer_5', 'answer_6')
+
         else:
-            s = UserMoreQuestions(user_id=request.user.id)
-        s.save()
+            if request.data:
+                s = UserMoreQuestions(user_id=request.user.id,
+                                      answer_1=request.data[0]['option'],
+                                      answer_2=request.data[1]['option'],
+                                      answer_3=request.data[2]['option'],
+                                      answer_4=request.data[3]['option'],
+                                      answer_5=request.data[4]['option'],
+                                      answer_6=request.data[5]['option'])
+                s.save()
+                user_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values('answer_1',
+                                                                                                  'answer_2',
+                                                                                                  'answer_3',
+                                                                                                  'answer_4',
+                                                                                                  'answer_5',
+                                                                                                  'answer_6')
+            else:
+                user_questions = ['2.5', '2.5', '2.5', '2.5', '2.5', '2.5']
+
 
         # features = np.zeros((100, 5, 3))
         #
@@ -165,8 +180,7 @@ class MoreQuestionsView(APIView):
 
         rec_system = CreateRecSystem.rec_system
 
-        cluster = [float(s.answer_1), float(s.answer_2), float(s.answer_3), float(s.answer_4), float(s.answer_5),
-                   float(s.answer_6)]
+        cluster = [float(x) for x in user_questions]
         ret_val = rec_system.recommend_based_on_cluster(cluster)
 
         a = Style.objects.filter(pk__in=ret_val).values()
