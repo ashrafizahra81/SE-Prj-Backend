@@ -8,6 +8,8 @@ from sklearn.cluster import KMeans
 import random
 
 # n equal to number of features
+from sklearn.preprocessing import Normalizer
+
 n = 5
 
 # m equal to number of samples
@@ -22,12 +24,52 @@ class Clustering:
         self.data = self.__preprecessing(path)
         self.data = self.__normalize_based_on_values([2, 2, 1.5, 1.25, 1.75])
 
+    def row_processing(self, data):
+        # print(self.data)
+        # select special part of the dataframe
+        data = data.iloc[:, 2:]
+
+        # spilit data and add new culomns
+        data[['Age1', 'Age2', 'Age3']] = data["Age"].str.split(",", n=2, expand=True)
+        data[['Color1', 'Color2', 'Color3']] = data["Color"].str.split(",", n=2, expand=True)
+        data[['Pattern1', 'Pattern2', 'Pattern3']] = data["Pattern"].str.split(",", n=2, expand=True)
+        data[['Size1', 'Size2', 'Size3']] = data["Size"].str.split(",", n=2, expand=True)
+        data[['Formal1', 'Formal2', 'Formal3']] = data["Formal"].str.split(",", n=2, expand=True)
+
+        # drop unusage columns
+        data.drop(columns=['Age', 'Color', 'Pattern', 'Size', 'Formal'], inplace=True)
+
+        # convert type from str to float64
+        data = data.astype('float64')
+
+        # calculate the average of each row specialy
+        data['Age_avg'] = self.__special_mean(data[['Age1', 'Age2', 'Age3']].values, 20)
+        data['Color-avg'] = self.__special_mean(data[['Color1', 'Color2', 'Color3']].values, 20)
+        data['Pattern_avg'] = self.__special_mean(data[['Pattern1', 'Pattern2', 'Pattern3']].values, 20)
+        data['Size-avg'] = self.__special_mean(data[['Size1', 'Size2', 'Size3']].values, 20)
+        data['Formal_avg'] = self.__special_mean(data[['Formal1', 'Formal2', 'Formal3']].values, 20)
+
+        # drop unusage columns
+        data.drop(columns=['Age1', 'Age2', 'Age3', 'Color1', 'Color2', 'Color3', 'Pattern1',
+                           'Pattern2', 'Pattern3', 'Size1', 'Size2', 'Size3', 'Formal1', 'Formal2', 'Formal3'],
+                  inplace=True)
+
+        ind = data.columns
+        data = self.preprocess.transform(data)
+        print(data)
+        data = pd.DataFrame(data, columns=['Age_avg', 'Color-avg', 'Pattern_avg', 'Size-avg', 'Formal_avg'])
+        data = (data - 0.5) * 2  # Age_avg  Color-avg  Pattern_avg  Size-avg  Formal_avg
+        data = data * self.values
+        return data
+
     def getData(self):
         return self.data
 
     def fit_predict(self, n_clusters=6):
         kmeans = KMeans(n_clusters=n_clusters, init='k-means++', random_state=42)
         self.kmeans = kmeans
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$asdffffffffffffffffffffffffffff$$$$$$$$$$$$$$$$$$$$$")
+        print(self.data)
         return kmeans.fit_predict(self.data)
 
     def cluster_centers(self):
@@ -70,7 +112,11 @@ class Clustering:
 
     def __normalize_based_on_values(self, values):
         # normalize data from 0 to 1
-        normalized_data = pd.DataFrame(preprocessing.normalize(self.data), columns=self.data.columns)
+        self.values = values
+        preprocess = Normalizer().fit(self.data)
+        inputData = preprocess.transform(self.data)
+        normalized_data = pd.DataFrame(inputData, columns=self.data.columns)
+        self.preprocess = preprocess
 
         # put it in -1 to +1
         normalized_data = (normalized_data - 0.5) * 2
@@ -101,6 +147,7 @@ class RecommendationSystem:
         self.clustering = Clustering(path='questions/accounts_style.csv')
         self.answers = self.clustering.fit_predict(n_clusters=6)
         self.preparedData = self.clustering.getData()
+        self.preparedData.insert(0, 'Id', range(1, 401))
         self.preparedDataWithAnswers = self.preparedData
         self.preparedDataWithAnswers['Answers'] = self.answers
 
@@ -142,6 +189,16 @@ class RecommendationSystem:
         random.shuffle(selected_indices)
         return selected_indices
 
+    def add_item(self, clothes, id):
+        clothes = pd.DataFrame(clothes, columns=['Id', 'Url', 'Age', 'Color', 'Pattern', 'Size', 'Formal'])
+        clothes = self.clustering.row_processing(clothes)
+        answer = self.clustering.predict(clothes)
+        clothes['Answers'] = answer
+        clothes.insert(0, 'Id', id)
+        self.preparedData.append(clothes)
+        self.preparedDataWithAnswers.append(clothes)
+        return 1
+
     def __k_recommend_recommend_based_on_cluster(self, index, k):
         indices = self.preparedDataWithAnswers[self.preparedDataWithAnswers['Answers'] == index].index
         rndIndices = random.choices(indices, k=2 * k)
@@ -158,10 +215,17 @@ class RecommendationSystem:
     def __flatten(self, t):
         return [item for sublist in t for item in sublist]
 
+    def normal_recommend_question2(self):
+        question2Indices = []
+        for i in range(0, 6):
+            oneClusterIndices = self.preparedDataWithAnswers[self.preparedDataWithAnswers['Answers'] == i].index
+            question2Indices.append(random.choice(oneClusterIndices))
+        return question2Indices
+
     def update_cluster_taste(self, prev_cluster_taste, comment, clothesInd, alpha=0.3):
         # find the class number of clothes
         # clusterNumber = self.which_cluster(clothesInd)
-        clusterNumber = 3
+        clusterNumber = self.preparedDataWithAnswers['Answers'][clothesInd - 1]
 
         # calculate the new replacement for selected cluster with weighted average
         weightedAverage = np.average([prev_cluster_taste[clusterNumber], comment], weights=[1, alpha])

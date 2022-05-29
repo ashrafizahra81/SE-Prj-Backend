@@ -10,6 +10,7 @@ from accounts.models import Style, UserStyle, Product, ConstantStyles
 from .ai_similarity import RecommendationSystem
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
+from accounts.views import CreateRecSystem
 
 
 # Create your views here.
@@ -92,18 +93,18 @@ class SimilarClothesView(APIView):
 
     def get(self, request, pk):
 
-        clothes_features = np.zeros((100, 5, 3))
-
-        all_cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-                                                  'style_param_5'))
-
-        all_clothes = [item for item in all_cls]
-        for i in range(100):
-            lst = list(all_clothes[i].values())
-            for j in range(5):
-                resp = [int(x) for x in lst[j].split(',')]
-                for k in range(3):
-                    clothes_features[i][j][k] = resp[k]
+        # clothes_features = np.zeros((100, 5, 3))
+        #
+        # all_cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+        #                                           'style_param_5'))
+        #
+        # all_clothes = [item for item in all_cls]
+        # for i in range(100):
+        #     lst = list(all_clothes[i].values())
+        #     for j in range(5):
+        #         resp = [int(x) for x in lst[j].split(',')]
+        #         for k in range(3):
+        #             clothes_features[i][j][k] = resp[k]
 
         features = np.zeros((5, 3))
 
@@ -116,8 +117,8 @@ class SimilarClothesView(APIView):
             for j in range(3):
                 features[i][j] = resp[j]
 
-        simil = RecommendationSystem(clothes_features)
-        resp = simil.recommend_based_on_clothes(selectedClothes=features, values=[1, 1, 1, 1, 1], anomaly=20)
+        rec_system = CreateRecSystem.rec_system
+        resp = rec_system.recommend_based_on_clothes(selectedClothes=features, values=[1, 1, 1, 1, 1], anomaly=20)
         resp = resp + 1
         val = list(resp)
 
@@ -149,20 +150,20 @@ class MoreQuestionsView(APIView):
             s = UserMoreQuestions(user_id=request.user.id)
         s.save()
 
-        features = np.zeros((100, 5, 3))
+        # features = np.zeros((100, 5, 3))
+        #
+        # cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+        #                                       'style_param_5'))
+        #
+        # clothes = [item for item in cls]
+        # for i in range(100):
+        #     lst = list(clothes[i].values())
+        #     for j in range(5):
+        #         val = [int(x) for x in lst[j].split(',')]
+        #         for k in range(3):
+        #             features[i][j][k] = val[k]
 
-        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-                                              'style_param_5'))
-
-        clothes = [item for item in cls]
-        for i in range(100):
-            lst = list(clothes[i].values())
-            for j in range(5):
-                val = [int(x) for x in lst[j].split(',')]
-                for k in range(3):
-                    features[i][j][k] = val[k]
-
-        rec_system = RecommendationSystem(features)
+        rec_system = CreateRecSystem.rec_system
 
         cluster = [float(s.answer_1), float(s.answer_2), float(s.answer_3), float(s.answer_4), float(s.answer_5),
                    float(s.answer_6)]
@@ -178,5 +179,42 @@ class MoreQuestionsView(APIView):
                 products.append(ser)
             else:
                 products.append({'upload': i['style_image_url']})
+
+        return Response(data=products, status=status.HTTP_200_OK)
+
+
+class NormalView(APIView):
+    def get(self, pk):
+        features = np.zeros((100, 5, 3))
+
+        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                              'style_param_5'))
+
+        clothes = [item for item in cls]
+        for i in range(100):
+            lst = list(clothes[i].values())
+            for j in range(5):
+                val = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    features[i][j][k] = val[k]
+
+        rec_system = RecommendationSystem(clothes)
+
+        ret_val = rec_system.normal_recommend_question2()
+        for i in range(len(ret_val)):
+            ret_val[i] += 1
+
+        a = Style.objects.filter(pk__in=ret_val).values()
+        products = []
+        for i in list(a):
+            if i['product_id']:
+                product = Product.objects.get(pk=i['product_id'])
+                ser = ProductsSerializer(instance=product).data
+                ser['upload'] = i['style_image_url']
+                products.append(ser)
+            else:
+                products.append({'upload': i['style_image_url']})
+
+        print(products)
 
         return Response(data=products, status=status.HTTP_200_OK)
