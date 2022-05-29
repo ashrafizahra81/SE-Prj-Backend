@@ -579,8 +579,8 @@ class ShowProductsByShop(APIView):
             data = {}
             data['id'] = i['id']
             data['product_name'] = i['product_name']
-            data['product_size'] = i['product_size']
-            data['product_color'] = i['product_color']
+            #data['product_size'] = i['product_size']
+            #data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
             price_off = 0
             if int(i['product_off_percent']) > 0:
