@@ -14,6 +14,7 @@ from django.core.files.storage import FileSystemStorage
 import requests
 import json
 import string
+from questions import ai_similarity
 
 
 class UserRegister(APIView):
@@ -579,8 +580,8 @@ class ShowProductsByShop(APIView):
             data = {}
             data['id'] = i['id']
             data['product_name'] = i['product_name']
-            #data['product_size'] = i['product_size']
-            #data['product_color'] = i['product_color']
+            # data['product_size'] = i['product_size']
+            # data['product_color'] = i['product_color']
             data['product_price'] = i['product_price']
             price_off = 0
             if int(i['product_off_percent']) > 0:
@@ -749,3 +750,69 @@ class ShowOrdersToShop(APIView):
                         data['shop_id'] = product['shop_id']
                         product_list.append(data)
         return Response(product_list, status=status.HTTP_200_OK)
+
+
+class PopularProducts(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        # user = User.objects.get(id=request.user.id)
+        product = Product.objects.get(pk=request.data['data'][0])
+        product_score = request.data['data'][1]
+        print(product_score)
+        score = product_score + product.score
+        print(score)
+        # product_number_of_votes = request.data['data'][1],
+        nums_of_votes = product.number_of_votes + 1
+        data = {}
+        data['number_of_votes'] = nums_of_votes
+        if nums_of_votes != 0:
+            data['score'] = float(score / nums_of_votes)
+        else:
+            data['score'] = 0.0
+        print(data)
+        print("**********")
+        json_object = json.dumps(data, indent=4)
+        print(json_object)
+        print("///////////////////")
+        serialized_data = EditProductSerializer(data=data, instance=product, partial=True)
+        print(serialized_data)
+        if serialized_data.is_valid():
+            edited_shop = serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShowPopularProduct(APIView):
+    def get(self, request):
+        row = 0
+        for i in Product.objects.all():
+            row = row + 1
+        table = [[0 for c in range(3)] for r in range(row)]
+        j = 0
+        for i in Product.objects.all().values():
+            table[j][0] = i['id']
+            table[j][1] = float(i['score'])
+            table[j][2] = int(i['number_of_votes'])
+            j = j + 1
+        data1 = list()
+        j = 0
+        for i in ai_similarity.RecommendationSystem.favorite_items(table):
+            product = Product.objects.filter(id=i[0]).values()
+            data = {}
+            data['id'] = product[0]['id']
+            # print(product.pk)
+            data['product_name'] = product[0]['product_name']
+            # data['product_size'] = product['product_size']
+            # data['product_color'] = product['product_color']
+            data['product_price'] = product[0]['product_price']
+            price_off = 0
+            if product[0]['product_off_percent'] > 0:
+                price_off = ((100 - product[0]['product_off_percent']) / 100) * product[0]['product_price']
+            data['product_off_percent'] = price_off
+            # data['inventory'] = i['inventory']
+            data['upload'] = product[0]['upload']
+            data['shop_id'] = product[0]['shop_id']
+            data1.append(data)
+        print(data1)
+        return Response(data1, status=status.HTTP_200_OK)

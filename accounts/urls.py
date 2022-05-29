@@ -39,5 +39,7 @@ urlpatterns = [
     path('api/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
     path('show_user_info/', views.ShowUserInfo.as_view(), name="show user info"),
     path('show_order_to_shop/', views.ShowOrdersToShop.as_view(), name="show orders product"),
+    path('vote_for_product/', views.PopularProducts.as_view(), name="vote for product"),
+    path('show_popular_product/', views.ShowPopularProduct.as_view(), name="show popular product"),
 
 ]
