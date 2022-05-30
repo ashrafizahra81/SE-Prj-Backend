@@ -203,15 +203,16 @@ class ShowUserShoppingCart(APIView):
             data['upload'] = i[0]['upload']
             data['shop_id'] = i[0]['shop_id']
             price_off = 0
-            if int(i[0]['product_off_percent']) > 0:
-                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
             data['product_off_percent'] = price_off
             total_price += i[0]['product_price']
             total_price_with_discount += price_off
             data1.append(data)
-        data1.append({"total_price": total_price})
-        data1.append({"total_price_with_discount": total_price_with_discount})
-        return Response(data1, status=status.HTTP_200_OK)
+        data2=list()
+        data2.append({"products" : data1})
+        data2.append({"total_price": total_price})
+        data2.append({"total_price_with_discount": total_price_with_discount})
+        return Response(data2, status=status.HTTP_200_OK)
 
 
 class AddToFavoriteProduct(APIView):
