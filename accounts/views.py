@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 from .serializers import *
 from .models import *
 from rest_framework import status
@@ -74,6 +74,14 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
     serializer_class = CustomTokenObtainPairSerializer
 
+
+class TokenVerifyView(TokenViewBase):
+    """
+    Takes a token and indicates if it is valid.  This view provides no
+    information about a token's fitness for a particular use.
+    """
+
+    serializer_class = CustomTokenVerifySerializer
 
 class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -189,6 +197,7 @@ class ShowUserShoppingCart(APIView):
         total_price = 0
         total_price_with_discount = 0
         for i in product_list:
+
             data = {}
             data['id'] = i[0]['id']
             data['product_name'] = i[0]['product_name']
