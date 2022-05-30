@@ -203,16 +203,15 @@ class ShowUserShoppingCart(APIView):
             data['upload'] = i[0]['upload']
             data['shop_id'] = i[0]['shop_id']
             price_off = 0
-            price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+            if int(i[0]['product_off_percent']) > 0:
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
             data['product_off_percent'] = price_off
             total_price += i[0]['product_price']
             total_price_with_discount += price_off
             data1.append(data)
-        data2=list()
-        data2.append({"products" : data1})
-        data2.append({"total_price": total_price})
-        data2.append({"total_price_with_discount": total_price_with_discount})
-        return Response(data2, status=status.HTTP_200_OK)
+        data1.append({"total_price": total_price})
+        data1.append({"total_price_with_discount": total_price_with_discount})
+        return Response(data1, status=status.HTTP_200_OK)
 
 
 class AddToFavoriteProduct(APIView):
@@ -580,10 +579,10 @@ class CheckoutShoppingCart(APIView):
             print(p_data)
             serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
             if product1.product_off_percent != 0:
-                off_price += ((100-product1.product_off_percent)/100)*product1.product_price
+                off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
             if serialized_data.is_valid():
                 edited_product = serialized_data.save()
-            else :
+            else:
                 print("not valid")
             price += product1.product_price
 
@@ -616,7 +615,6 @@ class CheckoutShoppingCart(APIView):
         if data:
             return JsonResponse(data, safe=False)
         return Response(data, status=status.HTTP_201_CREATED)
-
 
 
 class ShowProductsByShop(APIView):
@@ -812,10 +810,10 @@ class PopularProducts(APIView):
         print(product_score)
         score = product_score + product.score
 
-        s = ProductScore( user_id=request.user.id,
-                          product=product,
-                          score=score
-                          )
+        s = ProductScore(user_id=request.user.id,
+                         product=product,
+                         score=score
+                         )
         s.save()
 
         print(score)
@@ -874,39 +872,66 @@ class ShowPopularProduct(APIView):
         print(data1)
         return Response(data1, status=status.HTTP_200_OK)
 
+
 class MoreQuestions(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user_more_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values()
+        user_more_questions = UserMoreQuestions.objects.get(user_id=request.user.id)
         new_list = list()
 
-        new_list.append(float(user_more_questions[0]['answer_1']))
-        new_list.append(float(user_more_questions[0]['answer_2']))
-        new_list.append(float(user_more_questions[0]['answer_3']))
-        new_list.append(float(user_more_questions[0]['answer_4']))
-        new_list.append(float(user_more_questions[0]['answer_5']))
-        new_list.append(float(user_more_questions[0]['answer_6']))
+        new_list.append(float(user_more_questions.answer_1))
+        new_list.append(float(user_more_questions.answer_2))
+        new_list.append(float(user_more_questions.answer_3))
+        new_list.append(float(user_more_questions.answer_4))
+        new_list.append(float(user_more_questions.answer_5))
+        new_list.append(float(user_more_questions.answer_6))
 
         product_id = request.data['data'][0]
-
 
         product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
         for o1 in product_score:
             product1 = Product.objects.get(pk=product_id)
             user_score_for_product = o1['score']
-
+        print(user_score_for_product)
         print(new_list[0])
         new_cluster_taste = list()
-        new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
+
+        # features = np.zeros((100, 5, 3))
+        #
+        # cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+        #                                       'style_param_5'))
+        #
+        # clothes = [item for item in cls]
+        # for i in range(100):
+        #     lst = list(clothes[i].values())
+        #     for j in range(5):
+        #         val = [int(x) for x in lst[j].split(',')]
+        #         for k in range(3):
+        #             features[i][j][k] = val[k]
+        #
+        # rec_system = ai_similarity.RecommendationSystem(features)
+        # new_cluster_taste = rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
+
+        new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product,
+                                                                            product_id)
         p_data = {}
+        # p_data['user_id'] = request.user.id
         p_data['answer_1'] = str(new_cluster_taste[0])
         p_data['answer_2'] = str(new_cluster_taste[1])
         p_data['answer_3'] = str(new_cluster_taste[2])
         p_data['answer_4'] = str(new_cluster_taste[3])
         p_data['answer_5'] = str(new_cluster_taste[4])
         p_data['answer_6'] = str(new_cluster_taste[5])
-        serialized_data = EditMoreQuestionsSerializer(instance=user_more_questions, data=p_data, partial=True)
-        if serialized_data.is_valid():
-            edited_product = serialized_data.save()
 
+        print(p_data)
+
+        data2 = {}
+        user_more_questions.answer_1 = p_data['answer_1']
+        user_more_questions.answer_2 = p_data['answer_2']
+        user_more_questions.answer_3 = p_data['answer_3']
+        user_more_questions.answer_4 = p_data['answer_4']
+        user_more_questions.answer_5 = p_data['answer_5']
+        user_more_questions.answer_6 = p_data['answer_6']
+        user_more_questions.save()
+        return Response(p_data, status=status.HTTP_200_OK)
