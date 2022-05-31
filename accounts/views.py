@@ -623,6 +623,8 @@ class ShowProductsByShop(APIView):
 
     def post(self, request):
         product_list = list(Product.objects.filter(shop=request.data['data']).values())
+        shop = User.objects.filter(id = request.data['data']).values()
+        print(shop)
         data = {}
         data1 = list()
         for i in product_list:
@@ -640,7 +642,12 @@ class ShowProductsByShop(APIView):
             data['upload'] = i['upload']
             data['shop_id'] = i['shop_id']
             data1.append(data)
-        return Response(data1, status=status.HTTP_200_OK)
+        data2 = {}
+        data2["products"] = data1
+        data2["shop_name"] = shop[0]['shop_name']
+        data2["shop_address"] = shop[0]['shop_address']
+        data2["shop_phone_number"] = shop[0]['shop_phone_number']
+        return Response(data2, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
