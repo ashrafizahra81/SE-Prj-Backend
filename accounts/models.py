@@ -27,6 +27,8 @@ class Product(models.Model):
     upload = models.FileField(upload_to='uploads/', null=True)
     inventory = models.IntegerField(default=0, null=False)
     product_size = models.CharField(max_length=100, null=True)
+    product_group = models.CharField(max_length=100, null=True)
+    product_image = models.CharField(max_length=2000, null=True)
     product_color = models.CharField(max_length=100, null=True)
     product_height = models.IntegerField(default=0)
     product_design = models.CharField(max_length=100, null=True)
@@ -110,6 +112,8 @@ class ProductAndStyle(models.Model):
     upload = models.FileField(upload_to='uploads/', null=True)
 
     product_size = models.CharField(max_length=100, null=True)
+    product_group = models.CharField(max_length=100, null=True)
+    product_image = models.CharField(max_length=2000, null=True)
     product_height = models.IntegerField(default=0)
     product_design = models.CharField(max_length=100, null=True)
     product_material = models.CharField(max_length=100, null=True)

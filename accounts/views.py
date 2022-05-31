@@ -388,24 +388,24 @@ class AddProductsToShopViewSet(ModelViewSet):
         if _serializer.is_valid():
             data2 = request.data
 
-            m = request.FILES['upload']
-            fs = FileSystemStorage('uploads/')
-            filename = fs.save(m.name, m)
-            upload_url_file = fs.url(filename)
-            print(upload_url_file)
-
-            with open(f'./uploads{upload_url_file}', 'rb') as f:
-                data = f.read()
-            r = requests.post("https://api.nft.storage/upload", headers={
-                'accept': 'application/json',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
-                'Content-Type': 'image/*'},
-                              data=data)
-            print(json.loads(r.text))
-            str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
-            print(str)
-            str2 = "https://ipfs.io/ipfs/" + str
-            print(str2)
+            # m = request.FILES['upload']
+            # fs = FileSystemStorage('uploads/')
+            # filename = fs.save(m.name, m)
+            # upload_url_file = fs.url(filename)
+            # print(upload_url_file)
+            #
+            # with open(f'./uploads{upload_url_file}', 'rb') as f:
+            #     data = f.read()
+            # r = requests.post("https://api.nft.storage/upload", headers={
+            #     'accept': 'application/json',
+            #     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
+            #     'Content-Type': 'image/*'},
+            #                   data=data)
+            # print(json.loads(r.text))
+            # str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
+            # print(str)
+            # str2 = "https://ipfs.io/ipfs/" + str
+            # print(str2)
 
             # print(p.shop_id)
             data1 = {}
@@ -415,6 +415,8 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_name=data2['product_name'],
                 product_price=data2['product_price'],
                 product_size=data2['product_size'],
+                product_group=data2['product_group'],
+                product_image=data2['product_image'],
                 product_color=data2['product_color'],
                 product_height=data2['product_height'],
                 product_design=data2['product_design'],
@@ -422,7 +424,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_country=data2['product_country'],
                 # product_off_percent=data2['product_off_percent'],
                 inventory=data2['inventory'],
-                upload=str2,
+                # upload=str2,
                 is_available=True,
             )
             product.save()
@@ -430,15 +432,17 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_name'] = data2['product_name']
             data1['product_price'] = data2['product_price']
             data1['product_size'] = data2['product_size']
+            data1['product_group'] = data2['product_group']
+            data1['product_image'] = data2['product_image']
             data1['product_color'] = data2['product_color']
             data1['product_height'] = data2['product_height']
             data1['product_design'] = data2['product_design']
             data1['product_material'] = data2['product_material']
             data1['product_country'] = data2['product_country']
             data1['inventory'] = data2['inventory']
-            data1['upload'] = str2
+            # data1['upload'] = str2
             s = Style(product=product,
-                      style_image_url=str2,
+                      style_image_url=data1['product_image'],
                       style_param_1=data2['style_param_1'],
                       style_param_2=data2['style_param_2'],
                       style_param_3=data2['style_param_3'],
@@ -984,3 +988,15 @@ class MoreQuestions(APIView):
         user_more_questions.answer_6 = p_data['answer_6']
         user_more_questions.save()
         return Response(p_data, status=status.HTTP_200_OK)
+
+
+class ResetPassword(APIView):
+    def post(self , request):
+        mail_subject = 'reset password'
+        message = 'newpass1234'
+        to_email = request.data['email']
+        print(to_email)
+        email = EmailMessage(mail_subject, message, to=[to_email])
+        email.send()
+        data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
+        return Response(status=status.HTTP_200_OK , data = data2)
