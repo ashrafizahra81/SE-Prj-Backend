@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'questions.apps.QuestionsConfig',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'django_rest_passwordreset',
 ]
 
 REST_FRAMEWORK = {
@@ -158,3 +159,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
