@@ -22,7 +22,7 @@ class Clustering:
     def __init__(self, path='questions/accounts_style.csv'):
         self.path = path
         self.data = self.__preprecessing(path)
-        self.data = self.__normalize_based_on_values([2, 2, 1.5, 1.25, 1.75])
+        self.data = self.__normalize_based_on_values([2.8, 2.25, 1.7, 1.35, 1.85])
 
     def row_processing(self, data):
         # print(self.data)
@@ -54,12 +54,9 @@ class Clustering:
                            'Pattern2', 'Pattern3', 'Size1', 'Size2', 'Size3', 'Formal1', 'Formal2', 'Formal3'],
                   inplace=True)
 
-        ind = data.columns
         data = self.preprocess.transform(data)
-        print(data)
-        data = pd.DataFrame(data, columns=['Age_avg', 'Color-avg', 'Pattern_avg', 'Size-avg', 'Formal_avg'])
-        data = (data - 0.5) * 2  # Age_avg  Color-avg  Pattern_avg  Size-avg  Formal_avg
-        data = data * self.values
+        data = pd.DataFrame(data, columns=['Age_avg', 'Color_avg', 'Pattern_avg', 'Size_avg', 'Formal_avg'])
+        data = (data - 0.5) * 2
         return data
 
     def getData(self):
@@ -68,8 +65,6 @@ class Clustering:
     def fit_predict(self, n_clusters=6):
         kmeans = KMeans(n_clusters=n_clusters, init='k-means++', random_state=42)
         self.kmeans = kmeans
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$asdffffffffffffffffffffffffffff$$$$$$$$$$$$$$$$$$$$$")
-        print(self.data)
         return kmeans.fit_predict(self.data)
 
     def cluster_centers(self):
@@ -82,6 +77,7 @@ class Clustering:
         # select special part of the dataframe
         data = pd.read_csv(path)
         data = data.iloc[:, 2:]
+        # print(data)
 
         # spilit data and add new culomns
         data[['Age1', 'Age2', 'Age3']] = data["Age"].str.split(",", n=2, expand=True)
@@ -98,17 +94,28 @@ class Clustering:
 
         # calculate the average of each row specialy
         data['Age_avg'] = self.__special_mean(data[['Age1', 'Age2', 'Age3']].values, 20)
-        data['Color-avg'] = self.__special_mean(data[['Color1', 'Color2', 'Color3']].values, 20)
+        data['Color_avg'] = self.__special_mean(data[['Color1', 'Color2', 'Color3']].values, 20)
         data['Pattern_avg'] = self.__special_mean(data[['Pattern1', 'Pattern2', 'Pattern3']].values, 20)
-        data['Size-avg'] = self.__special_mean(data[['Size1', 'Size2', 'Size3']].values, 20)
+        data['Size_avg'] = self.__special_mean(data[['Size1', 'Size2', 'Size3']].values, 20)
         data['Formal_avg'] = self.__special_mean(data[['Formal1', 'Formal2', 'Formal3']].values, 20)
 
         # drop unusage columns
         data.drop(columns=['Age1', 'Age2', 'Age3', 'Color1', 'Color2', 'Color3', 'Pattern1',
                            'Pattern2', 'Pattern3', 'Size1', 'Size2', 'Size3', 'Formal1', 'Formal2', 'Formal3'],
                   inplace=True)
-
         return data
+
+    def print_n_cluster(self):
+        wcss = []
+        for i in range(1, 11):
+            kmeans = KMeans(n_clusters=i, init='k-means++', random_state=42)
+            kmeans.fit(self.data)
+            wcss.append(kmeans.inertia_)
+        plt.plot(range(1, 11), wcss)
+        plt.title('The Elbow Method')
+        plt.xlabel('Number of clusters')
+        plt.ylabel('WCSS')
+        plt.show()
 
     def __normalize_based_on_values(self, values):
         # normalize data from 0 to 1
@@ -146,13 +153,12 @@ class RecommendationSystem:
         self.allClothes = allClothes
         self.clustering = Clustering(path='questions/accounts_style.csv')
         self.answers = self.clustering.fit_predict(n_clusters=6)
-        self.preparedData = self.clustering.getData()
-        self.preparedData.insert(0, 'Id', range(1, 401))
-        self.preparedDataWithAnswers = self.preparedData
+        self.preparedDataWithAnswers = self.clustering.getData()
+        self.preparedDataWithAnswers.insert(0, 'Id', range(1, 401))
         self.preparedDataWithAnswers['Answers'] = self.answers
 
-    def get_prepared_data(self):
-        return self.preparedData
+    def print_n_cluster(self):
+        self.clustering.print_n_cluster()
 
     def get_prepared_data_with_anwers(self):
         return self.preparedDataWithAnswers
@@ -169,11 +175,14 @@ class RecommendationSystem:
         # merge and unigue indices(union)
         k_indices = np.append(k_indices1, np.append(k_indices2, np.append(k_indices3, k_indices4)))
 
-        # return the selected style indices
+        # return the selected style indices 
         return k_indices
 
-    def recommend_based_on_clothes(self, selectedClothes, values, anomaly=20, k=5):
+    def upddate_all_clothes(self, clothes):
+        self.allClothes = clothes
+        return 1
 
+    def recommend_based_on_clothes(self, selectedClothes, values, anomaly=20, k=5):
         # asume average of the each component for the as the customer vector of self.__oneRecommend little diffrent with the ordinary averages
         average_of_multi_tags = self.__special_mean(selectedClothes, anomaly)
         k_indeces = self.__one_recommend(average_of_multi_tags, values, k)
@@ -195,15 +204,16 @@ class RecommendationSystem:
         answer = self.clustering.predict(clothes)
         clothes['Answers'] = answer
         clothes.insert(0, 'Id', id)
-        self.preparedData.append(clothes)
         self.preparedDataWithAnswers.append(clothes)
         return 1
 
-    def __k_recommend_recommend_based_on_cluster(self, index, k):
-        indices = self.preparedDataWithAnswers[self.preparedDataWithAnswers['Answers'] == index].index
-        rndIndices = random.choices(indices, k=2 * k)
-        random.shuffle(rndIndices)
-        return rndIndices[:k]
+    def __k_recommend_recommend_based_on_cluster(self, ind, k):
+        indices = self.preparedDataWithAnswers[
+            ~self.preparedDataWithAnswers.where(self.preparedDataWithAnswers['Answers'] == ind)['Answers'].isnull()][
+            'Id'].values
+        rndIndices = random.sample(list(indices), k)
+        print(rndIndices)
+        return rndIndices
 
     def __one_recommend(self, customer, values, k):
         # compute distances by one of the distance(distance_1, distance_2, ...) functions
@@ -218,24 +228,21 @@ class RecommendationSystem:
     def normal_recommend_question2(self):
         question2Indices = []
         for i in range(0, 6):
-            oneClusterIndices = self.preparedDataWithAnswers[self.preparedDataWithAnswers['Answers'] == i].index
+            oneClusterIndices = self.preparedDataWithAnswers[
+                ~self.preparedDataWithAnswers.where(self.preparedDataWithAnswers['Answers'] == i)['Answers'].isnull()][
+                'Id'].values
             question2Indices.append(random.choice(oneClusterIndices))
         return question2Indices
 
-    def update_cluster_taste(self, prev_cluster_taste, comment, clothesInd, alpha=0.3):
+    def update_cluster_taste(self, prev_cluster_taste, comment, clothesInd, alpha=0.2):
         # find the class number of clothes
-        # clusterNumber = self.which_cluster(clothesInd)
-        clusterNumber = self.preparedDataWithAnswers['Answers'][clothesInd - 1]
-
+        clusterNumber = self.which_cluster(clothesInd)
         # calculate the new replacement for selected cluster with weighted average
         weightedAverage = np.average([prev_cluster_taste[clusterNumber], comment], weights=[1, alpha])
 
-        # update prev_Cluster_taste
+        # update prev_Cluster_taste 
         prev_cluster_taste[clusterNumber] = weightedAverage
         return prev_cluster_taste
-
-    def get_data(self):
-        return self.preparedData
 
     def favorite_items(inputmatrix):
         items = pd.DataFrame(inputmatrix, columns=['id', 'average', 'count'])
@@ -243,8 +250,10 @@ class RecommendationSystem:
         items.sort_values(['average', 'count'], inplace=True, ascending=False)
         return items.values
 
-    def which_cluster(ClothesInd):
-        return 1
+    def which_cluster(self, clothesInd):
+        return self.preparedDataWithAnswers[
+            ~self.preparedDataWithAnswers.where(self.preparedDataWithAnswers['Id'] == clothesInd)['Answers'].isnull()][
+            'Answers'].values[0]
 
     def __similarity1(self, customer, clothes, values):
         lowestMines = self.__lowest_mines(customer, clothes)

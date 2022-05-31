@@ -93,18 +93,18 @@ class SimilarClothesView(APIView):
 
     def get(self, request, pk):
 
-        # clothes_features = np.zeros((100, 5, 3))
-        #
-        # all_cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-        #                                           'style_param_5'))
-        #
-        # all_clothes = [item for item in all_cls]
-        # for i in range(100):
-        #     lst = list(all_clothes[i].values())
-        #     for j in range(5):
-        #         resp = [int(x) for x in lst[j].split(',')]
-        #         for k in range(3):
-        #             clothes_features[i][j][k] = resp[k]
+        clothes_features = np.zeros((100, 5, 3))
+
+        all_cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                                  'style_param_5'))
+
+        all_clothes = [item for item in all_cls]
+        for i in range(100):
+            lst = list(all_clothes[i].values())
+            for j in range(5):
+                resp = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    clothes_features[i][j][k] = resp[k]
 
         features = np.zeros((5, 3))
 
@@ -117,21 +117,25 @@ class SimilarClothesView(APIView):
             for j in range(3):
                 features[i][j] = resp[j]
 
-        rec_system = CreateRecSystem.rec_system
+        # rec_system = CreateRecSystem.rec_system
+        rec_system = RecommendationSystem(clothes_features)
         resp = rec_system.recommend_based_on_clothes(selectedClothes=features, values=[1, 1, 1, 1, 1], anomaly=20)
         resp = resp + 1
         val = list(resp)
 
         a = Style.objects.filter(pk__in=val).values()
         products = []
+        index = 1
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
                 ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
+                ser['id'] = index
                 products.append(ser)
             else:
-                products.append({'upload': i['style_image_url']})
+                products.append({'id': index, 'upload': i['style_image_url']})
+        index += 1
 
         return Response(data=products, status=status.HTTP_200_OK)
 
@@ -165,34 +169,38 @@ class MoreQuestionsView(APIView):
                 user_questions = ['2.5', '2.5', '2.5', '2.5', '2.5', '2.5']
 
 
-        # features = np.zeros((100, 5, 3))
-        #
-        # cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-        #                                       'style_param_5'))
-        #
-        # clothes = [item for item in cls]
-        # for i in range(100):
-        #     lst = list(clothes[i].values())
-        #     for j in range(5):
-        #         val = [int(x) for x in lst[j].split(',')]
-        #         for k in range(3):
-        #             features[i][j][k] = val[k]
+        features = np.zeros((100, 5, 3))
 
-        rec_system = CreateRecSystem.rec_system
+        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                              'style_param_5'))
+
+        clothes = [item for item in cls]
+        for i in range(100):
+            lst = list(clothes[i].values())
+            for j in range(5):
+                val = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    features[i][j][k] = val[k]
+
+        # rec_system = CreateRecSystem.rec_system
+        rec_system = RecommendationSystem(features)
 
         cluster = [float(x) for x in user_questions]
         ret_val = rec_system.recommend_based_on_cluster(cluster)
 
         a = Style.objects.filter(pk__in=ret_val).values()
         products = []
+        index = 1
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
                 ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
+                ser['id'] = index
                 products.append(ser)
             else:
-                products.append({'upload': i['style_image_url']})
+                products.append({'id': index, 'upload': i['style_image_url']})
+            index += 1
 
         return Response(data=products, status=status.HTTP_200_OK)
 
@@ -220,14 +228,17 @@ class NormalView(APIView):
 
         a = Style.objects.filter(pk__in=ret_val).values()
         products = []
+        index = 1
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
                 ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
+                ser['id'] = index
                 products.append(ser)
             else:
-                products.append({'upload': i['style_image_url']})
+                products.append({'id': index, 'upload': i['style_image_url']})
+        index += 1
 
         print(products)
 
