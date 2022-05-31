@@ -185,14 +185,17 @@ class MoreQuestionsView(APIView):
 
         a = Style.objects.filter(pk__in=ret_val).values()
         products = []
+        index = 1
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
                 ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
+                ser['id'] = index
                 products.append(ser)
             else:
-                products.append({'upload': i['style_image_url']})
+                products.append({'id': index, 'upload': i['style_image_url']})
+            index += 1
 
         return Response(data=products, status=status.HTTP_200_OK)
 
@@ -220,14 +223,17 @@ class NormalView(APIView):
 
         a = Style.objects.filter(pk__in=ret_val).values()
         products = []
+        index = 1
         for i in list(a):
             if i['product_id']:
                 product = Product.objects.get(pk=i['product_id'])
                 ser = ProductsSerializer(instance=product).data
                 ser['upload'] = i['style_image_url']
+                ser['id'] = index
                 products.append(ser)
             else:
-                products.append({'upload': i['style_image_url']})
+                products.append({'id': index, 'upload': i['style_image_url']})
+        index += 1
 
         print(products)
 
