@@ -533,7 +533,7 @@ class GetUserOrders(APIView):
         for o in user_orders:
             print(o)
             product = Product.objects.get(pk=o['product_id'])
-            serialized_product = ProductInfoSerializer(instance=product)
+            serialized_product = ProductsSerializer(instance=product)
             js = serialized_product.data
             js['cost'] = o['cost']
             js['order_date'] = o['order_date']
