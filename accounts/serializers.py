@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenVerifySerializer
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError, UntypedToken
+
+from Backend import settings
 from .models import *
 
 import django.contrib.auth.password_validation as validators
@@ -127,12 +129,26 @@ class LogoutSerializer(serializers.Serializer):
         except TokenError:
             self.fail('bad token')
 
+
 class MoreQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductScore
         fields = '__all__'
 
+
 class EditMoreQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+from jwt import decode as jwt_decode
+
+
+class CustomTokenVerifySerializer(TokenVerifySerializer):
+    def validate(self, attrs):
+        data = super(CustomTokenVerifySerializer, self).validate(attrs)
+        print(self)
+        data.update({"status":"ok"})
+        return data
+
