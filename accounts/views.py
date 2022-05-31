@@ -562,6 +562,12 @@ class GetProductInfo(APIView):
                 in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
                 ret_val['is_favorite'] = is_fav
                 ret_val['is_in_cart'] = in_cart
+                product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
+                for o1 in product_score:
+                    product1 = Product.objects.get(pk=product_id)
+                    user_score_for_product = o1['score']
+                score = user_score_for_product
+                ret_val['score'] = score
                 return Response(ret_val, status=status.HTTP_200_OK)
             else:
                 return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
@@ -858,31 +864,79 @@ class PopularProducts(APIView):
 
     def post(self, request):
         # user = User.objects.get(id=request.user.id)
+        user_more_questions = UserMoreQuestions.objects.get(user_id=request.user.id)
+
+        new_list = list()
+
+        new_list.append(float(user_more_questions.answer_1))
+        new_list.append(float(user_more_questions.answer_2))
+        new_list.append(float(user_more_questions.answer_3))
+        new_list.append(float(user_more_questions.answer_4))
+        new_list.append(float(user_more_questions.answer_5))
+        new_list.append(float(user_more_questions.answer_6))
+
+        product_id = request.data['data'][0]
+        user_score_for_product = request.data['data'][1]
+        new_cluster_taste = list()
+        new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product,
+                                                                            product_id)
+        p_data = {}
+        # p_data['user_id'] = request.user.id
+        p_data['answer_1'] = str(new_cluster_taste[0])
+        p_data['answer_2'] = str(new_cluster_taste[1])
+        p_data['answer_3'] = str(new_cluster_taste[2])
+        p_data['answer_4'] = str(new_cluster_taste[3])
+        p_data['answer_5'] = str(new_cluster_taste[4])
+        p_data['answer_6'] = str(new_cluster_taste[5])
+
+        print(p_data)
+
+        data2 = {}
+        user_more_questions.answer_1 = p_data['answer_1']
+        user_more_questions.answer_2 = p_data['answer_2']
+        user_more_questions.answer_3 = p_data['answer_3']
+        user_more_questions.answer_4 = p_data['answer_4']
+        user_more_questions.answer_5 = p_data['answer_5']
+        user_more_questions.answer_6 = p_data['answer_6']
+        user_more_questions.save()
+
         product = Product.objects.get(pk=request.data['data'][0])
         product_score = request.data['data'][1]
-        print(product_score)
-        score = product_score + product.score
+        score0 = product_score
+        score = product_score + product.number_of_votes * product.score
+        user_scors = list(ProductScore.objects.filter(user_id=request.user.id).values())
+        data = list()
+        product_in_ProductScore = 0
+        prev_score = 0
+        for o in user_scors:
+            # product = Product.objects.get(pk=o['product_id'])
+            if (o['product_id'] == request.data['data'][0]):
+                product_in_ProductScore = 1
+                prev_score = o['score']
+                print(prev_score)
 
-        s = ProductScore(user_id=request.user.id,
-                         product=product,
-                         score=score
-                         )
-        s.save()
+        if product_in_ProductScore == 0:
+            s = ProductScore(user_id=request.user.id,
+                             product=product,
+                             score=score0
+                             )
+            s.save()
 
-        print(score)
+        else:
+            s = ProductScore.objects.get(product_id=request.data['data'][0], user_id=request.user.id)
+            s.score = score0
+            s.save()
+
         # product_number_of_votes = request.data['data'][1],
         nums_of_votes = product.number_of_votes + 1
         data = {}
         data['number_of_votes'] = nums_of_votes
+        if product_in_ProductScore == 1:
+            score = product.score - prev_score + score0
         if nums_of_votes != 0:
             data['score'] = float(score / nums_of_votes)
         else:
             data['score'] = 0.0
-        print(data)
-        print("**********")
-        json_object = json.dumps(data, indent=4)
-        print(json_object)
-        print("///////////////////")
         serialized_data = EditProductSerializer(data=data, instance=product, partial=True)
         print(serialized_data)
         if serialized_data.is_valid():
@@ -926,68 +980,68 @@ class ShowPopularProduct(APIView):
         return Response(data1, status=status.HTTP_200_OK)
 
 
-class MoreQuestions(APIView):
-    permission_classes = [IsAuthenticated, ]
-
-    def post(self, request):
-        user_more_questions = UserMoreQuestions.objects.get(user_id=request.user.id)
-        new_list = list()
-
-        new_list.append(float(user_more_questions.answer_1))
-        new_list.append(float(user_more_questions.answer_2))
-        new_list.append(float(user_more_questions.answer_3))
-        new_list.append(float(user_more_questions.answer_4))
-        new_list.append(float(user_more_questions.answer_5))
-        new_list.append(float(user_more_questions.answer_6))
-
-        product_id = request.data['data'][0]
-
-        product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
-        for o1 in product_score:
-            product1 = Product.objects.get(pk=product_id)
-            user_score_for_product = o1['score']
-        print(user_score_for_product)
-        print(new_list[0])
-        new_cluster_taste = list()
-
-        features = np.zeros((100, 5, 3))
-
-        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-                                              'style_param_5'))
-
-        clothes = [item for item in cls]
-        for i in range(100):
-            lst = list(clothes[i].values())
-            for j in range(5):
-                val = [int(x) for x in lst[j].split(',')]
-                for k in range(3):
-                    features[i][j][k] = val[k]
-
-        rec_system = ai_similarity.RecommendationSystem(features)
-        new_cluster_taste = rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
-
-        new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product,
-                                                                            product_id)
-        p_data = {}
-        # p_data['user_id'] = request.user.id
-        p_data['answer_1'] = str(new_cluster_taste[0])
-        p_data['answer_2'] = str(new_cluster_taste[1])
-        p_data['answer_3'] = str(new_cluster_taste[2])
-        p_data['answer_4'] = str(new_cluster_taste[3])
-        p_data['answer_5'] = str(new_cluster_taste[4])
-        p_data['answer_6'] = str(new_cluster_taste[5])
-
-        print(p_data)
-
-        data2 = {}
-        user_more_questions.answer_1 = p_data['answer_1']
-        user_more_questions.answer_2 = p_data['answer_2']
-        user_more_questions.answer_3 = p_data['answer_3']
-        user_more_questions.answer_4 = p_data['answer_4']
-        user_more_questions.answer_5 = p_data['answer_5']
-        user_more_questions.answer_6 = p_data['answer_6']
-        user_more_questions.save()
-        return Response(p_data, status=status.HTTP_200_OK)
+# class MoreQuestions(APIView):
+#     permission_classes = [IsAuthenticated, ]
+#
+#     def post(self, request):
+#         user_more_questions = UserMoreQuestions.objects.get(user_id=request.user.id)
+#         new_list = list()
+#
+#         new_list.append(float(user_more_questions.answer_1))
+#         new_list.append(float(user_more_questions.answer_2))
+#         new_list.append(float(user_more_questions.answer_3))
+#         new_list.append(float(user_more_questions.answer_4))
+#         new_list.append(float(user_more_questions.answer_5))
+#         new_list.append(float(user_more_questions.answer_6))
+#
+#         product_id = request.data['data'][0]
+#
+#         product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
+#         for o1 in product_score:
+#             product1 = Product.objects.get(pk=product_id)
+#             user_score_for_product = o1['score']
+#         print(user_score_for_product)
+#         print(new_list[0])
+#         new_cluster_taste = list()
+#
+#         # features = np.zeros((100, 5, 3))
+#         #
+#         # cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+#         #                                       'style_param_5'))
+#         #
+#         # clothes = [item for item in cls]
+#         # for i in range(100):
+#         #     lst = list(clothes[i].values())
+#         #     for j in range(5):
+#         #         val = [int(x) for x in lst[j].split(',')]
+#         #         for k in range(3):
+#         #             features[i][j][k] = val[k]
+#         #
+#         # rec_system = ai_similarity.RecommendationSystem(features)
+#         # new_cluster_taste = rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
+#
+#         new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product,
+#                                                                             product_id)
+#         p_data = {}
+#         # p_data['user_id'] = request.user.id
+#         p_data['answer_1'] = str(new_cluster_taste[0])
+#         p_data['answer_2'] = str(new_cluster_taste[1])
+#         p_data['answer_3'] = str(new_cluster_taste[2])
+#         p_data['answer_4'] = str(new_cluster_taste[3])
+#         p_data['answer_5'] = str(new_cluster_taste[4])
+#         p_data['answer_6'] = str(new_cluster_taste[5])
+#
+#         print(p_data)
+#
+#         data2 = {}
+#         user_more_questions.answer_1 = p_data['answer_1']
+#         user_more_questions.answer_2 = p_data['answer_2']
+#         user_more_questions.answer_3 = p_data['answer_3']
+#         user_more_questions.answer_4 = p_data['answer_4']
+#         user_more_questions.answer_5 = p_data['answer_5']
+#         user_more_questions.answer_6 = p_data['answer_6']
+#         user_more_questions.save()
+#         return Response(p_data, status=status.HTTP_200_OK)
 
 
 class ResetPassword(APIView):
