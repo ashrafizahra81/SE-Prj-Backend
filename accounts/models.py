@@ -74,6 +74,11 @@ class UserStyle(models.Model):
     style_id = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
 
 
+class UserMoreStyles(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    style = models.ForeignKey(Style, on_delete=models.DO_NOTHING)
+
+
 class UserShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
@@ -138,7 +143,3 @@ class ProductScore(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     score = models.FloatField(default=0, null=True)
-
-
-
-

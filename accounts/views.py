@@ -67,6 +67,13 @@ class UserRegister(APIView):
             # data['user_address'] = account.user_address
             # token = Token.objects.get(user=account).key
             # data['token'] = token
+
+            mail_subject = 'ثبت نام در سبکینو'
+            message = 'ثبت نام شما در سایت سبکینو با موفقیت انجام شد!'
+            to_email = account.email
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
+
             return Response(data)
         return Response(serialized_data.errors)
 
@@ -83,6 +90,7 @@ class TokenVerifyView(TokenViewBase):
     """
 
     serializer_class = CustomTokenVerifySerializer
+
 
 class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -142,6 +150,29 @@ class UserStyles(APIView):
         style_id_list = list()
         for item in user_styles:
             style_id_list.append(item['style_id_id'])
+
+        a = Style.objects.filter(pk__in=style_id_list).values()
+        products = []
+        for i in list(a):
+            if i['product_id']:
+                product = Product.objects.get(pk=i['product_id'])
+                ser = ProductsSerializer(instance=product).data
+                ser['upload'] = i['style_image_url']
+                products.append(ser)
+            else:
+                products.append({'upload': i['style_image_url']})
+
+        return Response(data=products, status=status.HTTP_200_OK)
+
+
+class UserMoreStylesView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        user_styles = list(UserMoreStyles.objects.filter(user_id=request.user.id).values())
+        style_id_list = list()
+        for item in user_styles:
+            style_id_list.append(item['style_id'])
 
         a = Style.objects.filter(pk__in=style_id_list).values()
         products = []
@@ -218,7 +249,7 @@ class ShowUserShoppingCart(APIView):
             total_price += i[0]['product_price']
             total_price_with_discount += price_off
             data1.append(data)
-        data2={}
+        data2 = {}
         data2["products"] = data1
         data2["total_price"] = total_price
         data2["total_price_with_discount"] = total_price_with_discount
@@ -549,6 +580,7 @@ class GetUserOrders(APIView):
             product = Product.objects.get(pk=o['product_id'])
             serialized_product = ProductsSerializer(instance=product)
             js = serialized_product.data
+            print('upload')
             js['cost'] = o['cost']
             js['order_date'] = o['order_date']
             js['complete_date'] = o['complete_date']
@@ -635,8 +667,8 @@ class CheckoutShoppingCart(APIView):
 class ShowProductsByShop(APIView):
 
     def post(self, request):
-        product_list = list(Product.objects.filter(shop=request.data['data']).values())
-        shop = User.objects.filter(id = request.data['data']).values()
+        product_list = list(Product.objects.filter(shop=request.data['id']).values())
+        shop = User.objects.filter(id=request.data['data']).values()
         print(shop)
         data = {}
         data1 = list()
@@ -918,21 +950,21 @@ class MoreQuestions(APIView):
         print(new_list[0])
         new_cluster_taste = list()
 
-        # features = np.zeros((100, 5, 3))
-        #
-        # cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
-        #                                       'style_param_5'))
-        #
-        # clothes = [item for item in cls]
-        # for i in range(100):
-        #     lst = list(clothes[i].values())
-        #     for j in range(5):
-        #         val = [int(x) for x in lst[j].split(',')]
-        #         for k in range(3):
-        #             features[i][j][k] = val[k]
-        #
-        # rec_system = ai_similarity.RecommendationSystem(features)
-        # new_cluster_taste = rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
+        features = np.zeros((100, 5, 3))
+
+        cls = list(Style.objects.all().values('style_param_1', 'style_param_2', 'style_param_3', 'style_param_4',
+                                              'style_param_5'))
+
+        clothes = [item for item in cls]
+        for i in range(100):
+            lst = list(clothes[i].values())
+            for j in range(5):
+                val = [int(x) for x in lst[j].split(',')]
+                for k in range(3):
+                    features[i][j][k] = val[k]
+
+        rec_system = ai_similarity.RecommendationSystem(features)
+        new_cluster_taste = rec_system.update_cluster_taste(new_list, user_score_for_product, product_id)
 
         new_cluster_taste = CreateRecSystem.rec_system.update_cluster_taste(new_list, user_score_for_product,
                                                                             product_id)
