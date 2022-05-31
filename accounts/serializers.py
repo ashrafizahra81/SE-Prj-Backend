@@ -142,8 +142,6 @@ class EditMoreQuestionsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-from jwt import decode as jwt_decode
-
 
 class CustomTokenVerifySerializer(TokenVerifySerializer):
     def validate(self, attrs):

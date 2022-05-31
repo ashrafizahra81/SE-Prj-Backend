@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage
 from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -955,3 +956,15 @@ class MoreQuestions(APIView):
         user_more_questions.answer_6 = p_data['answer_6']
         user_more_questions.save()
         return Response(p_data, status=status.HTTP_200_OK)
+
+
+class ResetPassword(APIView):
+    def post(self , request):
+        mail_subject = 'reset password'
+        message = 'newpass1234'
+        to_email = request.data['email']
+        print(to_email)
+        email = EmailMessage(mail_subject, message, to=[to_email])
+        email.send()
+        data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
+        return Response(status=status.HTTP_200_OK , data = data2)
