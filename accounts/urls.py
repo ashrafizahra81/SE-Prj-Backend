@@ -18,6 +18,7 @@ urlpatterns = [
     path('logout/', views.Logout.as_view(), name='logout'),
     path('edit_profile/', views.UserEditProfile.as_view(), name="edit profile"),
     path('user_styles/', views.UserStyles.as_view(), name="user styles"),
+    path('user_more_styles/', views.UserMoreStylesView.as_view(), name="user more styles"),
     path('add_to_cart/', views.AddToShoppingCartView.as_view(), name="add to cart"),
     path('delete_from_cart/', views.DeleteFromShoppingCart.as_view(), name="delete from cart"),
     path('show_cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),

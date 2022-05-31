@@ -6,7 +6,7 @@ from .serializers import UserQuestionsSerializer
 from accounts.serializers import StyleSerializer, ProductsSerializer, ProductInfoSerializer
 from rest_framework.response import Response
 from .models import UserQuestions, UserMoreQuestions
-from accounts.models import Style, UserStyle, Product, ConstantStyles
+from accounts.models import Style, UserStyle, Product, ConstantStyles, UserMoreStyles
 from .ai_similarity import RecommendationSystem
 import numpy as np
 from rest_framework.permissions import IsAuthenticated
@@ -31,6 +31,11 @@ class UserQuestionView(APIView):
                 val = [int(x) for x in lst[j].split(',')]
                 for k in range(3):
                     features[i][j][k] = val[k]
+
+        exists = UserQuestions.objects.filter(user_id=request.user.id).exists()
+        if exists:
+            existing = UserQuestions.objects.get(user_id=request.user.id)
+            existing.delete()
 
         s = UserQuestions(user_id=request.user.id,
                           answer_1=request.data['data'][0],
@@ -79,6 +84,8 @@ class UserQuestionView(APIView):
         val = simil.recommend_based_on_questions(values, first_feature, second_feature, third_feature, fourth_feature)
         val = val + 1
 
+        UserStyle.objects.filter(user_id_id=request.user.id).delete()
+
         for st in val:
             us = UserStyle(user_id_id=request.user.id, style_id_id=st)
             us.save()
@@ -123,6 +130,12 @@ class SimilarClothesView(APIView):
         resp = resp + 1
         val = list(resp)
 
+        UserMoreStyles.objects.filter(user_id=request.user.id).delete()
+
+        for st in val:
+            us = UserMoreStyles(user_id=request.user.id, style_id=st)
+            us.save()
+
         a = Style.objects.filter(pk__in=val).values()
         products = []
         index = 1
@@ -143,6 +156,13 @@ class SimilarClothesView(APIView):
 class MoreQuestionsView(APIView):
     def post(self, request):
 
+        print(request.data['data'][0])
+        print(request.data['data'][1])
+        print(request.data['data'][2])
+        print(request.data['data'][3])
+        print(request.data['data'][4])
+        print(request.data['data'][5])
+
         answered = UserMoreQuestions.objects.filter(user_id=request.user.id).exists()
         if answered:
             user_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values('answer_1', 'answer_2',
@@ -152,12 +172,12 @@ class MoreQuestionsView(APIView):
         else:
             if request.data:
                 s = UserMoreQuestions(user_id=request.user.id,
-                                      answer_1=request.data[0]['option'],
-                                      answer_2=request.data[1]['option'],
-                                      answer_3=request.data[2]['option'],
-                                      answer_4=request.data[3]['option'],
-                                      answer_5=request.data[4]['option'],
-                                      answer_6=request.data[5]['option'])
+                                      answer_1=request.data['data'][0],
+                                      answer_2=request.data['data'][1],
+                                      answer_3=request.data['data'][2],
+                                      answer_4=request.data['data'][3],
+                                      answer_5=request.data['data'][4],
+                                      answer_6=request.data['data'][5])
                 s.save()
                 user_questions = UserMoreQuestions.objects.filter(user_id=request.user.id).values('answer_1',
                                                                                                   'answer_2',
@@ -185,7 +205,7 @@ class MoreQuestionsView(APIView):
         # rec_system = CreateRecSystem.rec_system
         rec_system = RecommendationSystem(features)
 
-        cluster = [float(x) for x in user_questions]
+        cluster = [float(x) for x in list(user_questions)[0].values()]
         ret_val = rec_system.recommend_based_on_cluster(cluster)
 
         a = Style.objects.filter(pk__in=ret_val).values()
