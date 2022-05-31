@@ -1,4 +1,4 @@
-from django.urls import path , include
+from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
@@ -42,5 +42,4 @@ urlpatterns = [
     path('show_popular_product/', views.ShowPopularProduct.as_view(), name="show popular product"),
     path('initialze_recom/', views.CreateRecSystem.as_view(), name="initialize recommendation system"),
     path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
-    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'questions.apps.QuestionsConfig',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
-    'django_rest_passwordreset',
 ]
 
 REST_FRAMEWORK = {
@@ -161,5 +160,5 @@ SIMPLE_JWT = {
 }
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
