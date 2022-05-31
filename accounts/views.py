@@ -1,8 +1,5 @@
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.http import HttpResponse, JsonResponse
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,8 +18,6 @@ import string
 from questions import ai_similarity
 from questions.models import UserMoreQuestions
 import numpy as np
-
-from .tokens import account_activation_token
 
 
 class CreateRecSystem(APIView):
@@ -57,8 +52,6 @@ class UserRegister(APIView):
         data = {}
         if serialized_data.is_valid():
             account = serialized_data.save()
-            account.is_active = False
-            account.save()
             # data['response'] = "successfully registered"
             data['username'] = account.username
             data['email'] = account.email

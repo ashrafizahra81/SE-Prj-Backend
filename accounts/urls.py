@@ -44,5 +44,4 @@ urlpatterns = [
     path('show_popular_product/', views.ShowPopularProduct.as_view(), name="show popular product"),
     path('initialze_recom/', views.CreateRecSystem.as_view(), name="initialize recommendation system"),
     path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
-    path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
 ]
