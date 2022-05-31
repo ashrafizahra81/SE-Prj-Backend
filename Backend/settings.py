@@ -160,5 +160,8 @@ SIMPLE_JWT = {
 }
 
 
-
-
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'noreply.sabkino@gmail.com'
+EMAIL_HOST_PASSWORD = 'Salam@123456'
+EMAIL_PORT = 587
