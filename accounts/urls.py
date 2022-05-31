@@ -44,4 +44,10 @@ urlpatterns = [
     path('initialze_recom/', views.CreateRecSystem.as_view(), name="initialize recommendation system"),
     path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
     path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
+    path('request-reset-email/', views.RequestPasswordResetEmail.as_view(),
+         name="request-reset-email"),
+    path('password-reset/<uidb64>/<token>/',
+         views.PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
+    path('password-reset-complete', views.SetNewPasswordAPIView.as_view(),
+         name='password-reset-complete')
 ]
