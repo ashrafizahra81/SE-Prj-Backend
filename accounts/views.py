@@ -1000,3 +1000,48 @@ class ResetPassword(APIView):
         email.send()
         data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
         return Response(status=status.HTTP_200_OK , data = data2)
+
+class Filters(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        filter = request.data['group'][0]
+
+        data1 = list()
+        if filter == "شلوار" or filter == "پیراهن" or filter == "تیشرت" or filter == "هودی":
+            products = list(Product.objects.filter(product_group=filter).values())
+            for p in products:
+                data = {}
+                data['id'] = p['id']
+                # print(product.pk)
+                data['product_name'] = p['product_name']
+                # data['product_size'] = product['product_size']
+                # data['product_color'] = product['product_color']
+                data['product_price'] = p['product_price']
+                price_off = 0
+                # if p[0]['product_off_percent'] > 0:
+                #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                # data['product_off_percent'] = price_off
+                # data['inventory'] = i['inventory']
+                data['upload'] = p['upload']
+                data['shop_id'] = p['shop_id']
+                data1.append(data)
+        if filter == "آبی" or filter == "قرمز" or filter == "زرد" or filter == "مشکی" or filter == "سفید":
+            products = list(Product.objects.filter(product_color=filter).values())
+            for p in products:
+                data = {}
+                data['id'] = p['id']
+                # print(product.pk)
+                data['product_name'] = p['product_name']
+                # data['product_size'] = product['product_size']
+                # data['product_color'] = product['product_color']
+                data['product_price'] = p['product_price']
+                price_off = 0
+                # if p[0]['product_off_percent'] > 0:
+                #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                # data['product_off_percent'] = price_off
+                # data['inventory'] = i['inventory']
+                data['upload'] = p['upload']
+                data['shop_id'] = p['shop_id']
+                data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)

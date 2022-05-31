@@ -46,5 +46,6 @@ urlpatterns = [
     path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
     path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
     path('reset_password/', views.ResetPassword.as_view(), name='reset password'),
+    path('filters/', views.Filters.as_view(), name='filters'),
 
 ]
