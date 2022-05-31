@@ -628,7 +628,6 @@ class CheckoutShoppingCart(APIView):
 
 
 class ShowProductsByShop(APIView):
-    permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
         product_list = list(Product.objects.filter(shop=request.data['data']).values())
