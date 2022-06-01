@@ -18,7 +18,7 @@ import string
 from questions import ai_similarity
 from questions.models import UserMoreQuestions
 import numpy as np
-
+from django.contrib.auth import get_user_model
 
 class CreateRecSystem(APIView):
     rec_system = None
@@ -1052,6 +1052,10 @@ class ResetPassword(APIView):
         print(to_email)
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
+        User = get_user_model()
+        u = User.objects.get(email = to_email)
+        u.set_password(message)
+        u.save()
         data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
         return Response(status=status.HTTP_200_OK , data = data2)
 
