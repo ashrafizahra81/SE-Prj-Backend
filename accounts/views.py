@@ -673,7 +673,7 @@ class CheckoutShoppingCart(APIView):
 class ShowProductsByShop(APIView):
 
     def post(self, request):
-        product_list = list(Product.objects.filter(shop=request.data['id']).values())
+        product_list = list(Product.objects.filter(shop=request.data['data']).values())
         shop = User.objects.filter(id=request.data['data']).values()
         print(shop)
         data = {}
