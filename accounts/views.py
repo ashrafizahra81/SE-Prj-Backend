@@ -229,26 +229,27 @@ class ShowUserShoppingCart(APIView):
         total_price = 0
         total_price_with_discount = 0
         for i in product_list:
-
-            data = {}
-            data['id'] = i[0]['id']
-            data['product_name'] = i[0]['product_name']
-            data['product_size'] = i[0]['product_size']
-            data['product_color'] = i[0]['product_color']
-            data['product_price'] = i[0]['product_price']
-            if int(i[0]['inventory']) > 0:
-                data['is_available'] = True
-            else:
-                data['is_available'] = False
-            # data['inventory'] = i[0]['inventory']
-            data['upload'] = i[0]['upload']
-            data['shop_id'] = i[0]['shop_id']
-            price_off = 0
-            price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
-            data['product_off_percent'] = price_off
-            total_price += i[0]['product_price']
-            total_price_with_discount += price_off
-            data1.append(data)
+            # print(i[0]['is_deleted'])
+            if i[0]['is_deleted'] == False:
+                data = {}
+                data['id'] = i[0]['id']
+                data['product_name'] = i[0]['product_name']
+                data['product_size'] = i[0]['product_size']
+                data['product_color'] = i[0]['product_color']
+                data['product_price'] = i[0]['product_price']
+                if int(i[0]['inventory']) > 0:
+                    data['is_available'] = True
+                else:
+                    data['is_available'] = False
+                # data['inventory'] = i[0]['inventory']
+                data['upload'] = i[0]['upload']
+                data['shop_id'] = i[0]['shop_id']
+                price_off = 0
+                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+                data['product_off_percent'] = price_off
+                total_price += i[0]['product_price']
+                total_price_with_discount += price_off
+                data1.append(data)
         data2 = {}
         data2["products"] = data1
         data2["total_price"] = total_price
@@ -283,21 +284,22 @@ class ShowFavoriteProduct(APIView):
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         data1 = list()
         for i in product_list:
-            data = {}
-            data['id'] = i[0]['id']
-            data['product_name'] = i[0]['product_name']
-            # data['product_size'] = i[0]['product_size']
-            # data['product_color'] = i[0]['product_color']
-            data['product_price'] = i[0]['product_price']
-            price_off = 0
-            if int(i[0]['product_off_percent']) > 0:
-                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
-            data['product_off_percent'] = price_off
-            # data['is_available'] = i[0]['is_available']
-            data['upload'] = i[0]['upload']
-            # data['shop_id'] = i[0]['shop_id']
-            print(i[0]['product_name'])
-            data1.append(data)
+            if i[0]['is_deleted'] == False:
+                data = {}
+                data['id'] = i[0]['id']
+                data['product_name'] = i[0]['product_name']
+                # data['product_size'] = i[0]['product_size']
+                # data['product_color'] = i[0]['product_color']
+                data['product_price'] = i[0]['product_price']
+                price_off = 0
+                if int(i[0]['product_off_percent']) > 0:
+                    price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+                data['product_off_percent'] = price_off
+                # data['is_available'] = i[0]['is_available']
+                data['upload'] = i[0]['upload']
+                # data['shop_id'] = i[0]['shop_id']
+                print(i[0]['product_name'])
+                data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -542,19 +544,25 @@ class EditProduct(APIView):
 
 
 class DeleteProduct(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopOwner]
 
     def delete(self, request, pk):
         product = Product.objects.get(pk=pk)
-        product.delete()
-        return Response({'message': 'product deleted'})
+        self.check_object_permissions(request, product)
+        product.is_deleted = True
+        product.save()
+        # product.delete()
+        return Response({'message': 'محصول موردنظر با موفقیت حذف شد'})
 
 
 class GetProductInfo(APIView):
 
     def get(self, request, pk):
         product = Product.objects.get(pk=pk)
-        if product:
+        score = 0
+        user_score_for_product = 0
+        ret_val = {}
+        if product and product.is_deleted == False:
             serialized_data = ProductsSerializer(instance=product, data=request.data, partial=True)
             if serialized_data.is_valid():
                 ret_val = serialized_data.data
@@ -564,13 +572,15 @@ class GetProductInfo(APIView):
                 ret_val['is_in_cart'] = in_cart
                 product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
                 for o1 in product_score:
-                    product1 = Product.objects.get(pk=product_id)
-                    user_score_for_product = o1['score']
+                    # product1 = Product.objects.get(pk=product_id)
+                    if o1['product_id'] == pk:
+                        user_score_for_product = o1['score']
                 score = user_score_for_product
                 ret_val['score'] = score
                 return Response(ret_val, status=status.HTTP_200_OK)
             else:
                 return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -624,35 +634,41 @@ class CheckoutShoppingCart(APIView):
         p_data = {}
 
         for o1 in user_cart:
+            print(o1['product_id'])
+            print("***")
             product1 = Product.objects.get(pk=o1['product_id'])
-            product_inventory = product1.inventory - 1
-            print(product_inventory)
-            p_data['inventory'] = product_inventory
-            json_object = json.dumps(p_data, indent=4)
-            print(p_data)
-            serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
-            if product1.product_off_percent != 0:
-                off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-            if serialized_data.is_valid():
-                edited_product = serialized_data.save()
-            else:
-                print("not valid")
-            price += product1.product_price
+            # print(product1.id)
+            if product1.is_deleted == False:
+                product_inventory = product1.inventory - 1
+                print(product_inventory)
+                p_data['inventory'] = product_inventory
+                json_object = json.dumps(p_data, indent=4)
+                print(p_data)
+                serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
+                if product1.product_off_percent != 0:
+                    off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
+                if serialized_data.is_valid():
+                    edited_product = serialized_data.save()
+                else:
+                    print("not valid")
+                price += product1.product_price
 
         for o in user_cart:
+            js = {}
             product = Product.objects.get(pk=o['product_id'])
-            serialized_product = ProductInfoSerializer(instance=product)
-            js = serialized_product.data
-            c = Order(
-                user=request.user,
-                product=product,
-                cost=product.product_price,
-                total_cost=price,
-                off_cost=off_price,
-                status="Accepted",
-            )
-            c.save()
-            js['product'] = product.product_price
+            if product.is_deleted == False:
+                serialized_product = ProductInfoSerializer(instance=product)
+                js = serialized_product.data
+                c = Order(
+                    user=request.user,
+                    product=product,
+                    cost=product.product_price,
+                    total_cost=price,
+                    off_cost=off_price,
+                    status="Accepted",
+                )
+                c.save()
+                js['product'] = product.product_price
             data.append(js)
             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
 
@@ -680,19 +696,21 @@ class ShowProductsByShop(APIView):
         data1 = list()
         for i in product_list:
             data = {}
-            data['id'] = i['id']
-            data['product_name'] = i['product_name']
-            # data['product_size'] = i['product_size']
-            # data['product_color'] = i['product_color']
-            data['product_price'] = i['product_price']
-            price_off = 0
-            if int(i['product_off_percent']) > 0:
-                price_off = ((100 - int(i['product_off_percent'])) / 100) * int(i['product_price'])
-            data['product_off_percent'] = price_off
-            data['inventory'] = i['inventory']
-            data['upload'] = i['upload']
-            data['shop_id'] = i['shop_id']
-            data1.append(data)
+            if i['is_deleted'] == False:
+                data['id'] = i['id']
+                data['product_name'] = i['product_name']
+                # data['product_size'] = i['product_size']
+                # data['product_color'] = i['product_color']
+                data['product_price'] = i['product_price']
+                price_off = 0
+                if int(i['product_off_percent']) > 0:
+                    price_off = ((100 - int(i['product_off_percent'])) / 100) * int(i['product_price'])
+                data['product_off_percent'] = price_off
+                data['inventory'] = i['inventory']
+                data['upload'] = i['upload']
+                data['shop_id'] = i['shop_id']
+            if len(data) != 0:
+                data1.append(data)
         data2 = {}
         data2["products"] = data1
         data2["shop_name"] = shop[0]['shop_name']
@@ -746,20 +764,23 @@ class ShowAllProducts(APIView):
         print(product_list)
         for i in product_list:
             data = {}
-            print(1)
-            print(i['id'])
-            print(2)
-            data['id'] = i['id']
-            data['product_name'] = i['product_name']
-            data['product_price'] = i['product_price']
-            price_off = 0
-            if int(i['product_off_percent']) > 0:
-                price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
-            data['product_off_percent'] = price_off
-            data['inventory'] = i['inventory']
-            data['upload'] = i['upload']
-            data['shop_id'] = i['shop_id']
-            data1.append(data)
+            if i['is_deleted'] == False:
+
+                print(1)
+                print(i['id'])
+                print(2)
+                data['id'] = i['id']
+                data['product_name'] = i['product_name']
+                data['product_price'] = i['product_price']
+                price_off = 0
+                if int(i['product_off_percent']) > 0:
+                    price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
+                data['product_off_percent'] = price_off
+                data['inventory'] = i['inventory']
+                data['upload'] = i['upload']
+                data['shop_id'] = i['shop_id']
+            if len(data) != 0:
+                data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
 
 
@@ -948,15 +969,17 @@ class PopularProducts(APIView):
 class ShowPopularProduct(APIView):
     def get(self, request):
         row = 0
-        for i in Product.objects.all():
-            row = row + 1
+        for i in Product.objects.all().values():
+            if i['is_deleted'] == False:
+                row = row + 1
         table = [[0 for c in range(3)] for r in range(row)]
         j = 0
         for i in Product.objects.all().values():
-            table[j][0] = i['id']
-            table[j][1] = float(i['score'])
-            table[j][2] = int(i['number_of_votes'])
-            j = j + 1
+            if i['is_deleted'] == False:
+                table[j][0] = i['id']
+                table[j][1] = float(i['score'])
+                table[j][2] = int(i['number_of_votes'])
+                j = j + 1
         data1 = list()
         j = 0
         for i in ai_similarity.RecommendationSystem.favorite_items(table):
@@ -1070,36 +1093,57 @@ class Filters(APIView):
             products = list(Product.objects.filter(product_group=filter).values())
             for p in products:
                 data = {}
-                data['id'] = p['id']
-                # print(product.pk)
-                data['product_name'] = p['product_name']
-                # data['product_size'] = product['product_size']
-                # data['product_color'] = product['product_color']
-                data['product_price'] = p['product_price']
-                price_off = 0
-                # if p[0]['product_off_percent'] > 0:
-                #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
-                # data['product_off_percent'] = price_off
-                # data['inventory'] = i['inventory']
-                data['upload'] = p['upload']
-                data['shop_id'] = p['shop_id']
-                data1.append(data)
+                if p['is_deleted'] == False:
+                    data['id'] = p['id']
+                    # print(product.pk)
+                    data['product_name'] = p['product_name']
+                    # data['product_size'] = product['product_size']
+                    # data['product_color'] = product['product_color']
+                    data['product_price'] = p['product_price']
+                    price_off = 0
+                    # if p[0]['product_off_percent'] > 0:
+                    #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                    # data['product_off_percent'] = price_off
+                    # data['inventory'] = i['inventory']
+                    data['upload'] = p['upload']
+                    data['shop_id'] = p['shop_id']
+                    data1.append(data)
         if filter == "آبی" or filter == "قرمز" or filter == "زرد" or filter == "مشکی" or filter == "سفید":
             products = list(Product.objects.filter(product_color=filter).values())
             for p in products:
                 data = {}
-                data['id'] = p['id']
-                # print(product.pk)
-                data['product_name'] = p['product_name']
-                # data['product_size'] = product['product_size']
-                # data['product_color'] = product['product_color']
-                data['product_price'] = p['product_price']
-                price_off = 0
-                # if p[0]['product_off_percent'] > 0:
-                #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
-                # data['product_off_percent'] = price_off
-                # data['inventory'] = i['inventory']
-                data['upload'] = p['upload']
-                data['shop_id'] = p['shop_id']
-                data1.append(data)
+                if p['is_deleted'] == False:
+                    data['id'] = p['id']
+                    # print(product.pk)
+                    data['product_name'] = p['product_name']
+                    # data['product_size'] = product['product_size']
+                    # data['product_color'] = product['product_color']
+                    data['product_price'] = p['product_price']
+                    price_off = 0
+                    # if p[0]['product_off_percent'] > 0:
+                    #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                    # data['product_off_percent'] = price_off
+                    # data['inventory'] = i['inventory']
+                    data['upload'] = p['upload']
+                    data['shop_id'] = p['shop_id']
+                    data1.append(data)
+        if filter == "XS" or filter == "S" or filter == "M" or filter == "L" or filter == "XL" or filter == "XXL":
+            products = list(Product.objects.filter(product_size=filter).values())
+            for p in products:
+                data = {}
+                if p['is_deleted'] == False:
+                    data['id'] = p['id']
+                    # print(product.pk)
+                    data['product_name'] = p['product_name']
+                    # data['product_size'] = product['product_size']
+                    # data['product_color'] = product['product_color']
+                    data['product_price'] = p['product_price']
+                    price_off = 0
+                    # if p[0]['product_off_percent'] > 0:
+                    #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                    # data['product_off_percent'] = price_off
+                    # data['inventory'] = i['inventory']
+                    data['upload'] = p['upload']
+                    data['shop_id'] = p['shop_id']
+                    data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)

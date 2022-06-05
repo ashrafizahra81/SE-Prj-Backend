@@ -36,6 +36,7 @@ class Product(models.Model):
     product_country = models.CharField(max_length=100, null=True)
     product_off_percent = models.IntegerField(default=0)
     is_available = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
     score = models.FloatField(default=0, null=True)
     number_of_votes = models.IntegerField(default=0, null=True)
     # product_brand = models.CharField(max_length=100, null=True)
