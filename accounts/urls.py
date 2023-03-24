@@ -17,8 +17,6 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', views.Logout.as_view(), name='logout'),
     path('edit_profile/', views.UserEditProfile.as_view(), name="edit profile"),
-    path('user_styles/', views.UserStyles.as_view(), name="user styles"),
-    path('user_more_styles/', views.UserMoreStylesView.as_view(), name="user more styles"),
     path('add_to_cart/', views.AddToShoppingCartView.as_view(), name="add to cart"),
     path('delete_from_cart/', views.DeleteFromShoppingCart.as_view(), name="delete from cart"),
     path('show_cart/', views.ShowUserShoppingCart.as_view(), name="show-cart"),
@@ -40,12 +38,5 @@ urlpatterns = [
     path('api/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
     path('show_user_info/', views.ShowUserInfo.as_view(), name="show user info"),
     path('show_order_to_shop/', views.ShowOrdersToShop.as_view(), name="show orders product"),
-    path('vote_for_product/', views.PopularProducts.as_view(), name="vote for product"),
-    path('show_popular_product/', views.ShowPopularProduct.as_view(), name="show popular product"),
-    path('initialze_recom/', views.CreateRecSystem.as_view(), name="initialize recommendation system"),
-    # path('show_better_clothes/', views.MoreQuestions.as_view(), name="show better clothes"),
     path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
-    path('reset_password/', views.ResetPassword.as_view(), name='reset password'),
-    path('filters/', views.Filters.as_view(), name='filters'),
-
 ]
