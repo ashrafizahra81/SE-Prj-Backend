@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'questions.apps.QuestionsConfig',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
 ]
