@@ -39,6 +39,7 @@ class Product(models.Model):
     is_deleted = models.BooleanField(default=False)
     score = models.FloatField(default=0, null=True)
     number_of_votes = models.IntegerField(default=0, null=True)
+    last_product_sold_date = models.DateField(null = True)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
     # product_size = models.CharField(max_length=100, null=False)

@@ -17,8 +17,7 @@ import json
 import string
 import numpy as np
 from django.contrib.auth import get_user_model
-
-
+from datetime import datetime
 
 class UserRegister(APIView):
     def post(self, request):
@@ -568,10 +567,11 @@ class CheckoutShoppingCart(APIView):
             print(o1['product_id'])
             print("***")
             product1 = Product.objects.get(pk=o1['product_id'])
-            # print(product1.id)
+            if(product_inventory == 0) :
+                product1.last_product_sold_date = datetime.today()
             if product1.is_deleted == False:
                 product_inventory = product1.inventory - 1
-                print(product_inventory)
+                # print(product_inventory)
                 p_data['inventory'] = product_inventory
                 json_object = json.dumps(p_data, indent=4)
                 print(p_data)
