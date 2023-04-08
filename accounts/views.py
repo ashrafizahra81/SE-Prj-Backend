@@ -607,6 +607,11 @@ class CheckoutShoppingCart(APIView):
         dict_price = {}
         dict_price["total price"] = price
         dict_price["total off_price"] = off_price
+        print("**************************************************")
+        print(request.user)
+        user = User.objects.get(email=request.user)
+        user.score = off_price / 10 # each 10,000 Toman, 1 score
+        user.save()
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)
