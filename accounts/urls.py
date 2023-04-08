@@ -39,4 +39,5 @@ urlpatterns = [
     path('show_user_info/', views.ShowUserInfo.as_view(), name="show user info"),
     path('show_order_to_shop/', views.ShowOrdersToShop.as_view(), name="show orders product"),
     path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
+    path('report/', views.Report.as_view(), name='report'),
 ]

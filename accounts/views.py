@@ -356,6 +356,7 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_country=data2['product_country'],
                 # product_off_percent=data2['product_off_percent'],
                 inventory=data2['inventory'],
+                initial_inventory = data2['inventory'],
                 # upload=str2,
                 is_available=True,
             )
@@ -811,6 +812,8 @@ class ShowOrdersToShop(APIView):
         return Response(product_list, status=status.HTTP_200_OK)
 
 class ResetPassword(APIView):
+    permission_classes = [IsAuthenticated, ]
+
     def post(self , request):
         mail_subject = 'reset password'
         message = 'newpass1234'
@@ -824,3 +827,22 @@ class ResetPassword(APIView):
         u.save()
         data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
         return Response(status=status.HTTP_200_OK , data = data2)
+
+class Report(APIView):
+    def get(self , request):
+        data = list()
+        totalPriceOfShop = 0
+        for product in Product.objects.all():
+            data1={}
+            if product.shop_id == request.user.id:
+                totalPrice = (product.initial_inventory - product.inventory) * product.product_price
+                totalPriceOfShop += totalPrice
+                data1['productName'] = product.product_name
+                data1['inventory'] = product.inventory
+                data1['initial_inventory'] = product.initial_inventory
+                data1['price'] = product.product_price
+                data1['totalPriceOfProduct'] = totalPrice
+                data.append(data1)
+        data.append({'totalSell':totalPriceOfShop})
+        return Response(data, status=status.HTTP_200_OK)
+        
