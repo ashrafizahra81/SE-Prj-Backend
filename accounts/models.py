@@ -12,6 +12,7 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=1000, null=True)
     shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
+    score = models.IntegerField(null= True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -26,6 +27,7 @@ class Product(models.Model):
     shop = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='products')
     upload = models.FileField(upload_to='uploads/', null=True)
     inventory = models.IntegerField(default=0, null=False)
+    initial_inventory = models.IntegerField(default=0, null=False)
     product_size = models.CharField(max_length=100, null=True)
     product_group = models.CharField(max_length=100, null=True)
     product_image = models.CharField(max_length=2000, null=True)
@@ -39,6 +41,7 @@ class Product(models.Model):
     is_deleted = models.BooleanField(default=False)
     score = models.FloatField(default=0, null=True)
     number_of_votes = models.IntegerField(default=0, null=True)
+    last_product_sold_date = models.DateField(null = True)
     # product_brand = models.CharField(max_length=100, null=True)
     # product_color = models.CharField(max_length=100, null=False)
     # product_size = models.CharField(max_length=100, null=False)
