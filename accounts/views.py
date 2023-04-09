@@ -25,7 +25,11 @@ class UserRegister(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
         data = {}
         if serialized_data.is_valid():
+            print("valiiiid")
             account = serialized_data.save()
+            print(account.id)
+
+
             # data['response'] = "successfully registered"
             data['username'] = account.username
             data['email'] = account.email
@@ -42,12 +46,17 @@ class UserRegister(APIView):
             # token = Token.objects.get(user=account).key
             # data['token'] = token
 
-            mail_subject = 'ثبت نام در سبکینو'
-            message = 'ثبت نام شما در سایت سبکینو با موفقیت انجام شد!'
-            to_email = account.email
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
-
+            # mail_subject = 'ثبت نام در سبکینو'
+            # message = 'ثبت نام شما در سایت سبکینو با موفقیت انجام شد!'
+            # to_email = account.email
+            # email = EmailMessage(mail_subject, message, to=[to_email])
+            # email.send()
+            wallet = Wallet(
+                user = account,
+                balance = 0, 
+            )
+            wallet.save()
+            print("hereeee")
             return Response(data)
         return Response(serialized_data.errors)
 
@@ -253,6 +262,78 @@ class ShopManagerRegister(APIView):
             data['access'] = str(refresh.access_token)
             return Response(data)
         return Response(serialized_data.errors)
+
+class ChargeWallet(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def post(self , request):
+        wallet = Wallet.objects.get(user=request.user)
+        data2 = request.data
+        data = {}
+        wallet.balance += float(data2['insert'])
+        print("new balanceeeeeeeee")
+        print(wallet.balance)
+        wallet.save()
+        data['balance'] = wallet.balance
+        return Response(data, status=status.HTTP_200_OK)
+
+class BuyFromWallet(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self , request):
+        AllUserShoppingCart_list = list(UserShoppingCart.objects.all().values())
+        UserShoppingCart_list = []
+        UserShoppingCartProductId_list = []
+        print(AllUserShoppingCart_list)
+        data = {}
+        totalPrice = 0
+        for userShoppingCart in AllUserShoppingCart_list:
+            if userShoppingCart['user_id'] == request.user.id:
+                if userShoppingCart['status'] == "not Accepted":
+                    UserShoppingCart_list.append(userShoppingCart)
+                    UserShoppingCartProductId_list.append(userShoppingCart['product_id'])
+        
+
+        
+        print(len(UserShoppingCart_list))
+        print(len(UserShoppingCartProductId_list))
+
+        products_list = list(Product.objects.all().values())
+        while len(UserShoppingCartProductId_list) > 0:
+            for product in products_list:
+                if UserShoppingCartProductId_list[0] == product['id']:
+                    totalPrice += product['product_price']
+                    UserShoppingCartProductId_list.pop(0)
+                    break
+
+        print("total price*******************")
+        print(totalPrice)
+        wallet = Wallet.objects.get(user=request.user)
+
+        if totalPrice > 0: 
+
+            if wallet.balance >= totalPrice:
+                wallet.balance -= totalPrice
+                data['status'] = 'done!'
+            # myList = UserShoppingCart.objects.get(user_id=request.user.id)
+            # print(lent(myList))
+                for userShoppingCart in AllUserShoppingCart_list:
+                    if userShoppingCart['user_id'] == request.user.id:
+                        if userShoppingCart['status'] == "not Accepted":
+                            UserShoppingCartById = UserShoppingCart.objects.get(id=userShoppingCart['id'])
+                            UserShoppingCartById.status = "Accepted"
+                            UserShoppingCartById.save()
+
+                wallet.save()
+
+            else:
+                data['status'] = 'Your account balance is insufficient!'
+        
+        else:
+            data['status'] = "there are no items in your shopping cart"
+   
+
+        
+        return Response(data, status=status.HTTP_200_OK)
+
 
 
 class EditShop(APIView):
@@ -607,11 +688,6 @@ class CheckoutShoppingCart(APIView):
         dict_price = {}
         dict_price["total price"] = price
         dict_price["total off_price"] = off_price
-        print("**************************************************")
-        print(request.user)
-        user = User.objects.get(email=request.user)
-        user.score = off_price / 10 # each 10,000 Toman, 1 score
-        user.save()
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)

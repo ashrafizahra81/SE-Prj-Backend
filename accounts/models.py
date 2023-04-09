@@ -12,7 +12,6 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=1000, null=True)
     shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
-    score = models.IntegerField(null= True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
@@ -145,3 +144,7 @@ class ProductScore(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     score = models.FloatField(default=0, null=True)
+
+class Wallet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    balance = models.FloatField(default=0, null=True)

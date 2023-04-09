@@ -13,6 +13,8 @@ AddProductsToShop_list = views.AddProductsToShopViewSet.as_view({
 
 urlpatterns = [
     path('register/', views.UserRegister.as_view()),
+    path('charge_wallet/', views.ChargeWallet.as_view()),
+    path('buy_from_wallet/', views.BuyFromWallet.as_view()),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', views.Logout.as_view(), name='logout'),
