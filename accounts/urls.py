@@ -42,4 +42,6 @@ urlpatterns = [
     path('show_order_to_shop/', views.ShowOrdersToShop.as_view(), name="show orders product"),
     path('api/token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
     path('report/', views.Report.as_view(), name='report'),
+    path('show_score/', views.show_score.as_view(), name='show_score'),
+
 ]
