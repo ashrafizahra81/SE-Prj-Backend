@@ -689,6 +689,9 @@ class CheckoutShoppingCart(APIView):
         dict_price = {}
         dict_price["total price"] = price
         dict_price["total off_price"] = off_price
+        user = User.objects.get(email=request.user)
+        user.score = off_price / 10 # each 10,000 Toman, 1 score
+        user.save()
         date = {}
         date["date"] = date_of_buy
         data.append(dict_price)
@@ -910,6 +913,9 @@ class ResetPassword(APIView):
         return Response(status=status.HTTP_200_OK , data = data2)
 
 class Report(APIView):
+
+    permission_classes = [IsAuthenticated, ]
+    
     def get(self , request):
         data = list()
         totalPriceOfShop = 0
@@ -926,4 +932,5 @@ class Report(APIView):
                 data.append(data1)
         data.append({'totalSell':totalPriceOfShop})
         return Response(data, status=status.HTTP_200_OK)
+
         
