@@ -18,6 +18,7 @@ import string
 import numpy as np
 from django.contrib.auth import get_user_model
 from datetime import datetime
+import random
 
 class UserRegister(APIView):
     def post(self, request):
@@ -933,4 +934,17 @@ class Report(APIView):
         data.append({'totalSell':totalPriceOfShop})
         return Response(data, status=status.HTTP_200_OK)
 
-        
+class show_score(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self , request):
+        data = {}
+        data['score'] = request.user.score
+        if(request.user.score >= 200):
+            data['get_discount'] = True
+            user = User.objects.get(email=request.user)
+            user.discount_code = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=7))
+            user.save()
+        else :
+            data['get_discount'] = False
