@@ -103,7 +103,8 @@ class EditShopSerializer(serializers.ModelSerializer):
 class ProductAndStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAndStyle
-        exclude = ['shop_id', 'product', 'product_off_percent']
+        exclude = ['shop_id', 'product', 'product_off_percent', 'style_param_1','style_param_2'
+                   ,'style_param_3','style_param_4','style_param_5','upload']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -114,6 +115,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+    serializers.ListField
 
 
 class LogoutSerializer(serializers.Serializer):

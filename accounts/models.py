@@ -122,6 +122,7 @@ class ProductAndStyle(models.Model):
     product_height = models.IntegerField(default=0)
     product_design = models.CharField(max_length=100, null=True)
     product_material = models.CharField(max_length=100, null=True)
+    product_color = models.CharField(max_length=100, null=True)
     product_country = models.CharField(max_length=100, null=True)
     product_off_percent = models.IntegerField(null=True, default=0)
     inventory = models.IntegerField(default=0, null=True)
