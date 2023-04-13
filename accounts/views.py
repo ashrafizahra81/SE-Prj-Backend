@@ -947,4 +947,34 @@ class show_score(APIView):
             data['can_get_discount'] = False
         return Response(data, status=status.HTTP_200_OK)
 
+class Filters(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        filter = request.data['group'][0]
+
+        data1 = list()
+        if filter == "شلوار" or filter == "پیراهن" or filter == "تیشرت" or filter == "هودی":
+            products = list(Product.objects.filter(product_group=filter).values())
+            for p in products:
+                data = {}
+                if p['is_deleted'] == False:
+                    data['id'] = p['id']
+                    # print(product.pk)
+                    data['product_name'] = p['product_name']
+                    # data['product_size'] = product['product_size']
+                    # data['product_color'] = product['product_color']
+                    data['product_price'] = p['product_price']
+                    price_off = 0
+                    # if p[0]['product_off_percent'] > 0:
+                    #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
+                    # data['product_off_percent'] = price_off
+                    # data['inventory'] = i['inventory']
+                    if p['upload']:
+                        data['upload'] = p['upload']
+                    else:
+                        data['upload'] = p['product_image']
+                    data['shop_id'] = p['shop_id']
+                    data1.append(data)
+        return Response(data1, status=status.HTTP_200_OK)
         
