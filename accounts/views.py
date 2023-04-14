@@ -914,15 +914,6 @@ class show_score(APIView):
      def get(self , request):
         data = {}
         data['score'] = request.user.score
-        if(request.user.score >= 200):
-            data['can_get_discount'] = True
-            user = User.objects.get(email=request.user)
-            user.discount_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-            user.save()
-            data['discount'] = user.discount_code
-        else :
-            data['can_get_discount'] = False
-            data['discount'] = ""
         return Response(data, status=status.HTTP_200_OK)
 
 class Filters(APIView):
