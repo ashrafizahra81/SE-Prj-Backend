@@ -633,74 +633,47 @@ class DeleteFromFavoriteProducts(APIView):
 class CheckoutShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request):
+    def post(self, request):
 
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-        data = list()
         price = 0
         off_price = 0
-        product_inventory = 0
-        date_of_buy = datetime.now()
-        user_buyer = {}
-        user_buyer["buyer"] = request.user.email
-        # data.append(user_buyer)
         p_data = {}
-
         for o1 in user_cart:
-            print(o1['product_id'])
-            print("***")
             product1 = Product.objects.get(pk=o1['product_id'])
-            if(product_inventory == 0) :
+            product_inventory = product1.inventory - 1
+            if(product1.inventory==0):
                 product1.last_product_sold_date = datetime.today()
-            if product1.is_deleted == False:
-                product_inventory = product1.inventory - 1
-                # print(product_inventory)
-                p_data['inventory'] = product_inventory
-                json_object = json.dumps(p_data, indent=4)
-                print(p_data)
-                serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
-                if product1.product_off_percent != 0:
-                    off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-                if serialized_data.is_valid():
-                    edited_product = serialized_data.save()
-                else:
-                    print("not valid")
-                price += product1.product_price
-
+                product1.is_available = 0
+            p_data['inventory'] = product_inventory
+            serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
+            off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
+            if serialized_data.is_valid():
+                edited_product = serialized_data.save()
+                
+            price += product1.product_price
+        wallet = Wallet.objects.get(user = request.user)
+        if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
+            return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_200_OK)
         for o in user_cart:
-            js = {}
             product = Product.objects.get(pk=o['product_id'])
             if product.is_deleted == False:
-                serialized_product = ProductInfoSerializer(instance=product)
-                js = serialized_product.data
                 c = Order(
                     user=request.user,
                     product=product,
                     cost=product.product_price,
-                    total_cost=price,
-                    off_cost=off_price,
+                    total_cost=price+30000,
+                    off_cost=off_price+30000,
                     status="Accepted",
                 )
                 c.save()
-                js['product'] = product.product_price
-            data.append(js)
             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
-
-        # print(price)
-        dict_price = {}
-        dict_price["total price"] = price
-        dict_price["total off_price"] = off_price
         user = User.objects.get(email=request.user)
-        user.score = off_price / 10 # each 10,000 Toman, 1 score
+        user.score += off_price / 100000 # each 100,000 Toman, 1 score
         user.save()
-        date = {}
-        date["date"] = date_of_buy
-        data.append(dict_price)
-        data.append(date)
-        # print(data)
-        if data:
-            return JsonResponse(data, safe=False)
-        return Response(data, status=status.HTTP_201_CREATED)
+        if(request.data['type'] == "wallet"):
+            wallet.balance = wallet.balance - (off_price+30000)
+        return Response({"message":"خرید با موفقیت انجام شد"}, status=status.HTTP_200_OK)
 
 
 class ShowProductsByShop(APIView):
