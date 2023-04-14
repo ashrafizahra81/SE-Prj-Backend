@@ -43,6 +43,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data.update({'type': 'user'})
             data.update({'username': self.user.username})
             data.update({'user_phone_number': self.user.user_phone_number})
+            wallet = Wallet.objects.get(user = self.user)
+            data.update({'inventory': wallet.balance})
         else:
             data.update({'type': 'seller'})
             data.update({'shop_name': self.user.shop_name})

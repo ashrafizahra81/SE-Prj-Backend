@@ -12,7 +12,7 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=1000, null=True)
     shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
-    score = models.IntegerField(null= True)
+    score = models.IntegerField(null= True , default=0)
     discount_code = models.CharField(max_length=20, null= True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]

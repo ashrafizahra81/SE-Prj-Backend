@@ -33,6 +33,7 @@ class UserRegister(APIView):
             data['username'] = account.username
             data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
+            data['inventory'] = 0
             refresh = RefreshToken.for_user(account)
             # res = {
             #     'refresh': str(refresh),
@@ -455,15 +456,15 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_country'] = data2['product_country']
             data1['inventory'] = data2['inventory']
             # data1['upload'] = str2
-            s = Style(product=product,
-                      style_image_url=data1['product_image'],
-                      style_param_1=data2['style_param_1'],
-                      style_param_2=data2['style_param_2'],
-                      style_param_3=data2['style_param_3'],
-                      style_param_4=data2['style_param_4'],
-                      style_param_5=data2['style_param_5']
-                      )
-            s.save()
+            # s = Style(product=product,
+            #           style_image_url=data1['product_image'],
+            #           style_param_1=data2['style_param_1'],
+            #           style_param_2=data2['style_param_2'],
+            #           style_param_3=data2['style_param_3'],
+            #           style_param_4=data2['style_param_4'],
+            #           style_param_5=data2['style_param_5']
+            #           )
+            # s.save()
             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
@@ -839,22 +840,24 @@ class ShowUserInfo(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-        user = User.objects.get(id=request.user.id)
-        print(user.username)
+        userObj = User.objects.get(id=request.user.id)
+        print(userObj.username)
         data = {}
-        if user.shop_name == None:
-            data['email'] = user.email
-            data['username'] = user.username
-            data['user_phone_number'] = user.user_phone_number
-            data['user_postal_code'] = user.user_postal_code
-            data['user_address'] = user.user_address
+        if userObj.shop_name == None:
+            data['email'] = userObj.email
+            data['username'] = userObj.username
+            data['user_phone_number'] = userObj.user_phone_number
+            data['user_postal_code'] = userObj.user_postal_code
+            data['user_address'] = userObj.user_address
+            wallet = Wallet.objects.get(user = userObj)
+            data['inventory'] = wallet.balance
         else:
-            data['email'] = user.email
-            data['username'] = user.username
-            data['shop_name'] = user.shop_name
-            data['shop_phone_number'] = user.shop_phone_number
-            data['user_phone_number'] = user.user_phone_number
-            data['shop_address'] = user.shop_address
+            data['email'] = userObj.email
+            data['username'] = userObj.username
+            data['shop_name'] = userObj.shop_name
+            data['shop_phone_number'] = userObj.shop_phone_number
+            data['user_phone_number'] = userObj.user_phone_number
+            data['shop_address'] = userObj.shop_address
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -943,8 +946,10 @@ class show_score(APIView):
             user = User.objects.get(email=request.user)
             user.discount_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
             user.save()
+            data['discount'] = user.discount_code
         else :
             data['can_get_discount'] = False
+            data['discount'] = ""
         return Response(data, status=status.HTTP_200_OK)
 
 class Filters(APIView):
