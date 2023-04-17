@@ -947,4 +947,14 @@ class Filters(APIView):
                     data['shop_id'] = p['shop_id']
                     data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
-        
+
+class ShowGiftInfo(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self , request):
+        data = []
+        for i in Gift.objects.all().values():
+            data1={}
+            data1['description'] = i['description']
+            data1['score'] = i['score']
+            data.append(data1)
+        return Response(data, status=status.HTTP_200_OK)

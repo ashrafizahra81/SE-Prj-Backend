@@ -3,6 +3,13 @@ from django.contrib.auth.models import AbstractUser
 from rest_framework.authtoken.models import Token
 
 
+class Gift(models.Model):
+    type = models.CharField(max_length=20)
+    discount_code = models.CharField(max_length=20)
+    score = models.IntegerField(default=0)
+    description = models.CharField(max_length=100)
+    date = models.DateField(null = True) 
+
 class User(AbstractUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=100)
@@ -13,7 +20,7 @@ class User(AbstractUser):
     shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
     score = models.IntegerField(null= True , default=0)
-    discount_code = models.CharField(max_length=20, null= True)
+    gift = models.ForeignKey(Gift, on_delete=models.DO_NOTHING, null=True, related_name='products')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
