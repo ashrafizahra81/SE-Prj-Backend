@@ -41,6 +41,7 @@ class UserRegister(APIView):
             # }
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
+            data['score'] = 0
             # data['user_postal_code'] = account.user_postal_code
             # data['user_address'] = account.user_address
             # token = Token.objects.get(user=account).key
