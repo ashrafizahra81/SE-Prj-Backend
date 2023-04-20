@@ -963,6 +963,11 @@ class getGift(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self,request):
         user = User.objects.get(email=request.user)
-        user.gift = Gift.objects.get(score = request.data['score'])
+        gift = Gift.objects.get(score = request.data['score'])
+        user.gift = gift
+        user.score = user.score - gift.score
         user.save()
-        return Response({"message":"ok"}, status=status.HTTP_200_OK)
+        data = {}
+        data['discount code'] = gift.discount_code
+        data['new score'] = user.score
+        return Response(data, status=status.HTTP_200_OK)
