@@ -958,3 +958,12 @@ class ShowGiftInfo(APIView):
             data1['score'] = i['score']
             data.append(data1)
         return Response(data, status=status.HTTP_200_OK)
+
+class getGift(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def post(self,request):
+        user = User.objects.get(email=request.user)
+        if(request.data['score']==0):
+            user.gift = Gift.objects.get(score = request.data['score'])
+            user.save()
+        return Response({"message":"ok"}, status=status.HTTP_200_OK)

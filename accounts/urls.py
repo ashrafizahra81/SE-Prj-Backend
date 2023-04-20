@@ -45,5 +45,5 @@ urlpatterns = [
     path('show_score/', views.show_score.as_view(), name='show_score'),
     path('filters/', views.Filters.as_view(), name='filters'),
     path('show_gift/', views.ShowGiftInfo.as_view(), name='show_gift'),
-
+    path('get_gift/', views.getGift.as_view(), name='get_gift'),
 ]
