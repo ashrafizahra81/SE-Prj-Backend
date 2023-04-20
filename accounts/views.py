@@ -971,3 +971,23 @@ class getGift(APIView):
         data['discount code'] = gift.discount_code
         data['new score'] = user.score
         return Response(data, status=status.HTTP_200_OK)
+class applyDiscount(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def post(self , request):
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        off_price = 0
+        for o1 in user_cart:
+            product1 = Product.objects.get(pk=o1['product_id'])
+            off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
+        data={}
+        gift = Gift.objects.get(discount_code = request.data['discount_code'])
+        if(gift.type=='C'):
+            data["total_cost"] = off_price+30000
+            data["discounted_total_cost"] = off_price
+        if(gift.type == 'A'):
+            data["total_cost"] = off_price+30000
+            data["discounted_total_cost"] = (0.8) * (off_price+30000)
+        else:
+            data["total_cost"] = off_price+30000
+            data["discounted_total_cost"] = (0.7) * (off_price+30000)
+        return Response(data,status=status.HTTP_200_OK)
