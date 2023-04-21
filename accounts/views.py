@@ -676,7 +676,22 @@ class CheckoutShoppingCart(APIView):
             wallet.balance = wallet.balance - (off_price+30000)
         return Response({"message":"خرید با موفقیت انجام شد"}, status=status.HTTP_200_OK)
 
-
+class show_checkout_info(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self , request):
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        off_price = 0
+        for o1 in user_cart:
+            product1 = Product.objects.get(pk=o1['product_id'])
+            if(product1.is_deleted == 1 or product1.is_available == 0):
+                return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_200_OK)
+            off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
+        data={}
+        data["discounted_price"] = off_price
+        data["total_cost"] = off_price+30000
+        data["score"] = int((off_price+30000)/100000)
+        return Response(data,status=status.HTTP_200_OK)
+    
 class ShowProductsByShop(APIView):
 
     def post(self, request):
