@@ -33,7 +33,7 @@ class UserRegister(APIView):
             data['username'] = account.username
             data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
-            data['inventory'] = 0
+            data['balance'] = 0
             refresh = RefreshToken.for_user(account)
             # res = {
             #     'refresh': str(refresh),
@@ -984,8 +984,8 @@ class getGift(APIView):
         user.score = user.score - gift.score
         user.save()
         data = {}
-        data['discount code'] = gift.discount_code
-        data['new score'] = user.score
+        data['discount_code'] = gift.discount_code
+        data['new_score'] = user.score
         return Response(data, status=status.HTTP_200_OK)
 class applyDiscount(APIView):
     permission_classes = [IsAuthenticated, ]
