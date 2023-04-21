@@ -643,8 +643,8 @@ class CheckoutShoppingCart(APIView):
         for o1 in user_cart:
             product1 = Product.objects.get(pk=o1['product_id'])
             product_inventory = product1.inventory - 1
+            product1.last_product_sold_date = datetime.today()
             if(product1.inventory==0):
-                product1.last_product_sold_date = datetime.today()
                 product1.is_available = 0
             p_data['inventory'] = product_inventory
             serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
