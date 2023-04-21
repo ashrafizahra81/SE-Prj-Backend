@@ -690,6 +690,7 @@ class show_checkout_info(APIView):
         data["discounted_price"] = off_price
         data["total_cost"] = off_price+30000
         data["score"] = int((off_price+30000)/100000)
+        data["shippingPrice"] = 30000
         return Response(data,status=status.HTTP_200_OK)
     
 class ShowProductsByShop(APIView):
@@ -1005,4 +1006,5 @@ class applyDiscount(APIView):
         else:
             data["total_cost"] = off_price+30000
             data["discounted_total_cost"] = (0.7) * (off_price+30000)
+        data['shippingPrice'] = 30000
         return Response(data,status=status.HTTP_200_OK)
