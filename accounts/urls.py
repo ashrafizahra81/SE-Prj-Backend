@@ -45,4 +45,7 @@ urlpatterns = [
     path('show_score/', views.show_score.as_view(), name='show_score'),
     path('filters/', views.Filters.as_view(), name='filters'),
     path('show_checkout_info/', views.show_checkout_info.as_view(), name='checkout_info'),
+    path('show_gift/', views.ShowGiftInfo.as_view(), name='show_gift'),
+    path('get_gift/', views.getGift.as_view(), name='get_gift'),
+    path('apply_discount/', views.applyDiscount.as_view(), name='apply_discount'),
 ]
