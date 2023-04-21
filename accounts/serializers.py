@@ -42,6 +42,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if self.user.shop_name == None:
             data.update({'type': 'user'})
             data.update({'username': self.user.username})
+            data.update({'email':self.user.email})
             data.update({'user_phone_number': self.user.user_phone_number})
             wallet = Wallet.objects.get(user = self.user)
             data.update({'balance': wallet.balance})
@@ -49,6 +50,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         else:
             data.update({'type': 'seller'})
             data.update({'shop_name': self.user.shop_name})
+            data.update({'email':self.user.email})
             data.update({'shop_phone_number': self.user.shop_phone_number})
 
         # and everything else you want to send in the response
