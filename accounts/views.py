@@ -19,7 +19,7 @@ import numpy as np
 from django.contrib.auth import get_user_model
 from datetime import datetime
 import random
-from drf_yasg.utils import swagger_auto_schema
+# from drf_yasg.utils import swagger_auto_schema
 from rest_framework_tracking.mixins import LoggingMixin
 
 
