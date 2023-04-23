@@ -680,7 +680,10 @@ class CheckoutShoppingCart(APIView):
         user.save()
         if(request.data['type'] == "wallet"):
             wallet.balance = wallet.balance - (off_price+30000)
-        return Response({"message":"خرید با موفقیت انجام شد"}, status=status.HTTP_200_OK)
+        data = {}
+        data["message"] = "خرید با موفقیت انجام شد"
+        data["balance"] = wallet.balance
+        return Response(data, status=status.HTTP_200_OK)
 
 class show_checkout_info(APIView):
     permission_classes = [IsAuthenticated, ]
