@@ -983,6 +983,7 @@ class ShowGiftInfo(APIView):
                 data1={}
                 data1['description'] = i['description']
                 data1['score'] = i['score']
+                data1['date'] = i['date']
                 data.append(data1)
         if(len(data) == 0):
             return Response({"message":"درحال حاضر جایزه‌ای فعال نیست"}, status=status.HTTP_204_NO_CONTENT)
