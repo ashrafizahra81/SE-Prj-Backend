@@ -20,10 +20,10 @@ from django.contrib.auth import get_user_model
 from datetime import datetime
 import random
 # from drf_yasg.utils import swagger_auto_schema
-from rest_framework_tracking.mixins import LoggingMixin
+# from rest_framework_tracking.mixins import LoggingMixin
 
 
-class UserRegister(LoggingMixin ,generics.GenericAPIView):
+class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
     def post(self, request):
         serialized_data = UserRegisterSerializer(data=request.data)
@@ -81,7 +81,7 @@ class TokenVerifyView(TokenViewBase):
     serializer_class = CustomTokenVerifySerializer
 
 
-class UserEditProfile(LoggingMixin ,generics.GenericAPIView):
+class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserEditProfileSerializer
     def post(self, request):
@@ -250,7 +250,7 @@ class ShowFavoriteProduct(APIView):
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ShopManagerRegister(LoggingMixin ,generics.GenericAPIView):
+class ShopManagerRegister(APIView):
     serializer_class = ShopManagerRegisterSerializer
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
@@ -343,7 +343,7 @@ class BuyFromWallet(APIView):
 
 
 
-class EditShop(LoggingMixin ,generics.GenericAPIView):
+class EditShop(APIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = EditShopSerializer
     def post(self, request):
