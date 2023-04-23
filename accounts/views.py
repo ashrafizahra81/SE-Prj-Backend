@@ -655,7 +655,7 @@ class CheckoutShoppingCart(APIView):
             price += product1.product_price
         wallet = Wallet.objects.get(user = request.user)
         if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
-            return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_200_OK)
+            return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)
         for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
             if product.is_deleted == False:
@@ -684,7 +684,7 @@ class show_checkout_info(APIView):
         for o1 in user_cart:
             product1 = Product.objects.get(pk=o1['product_id'])
             if(product1.is_deleted == 1 or product1.is_available == 0):
-                return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_200_OK)
+                return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_204_NO_CONTENT)
             off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
         data={}
         data["discounted_price"] = off_price
@@ -969,24 +969,30 @@ class ShowGiftInfo(APIView):
     def get(self , request):
         data = []
         for i in Gift.objects.all().values():
-            data1={}
-            data1['description'] = i['description']
-            data1['score'] = i['score']
-            data.append(data1)
+            if(datetime(i["date"].year, i["date"].month, i["date"].day) >= datetime.now()):
+                data1={}
+                data1['description'] = i['description']
+                data1['score'] = i['score']
+                data.append(data1)
+        if(len(data) == 0):
+            return Response({"message":"درحال حاضر جایزه‌ای فعال نیست"}, status=status.HTTP_204_NO_CONTENT)
         return Response(data, status=status.HTTP_200_OK)
 
 class getGift(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self,request):
         user = User.objects.get(email=request.user)
-        gift = Gift.objects.get(score = request.data['score'])
-        user.gift = gift
-        user.score = user.score - gift.score
-        user.save()
-        data = {}
-        data['discount_code'] = gift.discount_code
-        data['new_score'] = user.score
-        return Response(data, status=status.HTTP_200_OK)
+        gifts = Gift.objects.all().values()
+        for i in gifts :
+            if(i['score'] <=  request.data['score']):
+                user.gift = i
+                user.score = user.score - i["score"]
+                user.save()
+                data = {}
+                data['discount_code'] = i["discount_code"]
+                data['new_score'] = user.score
+                return Response(data, status=status.HTTP_200_OK)
+        return Response({"message":"امتیاز شما کافی نیست"},status=status.HTTP_204_NO_CONTENT)
 class applyDiscount(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
@@ -997,6 +1003,9 @@ class applyDiscount(APIView):
             off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
         data={}
         gift = Gift.objects.get(discount_code = request.data['discount_code'])
+        if(datetime(gift.date.year, gift.date.month, gift.date.day) < datetime.now()):
+            return Response({"message":"زمان استفاده از این کد تخفیف به انمام رسیده است"}
+                        ,status=status.HTTP_204_NO_CONTENT)
         if(gift.type=='C'):
             data["total_cost"] = off_price+30000
             data["discounted_total_cost"] = off_price
