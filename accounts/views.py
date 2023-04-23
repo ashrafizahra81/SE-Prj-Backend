@@ -922,6 +922,7 @@ class Report(APIView):
                 data1['initial_inventory'] = product.initial_inventory
                 data1['price'] = product.product_price
                 data1['totalPriceOfProduct'] = totalPrice
+                data1['date'] = datetime.date(product.last_product_sold_date)
                 data.append(data1)
         data.append({'totalSell':totalPriceOfShop})
         return Response(data, status=status.HTTP_200_OK)
