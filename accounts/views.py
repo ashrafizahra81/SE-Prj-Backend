@@ -983,17 +983,17 @@ class getGift(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self,request):
         user = User.objects.get(email=request.user)
-        gifts = Gift.objects.all().values()
-        for i in gifts :
-            if(i['score'] <=  request.data['score']):
-                user.gift = i
-                user.score = user.score - i["score"]
-                user.save()
-                data = {}
-                data['discount_code'] = i["discount_code"]
-                data['new_score'] = user.score
-                return Response(data, status=status.HTTP_200_OK)
+        gift = Gift.objects.get(score = request.data['score'])
+        if(user.score >= gift.score):
+            user.gift = gift
+            user.score = user.score - gift.score
+            user.save()
+            data = {}
+            data['discount_code'] = gift.discount_code
+            data['new_score'] = user.score
+            return Response(data, status=status.HTTP_200_OK)
         return Response({"message":"امتیاز شما کافی نیست"},status=status.HTTP_204_NO_CONTENT)
+        
 class applyDiscount(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
