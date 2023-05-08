@@ -7,7 +7,7 @@ from .models import *
 
 import django.contrib.auth.password_validation as validators
 from rest_framework import generics
-
+from wallets.models import Wallet
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,10 +27,10 @@ class UserEditProfileSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'user_phone_number', 'user_postal_code', 'user_address')
 
 
-class StyleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Style
-        fields = ['style_image_url']
+# class StyleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Style
+#         fields = ['style_image_url']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -57,31 +57,31 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
-class ProductsSerializer(serializers.ModelSerializer):
+# class ProductsSerializer(serializers.ModelSerializer):
 
-    def validate(self, data):
-        return data
+#     def validate(self, data):
+#         return data
 
-    def create(self, validated_data):
-        shop = validated_data.get('shop', None)
-        product = Product.objects.create(**validated_data)
-        return product
+#     def create(self, validated_data):
+#         shop = validated_data.get('shop', None)
+#         product = Product.objects.create(**validated_data)
+#         return product
 
-    class Meta:
-        model = Product
-        fields = '__all__'
-
-
-class ProductInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['product_name', 'upload']
+#     class Meta:
+#         model = Product
+#         fields = '__all__'
 
 
-class EditProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        exclude = ('shop', 'upload')
+# class ProductInfoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Product
+#         fields = ['product_name', 'upload']
+
+
+# class EditProductSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Product
+#         exclude = ('shop', 'upload')
 
 
 class ShopManagerRegisterSerializer(serializers.ModelSerializer):
@@ -105,11 +105,11 @@ class EditShopSerializer(serializers.ModelSerializer):
             'shop_phone_number')
 
 
-class ProductAndStyleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductAndStyle
-        exclude = ['shop_id', 'product', 'product_off_percent', 'style_param_1','style_param_2'
-                   ,'style_param_3','style_param_4','style_param_5','upload']
+# class ProductAndStyleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductAndStyle
+#         exclude = ['shop_id', 'product', 'product_off_percent', 'style_param_1','style_param_2'
+#                    ,'style_param_3','style_param_4','style_param_5','upload']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -137,16 +137,16 @@ class LogoutSerializer(serializers.Serializer):
             self.fail('bad token')
 
 
-class MoreQuestionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductScore
-        fields = '__all__'
+# class MoreQuestionsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductScore
+#         fields = '__all__'
 
 
-class EditMoreQuestionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
+# class EditMoreQuestionsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Product
+#         fields = '__all__'
 
 
 

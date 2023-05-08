@@ -36,5 +36,11 @@ from django.urls import path , include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('products/', include('products.urls')),
+    path('orders/', include('orders.urls')),
+    path('favoriteProducts/', include('favoriteProducts.urls')),
+    path('shoppingCarts/', include('shoppingCarts.urls')),
+    path('gifts/', include('gifts.urls')),
+    path('wallets/', include('wallets.urls')),
     # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
