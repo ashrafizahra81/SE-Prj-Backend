@@ -20,6 +20,7 @@ class User(AbstractUser):
     shop_address = models.CharField(max_length=20, null=True)
     shop_phone_number = models.CharField(max_length=20, null=True)
     score = models.IntegerField(null= True , default=0)
+    random_integer = models.IntegerField(null= True , default=0)
     gift = models.ForeignKey(Gift, on_delete=models.DO_NOTHING, null=True, related_name='products')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]

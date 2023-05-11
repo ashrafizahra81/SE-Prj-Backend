@@ -1,6 +1,7 @@
 from django.core.mail import EmailMessage
 from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,6 +22,10 @@ from datetime import datetime
 import random
 from wallets.models import Wallet
 from gifts.models import Gift
+from rest_framework.decorators import api_view, schema, authentication_classes, permission_classes
+from . import send_mail
+from django.contrib.auth.hashers import make_password
+
 # from drf_yasg.utils import swagger_auto_schema
 # from rest_framework_tracking.mixins import LoggingMixin
 
@@ -899,22 +904,22 @@ class Logout(APIView):
 #                         product_list.append(data)
 #         return Response(product_list, status=status.HTTP_200_OK)
 
-class ResetPassword(APIView):
-    permission_classes = [IsAuthenticated, ]
+# class ResetPassword(APIView):
+#     permission_classes = [IsAuthenticated, ]
 
-    def post(self , request):
-        mail_subject = 'reset password'
-        message = 'newpass1234'
-        to_email = request.data['email']
-        print(to_email)
-        email = EmailMessage(mail_subject, message, to=[to_email])
-        email.send()
-        User = get_user_model()
-        u = User.objects.get(email = to_email)
-        u.set_password(message)
-        u.save()
-        data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
-        return Response(status=status.HTTP_200_OK , data = data2)
+#     def post(self , request):
+#         mail_subject = 'reset password'
+#         message = 'newpass1234'
+#         to_email = request.data['email']
+#         print(to_email)
+#         email = EmailMessage(mail_subject, message, to=[to_email])
+#         email.send()
+#         User = get_user_model()
+#         u = User.objects.get(email = to_email)
+#         u.set_password(message)
+#         u.save()
+#         data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
+#         return Response(status=status.HTTP_200_OK , data = data2)
 
 # class Report(APIView):
 
@@ -1033,3 +1038,51 @@ class show_score(APIView):
 #             data["discounted_total_cost"] = (0.7) * (off_price+30000)
 #         data['shippingPrice'] = 30000
 #         return Response(data,status=status.HTTP_200_OK)
+
+
+@api_view(['GET','POST'])
+# @authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def reset_password(request):
+    print(request.method)
+    if request.method =='POST':
+        print("here in post 1")
+        data2 = request.data
+        print("here in post 2")
+        token_recieved=data2['token']
+        password=data2['password']
+        password_again=data2['password2']
+        print(request.user)
+        used = User.objects.get(id=request.user.id)
+
+        if int(token_recieved) !=used.random_integer:
+            print(type(used.random_integer))
+            print(type(token_recieved))
+            return Response('Invalid Token')
+
+        if password!=password_again:
+            return Response('Passwords should match')
+        used.random_integer=None
+        used.password = make_password(password)
+        used.save()
+        return Response('Password changed successfully')
+    print("here in post 2")
+    token1=random.randint(1000,9999)
+    print(request.user.email)
+    used=User.objects.get(id=request.user.id)
+    used.random_integer=token1
+    used.save()
+    print(token1)
+
+
+
+    to_emails = []
+    to_emails.append(used.email)
+    print(to_emails)
+    send_mail.send_mail(html=token1,text='Here is your password reset token',subject='password reset token',from_email='',to_emails=to_emails)
+    print("working")
+    
+
+
+
+    return Response('working now')
