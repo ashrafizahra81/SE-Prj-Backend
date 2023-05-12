@@ -25,6 +25,7 @@ from gifts.models import Gift
 from rest_framework.decorators import api_view, schema, authentication_classes, permission_classes
 from . import send_mail
 from django.contrib.auth.hashers import make_password
+from datetime import datetime, timedelta
 
 # from drf_yasg.utils import swagger_auto_schema
 # from rest_framework_tracking.mixins import LoggingMixin
@@ -1086,3 +1087,79 @@ def reset_password(request):
 
 
     return Response('working now')
+
+
+
+class ReceiveEmailForRecoverPassword(APIView):
+    def post(self, request):
+        data = request.data
+        email1 = data['email']
+        user = CodesForUsers.objects.filter(email=email1).exists()
+        print(user)
+        print("model is ok")
+        f = 0
+        if user != False:
+            user = CodesForUsers.objects.get(email=email1)
+            now = datetime.now()
+            print("userrr")
+            print(user.id)
+            print(type(user.created_at))
+            delta = now - user.created_at.replace(tzinfo=None)
+            print(now)
+            print(user.created_at.replace(tzinfo=None))
+            print("deltaaa")
+            print(delta)
+            diff = delta.seconds
+            print("diiiiiff")
+            print(diff)
+            if diff > 600:
+                token1=random.randint(1000,9999)
+                user.code = token1
+                user.created_at = datetime.now()
+                print("newww")
+                print(user.created_at)
+                user.save()
+        else:
+            token1=random.randint(1000,9999)
+            user = CodesForUsers(
+                code = token1,
+                created_at = datetime.now(),
+                email= email1,
+            )
+            user.save()
+        to_emails = []
+        to_emails.append(user.email)
+        print(to_emails)
+        send_mail.send_mail(html=user.code,text='Here is your password recovery token',subject='password recovery token',from_email='',to_emails=to_emails)
+        print("working")
+        # print(user.id)
+        data3 = {}
+        data3['id'] = user.id
+        
+        
+        return Response(data3, status=status.HTTP_200_OK)
+
+class RecoverPassword(APIView):
+    def post(self, request, pk):
+        print("here in post 1")
+        data2 = request.data
+        print("here in post 2")
+        token_recieved=data2['token']
+        password=data2['password']
+        password_again=data2['password2']
+        user = CodesForUsers.objects.get(pk=pk)
+        data3 = {}
+        data3['code-id'] = user.id
+        if token_recieved !=user.code:
+            # print(type(used.random_integer))
+            # print(type(token_recieved))
+            return Response('Invalid Token')
+        if password!=password_again:
+            return Response('Passwords should match')
+        
+        mainUser = User.objects.get(email=user.email)
+        mainUser.password = make_password(password)
+        mainUser.save()
+        return Response('Password changed successfully')
+        
+        # return Response(data3, status=status.HTTP_200_OK)

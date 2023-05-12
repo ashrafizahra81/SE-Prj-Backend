@@ -25,9 +25,10 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 
-
-
-
+class CodesForUsers(models.Model):
+    email = models.EmailField(verbose_name="email", max_length=60, unique=True)
+    code = models.CharField(max_length=1000, null=True)
+    created_at = models.DateTimeField(null=True)
 
 # class Product(models.Model):
 #     product_name = models.CharField(max_length=100, null=False)
@@ -152,3 +153,4 @@ class User(AbstractUser):
 # class Wallet(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 #     balance = models.FloatField(default=0, null=True)
+
