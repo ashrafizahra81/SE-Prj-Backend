@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 from .serializers import *
 from .models import *
@@ -27,9 +27,6 @@ from . import send_mail
 from django.contrib.auth.hashers import make_password
 from datetime import datetime, timedelta
 
-# from drf_yasg.utils import swagger_auto_schema
-# from rest_framework_tracking.mixins import LoggingMixin
-
 
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
@@ -37,43 +34,42 @@ class UserRegister(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
         data = {}
         if serialized_data.is_valid():
-            print("valiiiid")
             account = serialized_data.save()
-            print(account.id)
-
-
-            # data['response'] = "successfully registered"
             data['username'] = account.username
             data['email'] = account.email
             data['user_phone_number'] = account.user_phone_number
             data['balance'] = 0
+            access = AccessToken.for_user(account)
             refresh = RefreshToken.for_user(account)
-            # res = {
-            #     'refresh': str(refresh),
-            #     'access': str(refresh.access_token),
-            # }
-            data['refresh'] = str(refresh)
+            data['access'] = str(access)
             data['access'] = str(refresh.access_token)
             data['score'] = 0
-            # data['user_postal_code'] = account.user_postal_code
-            # data['user_address'] = account.user_address
-            # token = Token.objects.get(user=account).key
-            # data['token'] = token
-
-            # mail_subject = 'ثبت نام در سبکینو'
-            # message = 'ثبت نام شما در سایت سبکینو با موفقیت انجام شد!'
-            # to_email = account.email
-            # email = EmailMessage(mail_subject, message, to=[to_email])
-            # email.send()
+            account.is_active = 0
+            account.save()
+            print(access)
+            to_emails = []
+            to_emails.append(account.email)
+            link = "http://mahlashams.pythonanywhere.com/verify_email/"+str(refresh)
+            send_mail.send_mail(html=link,text='Here is the link ',subject='verification',from_email='',to_emails=to_emails)
             wallet = Wallet(
                 user = account,
                 balance = 0, 
             )
             wallet.save()
-            print("hereeee")
-            return Response(data)
+            return Response(data = data , status=status.HTTP_200_OK)
         return Response(serialized_data.errors)
 
+class verfyUserToResgister(APIView):
+    def get(self , request ,  token):
+
+        try:
+            access_token = AccessToken(token)
+        except TokenError:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        user = User.objects.get(id = access_token['user_id'])
+        user.is_active = 1
+        user.save()
+        return Response(status=status.HTTP_200_OK)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
