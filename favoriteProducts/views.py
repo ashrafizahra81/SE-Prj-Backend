@@ -16,14 +16,18 @@ class AddToFavoriteProduct(APIView):
         message = ""
         for product in Product.objects.all():
             if product.pk == request.data['data']:
+                temp=1
                 favorite_product = UserFavoriteProduct(
                     user=request.user,
                     product=product
                 )
                 favorite_product.save()
                 message = {"message": "محصول مورد نظر به لیست علاقه مندی ها اضافه شد"}
-
-        return Response(status=status.HTTP_200_OK, data=message)
+                return Response(status=status.HTTP_200_OK, data=message)
+        message = {"message": "محصول مورد نظر در لیست محصولات نیست"}
+        return Response(status=status.HTTP_404_NOT_FOUND, data=message)
+            
+        
 
 
 class ShowFavoriteProduct(APIView):
@@ -50,7 +54,6 @@ class ShowFavoriteProduct(APIView):
                 # data['is_available'] = i[0]['is_available']
                 data['upload'] = i[0]['upload']
                 # data['shop_id'] = i[0]['shop_id']
-                print(i[0]['product_name'])
                 data1.append(data)
         return Response(data1, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_204_NO_CONTENT)
@@ -59,7 +62,10 @@ class DeleteFromFavoriteProducts(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        UserFavoriteProduct.objects.filter(product_id=request.data['data']).delete()
+        deleted = UserFavoriteProduct.objects.filter(product_id=request.data['data']).delete()
+        if(deleted[0] == 0):
+            message = {"message": "محصول مورد نظر برای حذف یافت نشد"}
+            return Response(status=status.HTTP_404_NOT_FOUND, data=message)
         message = {"message": "محصول مورد نظر با موفقیت از لیست علاقه مندی حذف شد"}
         return Response(status=status.HTTP_200_OK, data=message)
 
