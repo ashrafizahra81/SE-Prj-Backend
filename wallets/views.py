@@ -15,9 +15,10 @@ class ChargeWallet(APIView):
         wallet = Wallet.objects.get(user=request.user)
         data2 = request.data
         data = {}
+        if(data2['insert'] == '' or data2['insert'] < 0 or data2['insert'] == 0):
+            data={"message": "مقدار وارد شده قابل قبول نیست"}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         wallet.balance += float(data2['insert'])
-        print("new balanceeeeeeeee")
-        print(wallet.balance)
         wallet.save()
         data['balance'] = wallet.balance
         return Response(data, status=status.HTTP_200_OK)
