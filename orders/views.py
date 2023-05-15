@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
+from permissions import IsShopOwner
 # Create your views here.
 
 
@@ -28,14 +29,14 @@ class GetUserOrders(APIView):
             js = serialized_product.data
             print('upload')
             js['cost'] = o['cost']
-            js['order_date'] = o['order_date']
-            js['complete_date'] = o['complete_date']
+            # js['order_date'] = o['order_date']
+            # js['complete_date'] = o['complete_date']
             js['status'] = o['status']
             data.append(js)
         if data:
-            return JsonResponse(data, safe=False)
+            return Response(status=status.HTTP_200_OK, data=data)
         else:
-            return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CheckoutShoppingCart(APIView):
@@ -85,17 +86,20 @@ class CheckoutShoppingCart(APIView):
         data = {}
         data["message"] = "خرید با موفقیت انجام شد"
         data["balance"] = wallet.balance
+        wallet.save()
         return Response(data, status=status.HTTP_200_OK)
 
 class ShowOrdersToShop(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopOwner]
 
     def get(self, request):
         order_list = list(Order.objects.all().values())
+        
         product_list = list()
         for order in order_list:
             # print(order)
             for product in Product.objects.all().values():
+                self.check_object_permissions(request, product)
                 print(product['id'])
                 if product['id'] == order['product_id']:
 
@@ -110,4 +114,6 @@ class ShowOrdersToShop(APIView):
                         data['upload'] = product['upload']
                         data['shop_id'] = product['shop_id']
                         product_list.append(data)
-        return Response(product_list, status=status.HTTP_200_OK)
+        if product_list:
+            return Response(product_list, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)

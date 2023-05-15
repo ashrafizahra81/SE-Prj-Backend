@@ -25,10 +25,10 @@ class DeleteFromFavoriteProductsTest(APITestCase):
         self.assertEqual(response.data , [
                                             {
                                                 "id": 1,
-                                                "product_name": "تی‌شرت",
+                                                "product_name": "T-shirt",
                                                 "product_price": 120000,
                                                 "product_off_percent": 0,
-                                                "upload": ""
+                                                "upload": "null"
                                             }
                                         ])
 
