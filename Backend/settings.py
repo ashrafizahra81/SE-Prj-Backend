@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'django_dump_load_utf8',
     # 'rest_framework_swagger',
     # 'drf_yasg',
     # "rest_framework_tracking",
