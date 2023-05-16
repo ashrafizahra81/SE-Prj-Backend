@@ -1,15 +1,9 @@
 from django.urls import path , include
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import TokenRefreshView
-#from rest_framework_simplejwt.views import TokenVerifyView
 from . import views
 
 app_name = 'accounts'
-
-# AddProductsToShop_list = views.AddProductsToShopViewSet.as_view({
-#     'get': 'list',
-#     'post': 'create'
-# })
 
 urlpatterns = [
     path('register/', views.UserRegister.as_view()),

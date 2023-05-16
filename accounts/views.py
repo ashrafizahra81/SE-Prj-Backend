@@ -1,3 +1,4 @@
+from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,12 +7,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 from .serializers import *
 from .models import *
 from rest_framework import status
+from datetime import datetime
+from datetime import datetime
 import random
 from wallets.models import Wallet
-from rest_framework.decorators import api_view, schema, authentication_classes, permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from . import send_mail
 from django.contrib.auth.hashers import make_password
 from datetime import datetime
+from permissions import IsShopOwner
+
 
 
 def sendEmail(self , email):
@@ -111,7 +116,6 @@ class UserEditProfile(APIView):
     serializer_class = UserEditProfileSerializer
     def post(self, request):
         user = User.objects.get(id=request.user.id)
-        print(user.username)
         data1 = {}
 
         data1['email'] = user.email
@@ -124,9 +128,12 @@ class UserEditProfile(APIView):
 
         serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
         if serialized_data.is_valid():
-            # print(request.user.email)
-            edited_user = serialized_data.save()
 
+            if(not(request.data['user_postal_code'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            if(not(request.data['user_phone_number'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            edited_user = serialized_data.save()
             if data1['email'] != edited_user.email:
                 data['email'] = edited_user.email
             else:
@@ -154,7 +161,6 @@ class UserEditProfile(APIView):
 
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ShopManagerRegister(APIView):
     serializer_class = ShopManagerRegisterSerializer
@@ -191,7 +197,7 @@ class ShopManagerRegister(APIView):
 
 
 class EditShop(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsShopOwner ,]
     serializer_class = EditShopSerializer
     def post(self, request):
         user = User.objects.get(id=request.user.id)
@@ -205,7 +211,10 @@ class EditShop(APIView):
         serialized_data = EditShopSerializer(data=request.data, instance=user, partial=True)
         data = {}
         if serialized_data.is_valid():
-
+            if(not(request.data['shop_phone_number'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            if(not(request.data['user_phone_number'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             edited_shop = serialized_data.save()
 
             if data1['username'] != edited_shop.username:
@@ -240,11 +249,7 @@ class EditShop(APIView):
 
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
+      
 class ChangePasswordView(generics.UpdateAPIView):
     """
     An endpoint for changing password.
@@ -285,7 +290,6 @@ class ShowUserInfo(APIView):
 
     def get(self, request):
         userObj = User.objects.get(id=request.user.id)
-        print(userObj.username)
         data = {}
         if userObj.shop_name == None:
             data['email'] = userObj.email
@@ -328,46 +332,28 @@ class show_score(APIView):
 # @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def reset_password(request):
-    print(request.method)
     if request.method =='POST':
         data2 = request.data
-        print("here in post 2")
         token_recieved=data2['token']
         password=data2['password']
         password_again=data2['password2']
-        print(request.user)
         used = User.objects.get(id=request.user.id)
-
         if int(token_recieved) !=used.random_integer:
-            print(type(used.random_integer))
-            print(type(token_recieved))
-            return Response('Invalid Token')
+            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
 
         if password!=password_again:
-            return Response('Passwords should match')
+            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         used.random_integer=None
         used.password = make_password(password)
         used.save()
         return Response('Password changed successfully')
-    print("here in post 2")
     token1=random.randint(1000,9999)
-    print(request.user.email)
     used=User.objects.get(id=request.user.id)
     used.random_integer=token1
     used.save()
-    print(token1)
-
-
-
     to_emails = []
     to_emails.append(used.email)
-    print(to_emails)
     send_mail.send_mail(html=token1,text='Here is your password reset token',subject='password reset token',from_email='',to_emails=to_emails)
-    print("working")
-    
-
-
-
     return Response('working now')
 
 
@@ -411,10 +397,7 @@ class ReceiveEmailForRecoverPassword(APIView):
             user.save()
         to_emails = []
         to_emails.append(user.email)
-        print(to_emails)
         send_mail.send_mail(html=user.code,text='Here is your password recovery token',subject='password recovery token',from_email='',to_emails=to_emails)
-        print("working")
-        # print(user.id)
         data3 = {}
         data3['id'] = user.id
         
@@ -433,15 +416,10 @@ class RecoverPassword(APIView):
         data3 = {}
         data3['code-id'] = user.id
         if token_recieved !=user.code:
-            # print(type(used.random_integer))
-            # print(type(token_recieved))
-            return Response('Invalid Token')
+            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
         if password!=password_again:
-            return Response('Passwords should match')
-        
+            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         mainUser = User.objects.get(email=user.email)
         mainUser.password = make_password(password)
         mainUser.save()
-        return Response('Password changed successfully')
-        
-        # return Response(data3, status=status.HTTP_200_OK)
+        return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
