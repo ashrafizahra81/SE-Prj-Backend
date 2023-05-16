@@ -15,7 +15,7 @@ from rest_framework.decorators import api_view, permission_classes
 from . import send_mail
 from django.contrib.auth.hashers import make_password
 from datetime import datetime
-from permissions import IsShopOwner
+from permissions import IsShopOwner , IsShopManager
 
 
 
@@ -197,9 +197,10 @@ class ShopManagerRegister(APIView):
 
 
 class EditShop(APIView):
-    permission_classes = [IsShopOwner ,]
+    permission_classes = [IsAuthenticated ,IsShopManager]
     serializer_class = EditShopSerializer
     def post(self, request):
+        self.check_object_permissions(request, request.user)
         user = User.objects.get(id=request.user.id)
         data1 = {}
         data1['username'] = user.username

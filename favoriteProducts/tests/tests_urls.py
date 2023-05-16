@@ -15,10 +15,10 @@ class TestFavoriteProductsUrls(SimpleTestCase):
     def test_delete_from_favorite_url(self):
     
         #Arrange
-        add_to_favorite_url = reverse('delete-from-favorite')
+        delete_from_favorite_url = reverse('delete-from-favorite')
 
         #Assert
-        self.assertEqual(resolve(add_to_favorite_url).func.view_class , DeleteFromFavoriteProducts)
+        self.assertEqual(resolve(delete_from_favorite_url).func.view_class , DeleteFromFavoriteProducts)
     
     def test_show_favorite_url(self):
     
