@@ -1,7 +1,4 @@
-from django.core.mail import EmailMessage
-from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
@@ -9,48 +6,51 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 from .serializers import *
 from .models import *
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
-from datetime import datetime
-from permissions import IsShopOwner
-from django.core.files.storage import FileSystemStorage
-import requests
-import json
-import string
-import numpy as np
-from django.contrib.auth import get_user_model
-from datetime import datetime
 import random
 from wallets.models import Wallet
-from gifts.models import Gift
 from rest_framework.decorators import api_view, schema, authentication_classes, permission_classes
 from . import send_mail
 from django.contrib.auth.hashers import make_password
-from datetime import datetime, timedelta
+from datetime import datetime
 
+
+def sendEmail(self , email):
+    token=random.randint(1000,9999)
+    to_emails = []
+    to_emails.append(email)
+    send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
+    return token
 
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
     def post(self, request):
         serialized_data = UserRegisterSerializer(data=request.data)
+        if(User.objects.filter(email=request.data['email']).exists()):
+            userCode = CodesForUsers.objects.get(email = request.data['email'])
+            now = datetime.now()
+            delta = now - userCode.created_at.replace(tzinfo=None)
+            diff = delta.seconds
+            if(diff > 600):
+                token = sendEmail(self , userCode.email)
+                userCode.created_at = datetime.now()
+                userCode.code = token
+                userCode.save()
+                return Response({"message":"کد جدید به ایمیل ارسال شد"},
+                            status=status.HTTP_201_CREATED)
+            return Response({"message":"کد به ایمیل شما ارسال شده است"},
+                            status=status.HTTP_202_ACCEPTED)
         data = {}
         if serialized_data.is_valid():
             account = serialized_data.save()
-            data['username'] = account.username
-            data['email'] = account.email
-            data['user_phone_number'] = account.user_phone_number
-            data['balance'] = 0
-            access = AccessToken.for_user(account)
-            refresh = RefreshToken.for_user(account)
-            data['access'] = str(access)
-            data['access'] = str(refresh.access_token)
-            data['score'] = 0
             account.is_active = 0
             account.save()
-            print(access)
-            to_emails = []
-            to_emails.append(account.email)
-            link = "http://mahlashams.pythonanywhere.com/verify_email/"+str(refresh)
-            send_mail.send_mail(html=link,text='Here is the link ',subject='verification',from_email='',to_emails=to_emails)
+            token = sendEmail(self , account.email)
+            user_code = CodesForUsers(
+                code = token,
+                created_at = datetime.now(),
+                email = account.email 
+            )
+            user_code.save()
             wallet = Wallet(
                 user = account,
                 balance = 0, 
@@ -60,16 +60,37 @@ class UserRegister(APIView):
         return Response(serialized_data.errors)
 
 class verfyUserToResgister(APIView):
-    def get(self , request ,  token):
+    def post(self , request):
+        if(not(request.data['code'] <=9999 and request.data['code'] >= 1000)):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
 
-        try:
-            access_token = AccessToken(token)
-        except TokenError:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = User.objects.get(id = access_token['user_id'])
-        user.is_active = 1
-        user.save()
-        return Response(status=status.HTTP_200_OK)
+            userCode = CodesForUsers.objects.get(code = request.data['code'])
+            userCode.code=None
+            userCode.save()
+            user = User.objects.get(email = userCode.email)
+            user.is_active = 1
+            user.save()
+            data={}
+            if(user.shop_name == None):
+                data['username'] = user.username
+                data['email'] = user.email
+                data['user_phone_number'] = user.user_phone_number
+                data['balance'] = 0
+                refresh = RefreshToken.for_user(user)
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+                data['score'] = 0
+            else:
+                data['username'] = user.username
+                data['email'] = user.email
+                data['shop_name'] = user.shop_name
+                data['shop_address'] = user.shop_address
+                data['shop_phone_number'] = user.shop_phone_number
+                refresh = RefreshToken.for_user(user)
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+            return Response(data=data , status=status.HTTP_200_OK)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
@@ -135,216 +156,38 @@ class UserEditProfile(APIView):
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-# class AddToShoppingCartView(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         print(request.data)
-#         message = ""
-#         for product in Product.objects.all():
-#             if product.pk == request.data['data']:
-#                 if product.inventory > 0:
-#                     cart = UserShoppingCart(
-#                         user=request.user,
-#                         product=product
-#                     )
-#                     message = {"message": "محصول مورد نظر به سبد خرید اضافه شد"}
-#                     cart.save()
-#                 else:
-#                     message = {"message": "محصول مورد نظر موجود نیست"}
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class DeleteFromShoppingCart(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         UserShoppingCart.objects.filter(product_id=request.data['data']).delete()
-#         message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class ShowUserShoppingCart(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def get(self, request):
-#         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-#         product_list = list()
-#         for i in user_cart:
-#             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-#         data1 = list()
-#         total_price = 0
-#         total_price_with_discount = 0
-#         for i in product_list:
-#             # print(i[0]['is_deleted'])
-#             if i[0]['is_deleted'] == False:
-#                 data = {}
-#                 data['id'] = i[0]['id']
-#                 data['product_name'] = i[0]['product_name']
-#                 data['product_size'] = i[0]['product_size']
-#                 data['product_color'] = i[0]['product_color']
-#                 data['product_price'] = i[0]['product_price']
-#                 if int(i[0]['inventory']) > 0:
-#                     data['is_available'] = True
-#                 else:
-#                     data['is_available'] = False
-#                 # data['inventory'] = i[0]['inventory']
-#                 data['upload'] = i[0]['upload']
-#                 data['shop_id'] = i[0]['shop_id']
-#                 price_off = 0
-#                 price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
-#                 data['product_off_percent'] = price_off
-#                 total_price += i[0]['product_price']
-#                 total_price_with_discount += price_off
-#                 data1.append(data)
-#         data2 = {}
-#         data2["products"] = data1
-#         data2["total_price"] = total_price
-#         data2["total_price_with_discount"] = total_price_with_discount
-#         return Response(data2, status=status.HTTP_200_OK)
-
-
-# class AddToFavoriteProduct(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         message = ""
-#         for product in Product.objects.all():
-#             if product.pk == request.data['data']:
-#                 favorite_product = UserFavoriteProduct(
-#                     user=request.user,
-#                     product=product
-#                 )
-#                 favorite_product.save()
-#                 message = {"message": "محصول مورد نظر به لیست علاقه مندی ها اضافه شد"}
-
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class ShowFavoriteProduct(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def get(self, request):
-#         user_favorite_product = list(UserFavoriteProduct.objects.filter(user_id=request.user.id).values())
-#         product_list = list()
-#         for i in user_favorite_product:
-#             product_list.append(Product.objects.filter(id=i["product_id"]).values())
-#         data1 = list()
-#         for i in product_list:
-#             if i[0]['is_deleted'] == False:
-#                 data = {}
-#                 data['id'] = i[0]['id']
-#                 data['product_name'] = i[0]['product_name']
-#                 # data['product_size'] = i[0]['product_size']
-#                 # data['product_color'] = i[0]['product_color']
-#                 data['product_price'] = i[0]['product_price']
-#                 price_off = 0
-#                 if int(i[0]['product_off_percent']) > 0:
-#                     price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
-#                 data['product_off_percent'] = price_off
-#                 # data['is_available'] = i[0]['is_available']
-#                 data['upload'] = i[0]['upload']
-#                 # data['shop_id'] = i[0]['shop_id']
-#                 print(i[0]['product_name'])
-#                 data1.append(data)
-#         return Response(data1, status=status.HTTP_200_OK)
-#         # return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class ShopManagerRegister(APIView):
     serializer_class = ShopManagerRegisterSerializer
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
+        if(User.objects.filter(email=request.data['email']).exists()):
+            userCode = CodesForUsers.objects.get(email = request.data['email'])
+            now = datetime.now()
+            delta = now - userCode.created_at.replace(tzinfo=None)
+            diff = delta.seconds
+            if(diff > 600):
+                token = sendEmail(self , userCode.email)
+                userCode.created_at = datetime.now()
+                userCode.code = token
+                userCode.save()
+                return Response({"message":"کد جدید به ایمیل ارسال شد"},
+                            status=status.HTTP_201_CREATED)
+            return Response({"message":"کد به ایمیل شما ارسال شده است"},
+                            status=status.HTTP_202_ACCEPTED)
         data = {}
         if serialized_data.is_valid():
-            shop_manager = serialized_data.save()
-            # data['response'] = "successfully registered"
-            data['username'] = shop_manager.username
-            data['email'] = shop_manager.email
-            # data['user_phone_number'] = shop_manager.user_phone_number
-            data['shop_name'] = shop_manager.shop_name
-            data['shop_address'] = shop_manager.shop_address
-            data['shop_phone_number'] = shop_manager.shop_phone_number
-            refresh = RefreshToken.for_user(shop_manager)
-            data['refresh'] = str(refresh)
-            data['access'] = str(refresh.access_token)
+            account = serialized_data.save()
+            account.is_active = 0
+            account.save()
+            token = sendEmail(self , account.email)
+            user_code = CodesForUsers(
+                code = token,
+                created_at = datetime.now(),
+                email = account.email 
+            )
+            user_code.save()
             return Response(data)
         return Response(serialized_data.errors)
-
-# class ChargeWallet(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def post(self , request):
-#         wallet = Wallet.objects.get(user=request.user)
-#         data2 = request.data
-#         data = {}
-#         wallet.balance += float(data2['insert'])
-#         print("new balanceeeeeeeee")
-#         print(wallet.balance)
-#         wallet.save()
-#         data['balance'] = wallet.balance
-#         return Response(data, status=status.HTTP_200_OK)
-
-# class BuyFromWallet(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def get(self , request):
-#         AllUserShoppingCart_list = list(UserShoppingCart.objects.all().values())
-#         UserShoppingCart_list = []
-#         UserShoppingCartProductId_list = []
-#         print(AllUserShoppingCart_list)
-#         data = {}
-#         totalPrice = 0
-#         for userShoppingCart in AllUserShoppingCart_list:
-#             if userShoppingCart['user_id'] == request.user.id:
-#                 if userShoppingCart['status'] == "not Accepted":
-#                     UserShoppingCart_list.append(userShoppingCart)
-#                     UserShoppingCartProductId_list.append(userShoppingCart['product_id'])
-        
-
-        
-#         print(len(UserShoppingCart_list))
-#         print(len(UserShoppingCartProductId_list))
-
-#         products_list = list(Product.objects.all().values())
-#         while len(UserShoppingCartProductId_list) > 0:
-#             for product in products_list:
-#                 if UserShoppingCartProductId_list[0] == product['id']:
-#                     totalPrice += product['product_price']
-#                     UserShoppingCartProductId_list.pop(0)
-#                     break
-
-#         print("total price*******************")
-#         print(totalPrice)
-#         wallet = Wallet.objects.get(user=request.user)
-
-#         if totalPrice > 0: 
-
-#             if wallet.balance >= totalPrice:
-#                 wallet.balance -= totalPrice
-#                 data['status'] = 'done!'
-#             # myList = UserShoppingCart.objects.get(user_id=request.user.id)
-#             # print(lent(myList))
-#                 for userShoppingCart in AllUserShoppingCart_list:
-#                     if userShoppingCart['user_id'] == request.user.id:
-#                         if userShoppingCart['status'] == "not Accepted":
-#                             UserShoppingCartById = UserShoppingCart.objects.get(id=userShoppingCart['id'])
-#                             UserShoppingCartById.status = "Accepted"
-#                             UserShoppingCartById.save()
-
-#                 wallet.save()
-
-#             else:
-#                 data['status'] = 'Your account balance is insufficient!'
-        
-#         else:
-#             data['status'] = "there are no items in your shopping cart"
-   
-
-        
-#         return Response(data, status=status.HTTP_200_OK)
-
 
 
 class EditShop(APIView):
@@ -399,409 +242,7 @@ class EditShop(APIView):
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class AddProductsToShopViewSet(ModelViewSet):
-#     queryset = Product.objects.none()
-#     serializer_class = ProductAndStyleSerializer
-#     permission_classes = (IsAuthenticated,)
-#     http_method_names = ['post', ]
 
-#     def create(self, request, *args, **kwargs):
-#         _serializer = self.serializer_class(data=request.data)
-#         data = {}
-
-#         print(_serializer)
-#         if _serializer.is_valid():
-#             data2 = request.data
-
-#             # m = request.FILES['upload']
-#             # fs = FileSystemStorage('uploads/')
-#             # filename = fs.save(m.name, m)
-#             # upload_url_file = fs.url(filename)
-#             # print(upload_url_file)
-#             #
-#             # with open(f'./uploads{upload_url_file}', 'rb') as f:
-#             #     data = f.read()
-#             # r = requests.post("https://api.nft.storage/upload", headers={
-#             #     'accept': 'application/json',
-#             #     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
-#             #     'Content-Type': 'image/*'},
-#             #                   data=data)
-#             # print(json.loads(r.text))
-#             # str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
-#             # print(str)
-#             # str2 = "https://ipfs.io/ipfs/" + str
-#             # print(str2)
-
-#             # print(p.shop_id)
-#             data1 = {}
-#             product = Product(
-
-#                 shop=request.user,
-#                 product_name=data2['product_name'],
-#                 product_price=data2['product_price'],
-#                 product_size=data2['product_size'],
-#                 product_group=data2['product_group'],
-#                 product_image=data2['product_image'],
-#                 product_color=data2['product_color'],
-#                 product_height=data2['product_height'],
-#                 product_design=data2['product_design'],
-#                 product_material=data2['product_material'],
-#                 product_country=data2['product_country'],
-#                 # product_off_percent=data2['product_off_percent'],
-#                 inventory=data2['inventory'],
-#                 initial_inventory = data2['inventory'],
-#                 # upload=str2,
-#                 is_available=True,
-#             )
-#             product.save()
-#             data1['product_id'] = product.id
-#             data1['product_name'] = data2['product_name']
-#             data1['product_price'] = data2['product_price']
-#             data1['product_size'] = data2['product_size']
-#             data1['product_group'] = data2['product_group']
-#             data1['product_image'] = data2['product_image']
-#             data1['product_color'] = data2['product_color']
-#             data1['product_height'] = data2['product_height']
-#             data1['product_design'] = data2['product_design']
-#             data1['product_material'] = data2['product_material']
-#             data1['product_country'] = data2['product_country']
-#             data1['inventory'] = data2['inventory']
-#             # data1['upload'] = str2
-#             # s = Style(product=product,
-#             #           style_image_url=data1['product_image'],
-#             #           style_param_1=data2['style_param_1'],
-#             #           style_param_2=data2['style_param_2'],
-#             #           style_param_3=data2['style_param_3'],
-#             #           style_param_4=data2['style_param_4'],
-#             #           style_param_5=data2['style_param_5']
-#             #           )
-#             # s.save()
-#             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
-#         else:
-#             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
-
-
-# class EditProduct(APIView):
-#     permission_classes = [IsAuthenticated, IsShopOwner]
-
-#     def put(self, request, pk):
-#         product = Product.objects.get(pk=pk)
-#         self.check_object_permissions(request, product)
-
-#         data1 = {}
-#         data1['product_name'] = product.product_name
-#         data1['product_price'] = product.product_price
-#         data1['inventory'] = product.inventory
-#         data1['product_size'] = product.product_size
-#         data1['product_color'] = product.product_color
-#         data1['product_height'] = product.product_height
-#         data1['product_design'] = product.product_design
-#         data1['product_material'] = product.product_material
-#         data1['product_country'] = product.product_country
-#         data1['product_off_percent'] = product.product_off_percent
-#         data1['is_available'] = product.is_available
-
-#         data = {}
-
-#         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
-#         if serialized_data.is_valid():
-#             # print(request.user.email)
-#             edited_product = serialized_data.save()
-
-#             if data1['product_name'] != edited_product.product_name:
-#                 data['product_name'] = edited_product.product_name
-#             else:
-#                 data['product_name'] = ""
-
-#             if data1['product_price'] != edited_product.product_price:
-#                 data['product_price'] = edited_product.product_price
-#             else:
-#                 data['product_price'] = ""
-
-#             if data1['inventory'] != edited_product.inventory:
-#                 data['inventory'] = edited_product.inventory
-#             else:
-#                 data['inventory'] = ""
-
-#             if data1['product_size'] != edited_product.product_size:
-#                 data['product_size'] = edited_product.product_size
-#             else:
-#                 data['product_size'] = ""
-
-#             if data1['product_color'] != edited_product.product_color:
-#                 data['product_color'] = edited_product.product_color
-#             else:
-#                 data['product_color'] = ""
-
-#             if data1['product_height'] != edited_product.product_height:
-#                 data['product_height'] = edited_product.product_height
-#             else:
-#                 data['product_height'] = ""
-
-#             if data1['product_design'] != edited_product.product_design:
-#                 data['product_design'] = edited_product.product_design
-#             else:
-#                 data['product_design'] = ""
-
-#             if data1['product_material'] != edited_product.product_material:
-#                 data['product_material'] = edited_product.product_material
-#             else:
-#                 data['product_material'] = ""
-
-#             if data1['product_country'] != edited_product.product_country:
-#                 data['product_country'] = edited_product.product_country
-#             else:
-#                 data['product_country'] = ""
-
-#             if data1['product_off_percent'] != edited_product.product_off_percent:
-#                 data['product_off_percent'] = edited_product.product_off_percent
-#             else:
-#                 data['product_off_percent'] = ""
-
-#             if data1['is_available'] != edited_product.is_available:
-#                 data['is_available'] = edited_product.is_available
-#             else:
-#                 data['is_available'] = ""
-
-#             return Response(data, status=status.HTTP_200_OK)
-#         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class DeleteProduct(APIView):
-#     permission_classes = [IsAuthenticated, IsShopOwner]
-
-#     def delete(self, request, pk):
-#         product = Product.objects.get(pk=pk)
-#         self.check_object_permissions(request, product)
-#         product.is_deleted = True
-#         product.save()
-#         # product.delete()
-#         return Response({'message': 'محصول موردنظر با موفقیت حذف شد'})
-
-
-# class GetProductInfo(APIView):
-
-#     def get(self, request, pk):
-#         product = Product.objects.get(pk=pk)
-#         score = 0
-#         user_score_for_product = 0
-#         ret_val = {}
-#         if product and product.is_deleted == False:
-#             serialized_data = ProductsSerializer(instance=product, data=request.data, partial=True)
-#             if serialized_data.is_valid():
-#                 ret_val = serialized_data.data
-#                 is_fav = UserFavoriteProduct.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
-#                 in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
-#                 ret_val['is_favorite'] = is_fav
-#                 ret_val['is_in_cart'] = in_cart
-#                 product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
-#                 for o1 in product_score:
-#                     # product1 = Product.objects.get(pk=product_id)
-#                     if o1['product_id'] == pk:
-#                         user_score_for_product = o1['score']
-#                 score = user_score_for_product
-#                 ret_val['score'] = score
-#                 return Response(ret_val, status=status.HTTP_200_OK)
-#             else:
-#                 return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
-
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# class GetUserOrders(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def get(self, request):
-
-#         user_orders = list(Order.objects.filter(user_id=request.user.id).values())
-#         data = list()
-#         for o in user_orders:
-#             print(o)
-#             product = Product.objects.get(pk=o['product_id'])
-#             serialized_product = ProductsSerializer(instance=product)
-#             js = serialized_product.data
-#             print('upload')
-#             js['cost'] = o['cost']
-#             js['order_date'] = o['order_date']
-#             js['complete_date'] = o['complete_date']
-#             js['status'] = o['status']
-#             data.append(js)
-#         if data:
-#             return JsonResponse(data, safe=False)
-#         else:
-#             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
-
-
-# class DeleteFromFavoriteProducts(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         UserFavoriteProduct.objects.filter(product_id=request.data['data']).delete()
-#         message = {"message": "محصول مورد نظر با موفقیت از لیست علاقه مندی حذف شد"}
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class CheckoutShoppingCart(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-
-#         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-#         price = 0
-#         off_price = 0
-#         p_data = {}
-#         for o1 in user_cart:
-#             product1 = Product.objects.get(pk=o1['product_id'])
-#             product_inventory = product1.inventory - 1
-#             product1.last_product_sold_date = datetime.today()
-#             if(product1.inventory==0):
-#                 product1.is_available = 0
-#             p_data['inventory'] = product_inventory
-#             serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
-#             off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-#             if serialized_data.is_valid():
-#                 edited_product = serialized_data.save()
-                
-#             price += product1.product_price
-#         wallet = Wallet.objects.get(user = request.user)
-#         if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
-#             return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)
-#         for o in user_cart:
-#             product = Product.objects.get(pk=o['product_id'])
-#             if product.is_deleted == False:
-#                 c = Order(
-#                     user=request.user,
-#                     product=product,
-#                     cost=product.product_price,
-#                     total_cost=price+30000,
-#                     off_cost=off_price+30000,
-#                     status="Accepted",
-#                 )
-#                 c.save()
-#             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
-#         user = User.objects.get(email=request.user)
-#         user.score += off_price / 100000 # each 100,000 Toman, 1 score
-#         user.save()
-#         if(request.data['type'] == "wallet"):
-#             wallet.balance = wallet.balance - (off_price+30000)
-#         data = {}
-#         data["message"] = "خرید با موفقیت انجام شد"
-#         data["balance"] = wallet.balance
-#         return Response(data, status=status.HTTP_200_OK)
-
-# class show_checkout_info(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def get(self , request):
-#         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-#         off_price = 0
-#         for o1 in user_cart:
-#             product1 = Product.objects.get(pk=o1['product_id'])
-#             if(product1.is_deleted == 1 or product1.is_available == 0):
-#                 return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_204_NO_CONTENT)
-#             off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-#         data={}
-#         data["discounted_price"] = off_price
-#         data["total_cost"] = off_price+30000
-#         data["score"] = int((off_price+30000)/100000)
-#         data["shippingPrice"] = 30000
-#         return Response(data,status=status.HTTP_200_OK)
-    
-# class ShowProductsByShop(APIView):
-
-#     def get(self, request):
-#         product_list = list(Product.objects.filter(shop=request.user.id).values())
-#         shop = User.objects.filter(id=request.user.id).values()
-#         print(shop)
-#         data = {}
-#         data1 = list()
-#         for i in product_list:
-#             data = {}
-#             if i['is_deleted'] == False:
-#                 data['id'] = i['id']
-#                 data['product_name'] = i['product_name']
-#                 # data['product_size'] = i['product_size']
-#                 # data['product_color'] = i['product_color']
-#                 data['product_price'] = i['product_price']
-#                 price_off = 0
-#                 if int(i['product_off_percent']) > 0:
-#                     price_off = ((100 - int(i['product_off_percent'])) / 100) * int(i['product_price'])
-#                 data['product_off_percent'] = price_off
-#                 data['inventory'] = i['inventory']
-#                 data['upload'] = i['upload']
-#                 data['shop_id'] = i['shop_id']
-#             if len(data) != 0:
-#                 data1.append(data)
-#         data2 = {}
-#         data2["products"] = data1
-#         data2["shop_name"] = shop[0]['shop_name']
-#         data2["shop_address"] = shop[0]['shop_address']
-#         data2["shop_phone_number"] = shop[0]['shop_phone_number']
-#         return Response(data2, status=status.HTTP_200_OK)
-#         # return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# class AddOrDeleteFavoriteView(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         is_fav = UserFavoriteProduct.objects.filter(user_id=request.user.id, product_id=request.data['data']).exists()
-#         print(is_fav)
-#         if is_fav:
-#             user_product = UserFavoriteProduct.objects.get(user_id=request.user, product_id=request.data['data'])
-#             user_product.delete()
-#             message = "محصول مورد نظر از لیست علاقه مندی ها حذف شد"
-#         else:
-#             to_save = UserFavoriteProduct(user=request.user, product=Product.objects.get(pk=request.data['data']))
-#             to_save.save()
-#             message = "محصول مورد نظر به لیست علاقه مندی ها اضافه شد"
-
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class AddOrRemoveShoppingCartView(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=request.data['data']).exists()
-#         if in_cart:
-#             user_product = UserShoppingCart.objects.get(user_id=request.user.id, product_id=request.data['data'])
-#             user_product.delete()
-#             message = "محصول مورد نظر از سبد خرید حذف شد"
-#         else:
-#             to_save = UserShoppingCart(user=request.user, product=Product.objects.get(pk=request.data['data']),
-#                                        status="NOT PAID")
-#             to_save.save()
-#             message = "محصول مورد نظر به سبد خرید اضافه شد"
-
-#         return Response(status=status.HTTP_200_OK, data=message)
-
-
-# class ShowAllProducts(APIView):
-#     def get(self, request):
-#         product_list = list(Product.objects.all().values())
-#         data = {}
-#         data1 = list()
-#         print(product_list)
-#         for i in product_list:
-#             data = {}
-#             if i['is_deleted'] == False:
-
-#                 print(1)
-#                 print(i['id'])
-#                 print(2)
-#                 data['id'] = i['id']
-#                 data['product_name'] = i['product_name']
-#                 data['product_price'] = i['product_price']
-#                 price_off = 0
-#                 if int(i['product_off_percent']) > 0:
-#                     price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
-#                 data['product_off_percent'] = price_off
-#                 data['inventory'] = i['inventory']
-#                 data['upload'] = i['upload']
-#                 data['shop_id'] = i['shop_id']
-#             if len(data) != 0:
-#                 data1.append(data)
-#         return Response(data1, status=status.HTTP_200_OK)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -876,73 +317,6 @@ class Logout(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class ShowOrdersToShop(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def get(self, request):
-#         order_list = list(Order.objects.all().values())
-#         product_list = list()
-#         for order in order_list:
-#             # print(order)
-#             for product in Product.objects.all().values():
-#                 print(product['id'])
-#                 if product['id'] == order['product_id']:
-
-#                     if product['shop_id'] == request.user.id:
-#                         data = {}
-#                         data['id'] = product['id']
-#                         data['product_name'] = product['product_name']
-#                         data['product_size'] = product['product_size']
-#                         data['product_color'] = product['product_color']
-#                         data['product_price'] = product['product_price']
-#                         data['inventory'] = product['inventory']
-#                         data['upload'] = product['upload']
-#                         data['shop_id'] = product['shop_id']
-#                         product_list.append(data)
-#         return Response(product_list, status=status.HTTP_200_OK)
-
-# class ResetPassword(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self , request):
-#         mail_subject = 'reset password'
-#         message = 'newpass1234'
-#         to_email = request.data['email']
-#         print(to_email)
-#         email = EmailMessage(mail_subject, message, to=[to_email])
-#         email.send()
-#         User = get_user_model()
-#         u = User.objects.get(email = to_email)
-#         u.set_password(message)
-#         u.save()
-#         data2 ={"message" : "رمز جدید به ایمیل شما ارسال شد"}
-#         return Response(status=status.HTTP_200_OK , data = data2)
-
-# class Report(APIView):
-
-#     permission_classes = [IsAuthenticated, ]
-    
-#     def get(self , request):
-#         data = list()
-#         totalPriceOfShop = 0
-#         for product in Product.objects.all():
-#             data1={}
-#             if product.shop_id == request.user.id:
-#                 totalPrice = (product.initial_inventory - product.inventory) * product.product_price
-#                 totalPriceOfShop += totalPrice
-#                 data1['productName'] = product.product_name
-#                 data1['inventory'] = product.inventory
-#                 data1['initial_inventory'] = product.initial_inventory
-#                 data1['price'] = product.product_price
-#                 data1['totalPriceOfProduct'] = totalPrice
-#                 if(product.last_product_sold_date != None):
-#                     data1['date'] = datetime.date(product.last_product_sold_date)
-#                 else :
-#                     data1['date'] = "تاکنون خریدی انجام نشده"
-#                 data.append(data1)
-#         data.append({'totalSell':totalPriceOfShop})
-#         return Response(data, status=status.HTTP_200_OK)
-    
 class show_score(APIView):
      permission_classes = [IsAuthenticated, ]
      def get(self , request):
@@ -950,100 +324,12 @@ class show_score(APIView):
         data['score'] = request.user.score
         return Response(data, status=status.HTTP_200_OK)
 
-# class Filters(APIView):
-#     permission_classes = [IsAuthenticated, ]
-
-#     def post(self, request):
-#         filter = request.data['group'][0]
-
-#         data1 = list()
-#         if filter == "شلوار" or filter == "پیراهن" or filter == "تیشرت" or filter == "هودی":
-#             products = list(Product.objects.filter(product_group=filter).values())
-#             for p in products:
-#                 data = {}
-#                 if p['is_deleted'] == False:
-#                     data['id'] = p['id']
-#                     # print(product.pk)
-#                     data['product_name'] = p['product_name']
-#                     # data['product_size'] = product['product_size']
-#                     # data['product_color'] = product['product_color']
-#                     data['product_price'] = p['product_price']
-#                     price_off = 0
-#                     # if p[0]['product_off_percent'] > 0:
-#                     #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
-#                     # data['product_off_percent'] = price_off
-#                     # data['inventory'] = i['inventory']
-#                     if p['upload']:
-#                         data['upload'] = p['upload']
-#                     else:
-#                         data['upload'] = p['product_image']
-#                     data['shop_id'] = p['shop_id']
-#                     data1.append(data)
-#         return Response(data1, status=status.HTTP_200_OK)
-
-# class ShowGiftInfo(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def get(self , request):
-#         data = []
-#         for i in Gift.objects.all().values():
-#             if(datetime(i["date"].year, i["date"].month, i["date"].day) >= datetime.now()):
-#                 data1={}
-#                 data1['description'] = i['description']
-#                 data1['score'] = i['score']
-#                 data1['date'] = i['date']
-#                 data.append(data1)
-#         if(len(data) == 0):
-#             return Response({"message":"درحال حاضر جایزه‌ای فعال نیست"}, status=status.HTTP_204_NO_CONTENT)
-#         return Response(data, status=status.HTTP_200_OK)
-
-# class getGift(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def post(self,request):
-#         user = User.objects.get(email=request.user)
-#         gift = Gift.objects.get(score = request.data['score'])
-#         if(user.score >= gift.score):
-#             user.gift = gift
-#             user.score = user.score - gift.score
-#             user.save()
-#             data = {}
-#             data['discount_code'] = gift.discount_code
-#             data['new_score'] = user.score
-#             return Response(data, status=status.HTTP_200_OK)
-#         return Response({"message":"امتیاز شما کافی نیست"},status=status.HTTP_204_NO_CONTENT)
-        
-# class applyDiscount(APIView):
-#     permission_classes = [IsAuthenticated, ]
-#     def post(self , request):
-#         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-#         off_price = 0
-#         for o1 in user_cart:
-#             product1 = Product.objects.get(pk=o1['product_id'])
-#             off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-#         data={}
-#         gift = Gift.objects.get(discount_code = request.data['discount_code'])
-#         if(datetime(gift.date.year, gift.date.month, gift.date.day) < datetime.now()):
-#             return Response({"message":"زمان استفاده از این کد تخفیف به انمام رسیده است"}
-#                         ,status=status.HTTP_204_NO_CONTENT)
-#         if(gift.type=='C'):
-#             data["total_cost"] = off_price+30000
-#             data["discounted_total_cost"] = off_price
-#         if(gift.type == 'A'):
-#             data["total_cost"] = off_price+30000
-#             data["discounted_total_cost"] = (0.8) * (off_price+30000)
-#         else:
-#             data["total_cost"] = off_price+30000
-#             data["discounted_total_cost"] = (0.7) * (off_price+30000)
-#         data['shippingPrice'] = 30000
-#         return Response(data,status=status.HTTP_200_OK)
-
-
 @api_view(['GET','POST'])
 # @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def reset_password(request):
     print(request.method)
     if request.method =='POST':
-        print("here in post 1")
         data2 = request.data
         print("here in post 2")
         token_recieved=data2['token']
