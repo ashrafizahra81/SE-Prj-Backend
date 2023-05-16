@@ -273,10 +273,10 @@ def reset_password(request):
         password_again=data2['password2']
         used = User.objects.get(id=request.user.id)
         if int(token_recieved) !=used.random_integer:
-            return Response('Invalid Token')
+            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
 
         if password!=password_again:
-            return Response('Passwords should match')
+            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         used.random_integer=None
         used.password = make_password(password)
         used.save()
@@ -350,15 +350,10 @@ class RecoverPassword(APIView):
         data3 = {}
         data3['code-id'] = user.id
         if token_recieved !=user.code:
-            # print(type(used.random_integer))
-            # print(type(token_recieved))
-            return Response('Invalid Token')
+            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
         if password!=password_again:
-            return Response('Passwords should match')
-        
+            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         mainUser = User.objects.get(email=user.email)
         mainUser.password = make_password(password)
         mainUser.save()
-        return Response('Password changed successfully')
-        
-        # return Response(data3, status=status.HTTP_200_OK)
+        return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
