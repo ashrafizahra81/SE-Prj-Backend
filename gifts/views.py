@@ -26,9 +26,12 @@ class ShowGiftInfo(APIView):
             return Response({"message":"درحال حاضر جایزه‌ای فعال نیست"}, status=status.HTTP_204_NO_CONTENT)
         return Response(data, status=status.HTTP_200_OK)
 
-class getGift(APIView):
+class GetGift(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self,request):
+        if(type(request.data['score'])== str):
+            if(not(request.data['score'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.get(email=request.user)
         gift = Gift.objects.get(score = request.data['score'])
         if(user.score >= gift.score):
@@ -41,7 +44,7 @@ class getGift(APIView):
             return Response(data, status=status.HTTP_200_OK)
         return Response({"message":"امتیاز شما کافی نیست"},status=status.HTTP_204_NO_CONTENT)
 
-class applyDiscount(APIView):
+class ApplyDiscount(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())

@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 from .serializers import *
 from .models import *
@@ -19,29 +19,83 @@ from permissions import IsShopOwner
 
 
 
+def sendEmail(self , email):
+    token=random.randint(1000,9999)
+    to_emails = []
+    to_emails.append(email)
+    send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
+    return token
+
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
     def post(self, request):
         serialized_data = UserRegisterSerializer(data=request.data)
+        if(User.objects.filter(email=request.data['email']).exists()):
+            userCode = CodesForUsers.objects.get(email = request.data['email'])
+            now = datetime.now()
+            delta = now - userCode.created_at.replace(tzinfo=None)
+            diff = delta.seconds
+            if(diff > 600):
+                token = sendEmail(self , userCode.email)
+                userCode.created_at = datetime.now()
+                userCode.code = token
+                userCode.save()
+                return Response({"message":"کد جدید به ایمیل ارسال شد"},
+                            status=status.HTTP_201_CREATED)
+            return Response({"message":"کد به ایمیل شما ارسال شده است"},
+                            status=status.HTTP_202_ACCEPTED)
         data = {}
         if serialized_data.is_valid():
             account = serialized_data.save()
-            data['username'] = account.username
-            data['email'] = account.email
-            data['user_phone_number'] = account.user_phone_number
-            data['balance'] = 0
-            refresh = RefreshToken.for_user(account)
-            data['refresh'] = str(refresh)
-            data['access'] = str(refresh.access_token)
-            data['score'] = 0
+            account.is_active = 0
+            account.save()
+            token = sendEmail(self , account.email)
+            user_code = CodesForUsers(
+                code = token,
+                created_at = datetime.now(),
+                email = account.email 
+            )
+            user_code.save()
             wallet = Wallet(
                 user = account,
                 balance = 0, 
             )
             wallet.save()
-            return Response(data)
+            return Response(data = data , status=status.HTTP_200_OK)
         return Response(serialized_data.errors)
 
+class verfyUserToResgister(APIView):
+    def post(self , request):
+        if(not(request.data['code'] <=9999 and request.data['code'] >= 1000)):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
+
+            userCode = CodesForUsers.objects.get(code = request.data['code'])
+            userCode.code=None
+            userCode.save()
+            user = User.objects.get(email = userCode.email)
+            user.is_active = 1
+            user.save()
+            data={}
+            if(user.shop_name == None):
+                data['username'] = user.username
+                data['email'] = user.email
+                data['user_phone_number'] = user.user_phone_number
+                data['balance'] = 0
+                refresh = RefreshToken.for_user(user)
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+                data['score'] = 0
+            else:
+                data['username'] = user.username
+                data['email'] = user.email
+                data['shop_name'] = user.shop_name
+                data['shop_address'] = user.shop_address
+                data['shop_phone_number'] = user.shop_phone_number
+                refresh = RefreshToken.for_user(user)
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+            return Response(data=data , status=status.HTTP_200_OK)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
@@ -112,19 +166,32 @@ class ShopManagerRegister(APIView):
     serializer_class = ShopManagerRegisterSerializer
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
+        if(User.objects.filter(email=request.data['email']).exists()):
+            userCode = CodesForUsers.objects.get(email = request.data['email'])
+            now = datetime.now()
+            delta = now - userCode.created_at.replace(tzinfo=None)
+            diff = delta.seconds
+            if(diff > 600):
+                token = sendEmail(self , userCode.email)
+                userCode.created_at = datetime.now()
+                userCode.code = token
+                userCode.save()
+                return Response({"message":"کد جدید به ایمیل ارسال شد"},
+                            status=status.HTTP_201_CREATED)
+            return Response({"message":"کد به ایمیل شما ارسال شده است"},
+                            status=status.HTTP_202_ACCEPTED)
         data = {}
         if serialized_data.is_valid():
-            shop_manager = serialized_data.save()
-            # data['response'] = "successfully registered"
-            data['username'] = shop_manager.username
-            data['email'] = shop_manager.email
-            # data['user_phone_number'] = shop_manager.user_phone_number
-            data['shop_name'] = shop_manager.shop_name
-            data['shop_address'] = shop_manager.shop_address
-            data['shop_phone_number'] = shop_manager.shop_phone_number
-            refresh = RefreshToken.for_user(shop_manager)
-            data['refresh'] = str(refresh)
-            data['access'] = str(refresh.access_token)
+            account = serialized_data.save()
+            account.is_active = 0
+            account.save()
+            token = sendEmail(self , account.email)
+            user_code = CodesForUsers(
+                code = token,
+                created_at = datetime.now(),
+                email = account.email 
+            )
+            user_code.save()
             return Response(data)
         return Response(serialized_data.errors)
 
@@ -182,7 +249,7 @@ class EditShop(APIView):
 
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
+      
 class ChangePasswordView(generics.UpdateAPIView):
     """
     An endpoint for changing password.
@@ -260,7 +327,6 @@ class show_score(APIView):
         data = {}
         data['score'] = request.user.score
         return Response(data, status=status.HTTP_200_OK)
-
 
 @api_view(['GET','POST'])
 # @authentication_classes([TokenAuthentication])

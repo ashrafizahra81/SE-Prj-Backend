@@ -5,12 +5,14 @@ from favoriteProducts.models import UserFavoriteProduct
 from .models import *
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from permissions import IsShopOwner
+from permissions import IsShopOwner, IsShopManager
 from rest_framework.viewsets import ModelViewSet
 from .serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
+# import datetime
+
 # Create your views here.
 
 
@@ -110,7 +112,7 @@ class DeleteProduct(APIView):
         product.is_deleted = True
         product.save()
         # product.delete()
-        return Response({'message': 'محصول موردنظر با موفقیت حذف شد'})
+        return Response({'message': 'محصول موردنظر با موفقیت حذف شد'}, status=status.HTTP_200_OK)
 
 
 class GetProductInfo(APIView):
@@ -145,10 +147,11 @@ class GetProductInfo(APIView):
 class AddProductsToShopViewSet(ModelViewSet):
     queryset = Product.objects.none()
     serializer_class = ProductAndStyleSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsShopManager)
     http_method_names = ['post', ]
 
     def create(self, request, *args, **kwargs):
+        self.check_object_permissions(request, request.user)
         _serializer = self.serializer_class(data=request.data)
         data = {}
 
@@ -226,7 +229,11 @@ class AddProductsToShopViewSet(ModelViewSet):
 
 class ShowProductsByShop(APIView):
 
+    permission_classes = (IsAuthenticated, IsShopManager)
+
     def get(self, request):
+        print(request.user.shop_name)
+        self.check_object_permissions(request, request.user)
         product_list = list(Product.objects.filter(shop=request.user.id).values())
         shop = User.objects.filter(id=request.user.id).values()
         print(shop)
@@ -289,9 +296,11 @@ class ShowAllProducts(APIView):
 
 class Report(APIView):
 
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsShopManager]
     
     def get(self , request):
+        print (datetime(2020, 5, 17))
+        self.check_object_permissions(request, request.user)
         data = list()
         totalPriceOfShop = 0
         for product in Product.objects.all():
@@ -305,6 +314,8 @@ class Report(APIView):
                 data1['price'] = product.product_price
                 data1['totalPriceOfProduct'] = totalPrice
                 if(product.last_product_sold_date != None):
+                    print(type(product.last_product_sold_date))
+                    print(datetime.date(product.last_product_sold_date))
                     data1['date'] = datetime.date(product.last_product_sold_date)
                 else :
                     data1['date'] = "تاکنون خریدی انجام نشده"
@@ -320,7 +331,7 @@ class Filters(APIView):
         filter = request.data['group'][0]
 
         data1 = list()
-        if filter == "شلوار" or filter == "پیراهن" or filter == "تیشرت" or filter == "هودی":
+        if filter == "pants" or filter == "shirt" or filter == "T-shirt" or filter == "hoodie":
             products = list(Product.objects.filter(product_group=filter).values())
             for p in products:
                 data = {}
@@ -342,4 +353,7 @@ class Filters(APIView):
                         data['upload'] = p['product_image']
                     data['shop_id'] = p['shop_id']
                     data1.append(data)
-        return Response(data1, status=status.HTTP_200_OK)
+        if data1:
+            return Response(status=status.HTTP_200_OK, data=data1)
+        else:
+            return Response(status=status.HTTP_204_NO_CONTENT)
