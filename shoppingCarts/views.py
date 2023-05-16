@@ -32,8 +32,14 @@ class DeleteFromShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        UserShoppingCart.objects.filter(product_id=request.data['data']).delete()
-        message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
+
+        message = ""
+        for userCart in UserShoppingCart.objects.all():
+            if userCart.user_id == request.user.id:
+                if userCart.product_id == int(request.data['data']):
+                    userCart.delete()
+                    message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
+                    break
         return Response(status=status.HTTP_200_OK, data=message)
 
 
