@@ -329,6 +329,7 @@ class show_score(APIView):
         data['score'] = request.user.score
         return Response(data, status=status.HTTP_200_OK)
 
+
 @api_view(['GET','POST'])
 # @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -355,7 +356,7 @@ def reset_password(request):
     to_emails = []
     to_emails.append(used.email)
     send_mail.send_mail(html=token1,text='Here is your password reset token',subject='password reset token',from_email='',to_emails=to_emails)
-    return Response('working now')
+    return Response({'message':'a token was sent to the user'}, status=status.HTTP_200_OK)
 
 
 
@@ -368,27 +369,23 @@ class ReceiveEmailForRecoverPassword(APIView):
         print("model is ok")
         f = 0
         if user != False:
+
             user = CodesForUsers.objects.get(email=email1)
             now = datetime.now()
-            print("userrr")
-            print(user.id)
-            print(type(user.created_at))
             delta = now - user.created_at.replace(tzinfo=None)
-            print(now)
-            print(user.created_at.replace(tzinfo=None))
-            print("deltaaa")
-            print(delta)
             diff = delta.seconds
-            print("diiiiiff")
-            print(diff)
+
             if diff > 600:
+
                 token1=random.randint(1000,9999)
                 user.code = token1
                 user.created_at = datetime.now()
                 print("newww")
                 print(user.created_at)
                 user.save()
+
         else:
+
             token1=random.randint(1000,9999)
             user = CodesForUsers(
                 code = token1,
@@ -407,9 +404,8 @@ class ReceiveEmailForRecoverPassword(APIView):
 
 class RecoverPassword(APIView):
     def post(self, request, pk):
-        print("here in post 1")
+
         data2 = request.data
-        print("here in post 2")
         token_recieved=data2['token']
         password=data2['password']
         password_again=data2['password2']

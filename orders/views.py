@@ -61,7 +61,6 @@ class CheckoutShoppingCart(APIView):
                 edited_product = serialized_data.save()
                 
             price += product1.product_price
-        print(request.user)
         wallet = Wallet.objects.get(user_id = request.user)
         if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
             return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)

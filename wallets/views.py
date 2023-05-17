@@ -7,8 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 
-# Create your views here.
-
 class ChargeWallet(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
@@ -51,8 +49,6 @@ class BuyFromWallet(APIView):
                     UserShoppingCartProductId_list.pop(0)
                     break
 
-        print("total price*******************")
-        print(totalPrice)
         wallet = Wallet.objects.get(user=request.user)
 
         if totalPrice > 0: 
@@ -60,8 +56,6 @@ class BuyFromWallet(APIView):
             if wallet.balance >= totalPrice:
                 wallet.balance -= totalPrice
                 data['status'] = 'done!'
-            # myList = UserShoppingCart.objects.get(user_id=request.user.id)
-            # print(lent(myList))
                 for userShoppingCart in AllUserShoppingCart_list:
                     if userShoppingCart['user_id'] == request.user.id:
                         if userShoppingCart['status'] == "not Accepted":

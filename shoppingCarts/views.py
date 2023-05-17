@@ -55,7 +55,7 @@ class ShowUserShoppingCart(APIView):
         total_price = 0
         total_price_with_discount = 0
         for i in product_list:
-            # print(i[0]['is_deleted'])
+            
             if i[0]['is_deleted'] == False:
                 data = {}
                 data['id'] = i[0]['id']
