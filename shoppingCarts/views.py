@@ -5,14 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
-# Create your views here.
-
+import logging
+logger = logging.getLogger("django")
 
 class AddToShoppingCartView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        print(request.data)
         message = ""
         for product in Product.objects.all():
             if product.pk == request.data['data']:
@@ -23,8 +22,10 @@ class AddToShoppingCartView(APIView):
                     )
                     message = {"message": "محصول مورد نظر به سبد خرید اضافه شد"}
                     cart.save()
+                    logger.info('product '+str(request.data['data'])+' added to shopping cart of user '+str(request.user.id))
                 else:
                     message = {"message": "محصول مورد نظر موجود نیست"}
+                    logger.warn('product '+str(request.data['data'])+ ' is not available and could not add to shopping cart')
         return Response(status=status.HTTP_200_OK, data=message)
 
 
@@ -39,6 +40,7 @@ class DeleteFromShoppingCart(APIView):
                 if userCart.product_id == int(request.data['data']):
                     userCart.delete()
                     message = {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"}
+                    logger.info('product '+str(request.data['data'])+' deleted from shopping cart of user '+str(request.user.id))
                     break
         return Response(status=status.HTTP_200_OK, data=message)
 
@@ -55,7 +57,6 @@ class ShowUserShoppingCart(APIView):
         total_price = 0
         total_price_with_discount = 0
         for i in product_list:
-            # print(i[0]['is_deleted'])
             if i[0]['is_deleted'] == False:
                 data = {}
                 data['id'] = i[0]['id']
@@ -67,7 +68,6 @@ class ShowUserShoppingCart(APIView):
                     data['is_available'] = True
                 else:
                     data['is_available'] = False
-                # data['inventory'] = i[0]['inventory']
                 data['upload'] = i[0]['upload']
                 data['shop_id'] = i[0]['shop_id']
                 price_off = 0
@@ -80,6 +80,7 @@ class ShowUserShoppingCart(APIView):
         data2["products"] = data1
         data2["total_price"] = total_price
         data2["total_price_with_discount"] = total_price_with_discount
+        logger.info('products of shopping cart of user '+ str(request.user.id)+' returned')
         return Response(data2, status=status.HTTP_200_OK)
 
 
@@ -98,4 +99,5 @@ class show_checkout_info(APIView):
         data["total_cost"] = off_price+30000
         data["score"] = int((off_price+30000)/100000)
         data["shippingPrice"] = 30000
+        logger.info('checkout information of user '+ str(request.user.id)+' returned')
         return Response(data,status=status.HTTP_200_OK)
