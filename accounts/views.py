@@ -34,6 +34,9 @@ class UserRegister(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
             logger.info('This email already exists: ' + request.data['email'])
+            if(User.objects.get(email = request.data['email']).is_active == 1):
+                logger.info('This account is active: ' + request.data['email'])
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             userCode = CodesForUsers.objects.get(email = request.data['email'])
             now = datetime.now()
             delta = now - userCode.created_at.replace(tzinfo=None)
@@ -43,7 +46,7 @@ class UserRegister(APIView):
                 userCode.created_at = datetime.now()
                 userCode.code = token
                 userCode.save()
-                logger.info('New verification code has been sent')
+                logger.info('The code stored in database for user '+userCode.email)
                 return Response({"message":"کد جدید به ایمیل ارسال شد"},
                             status=status.HTTP_201_CREATED)
             logger.info('User has valid code')
@@ -201,6 +204,9 @@ class ShopManagerRegister(APIView):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
             logger.info('This email already exists: ' + request.data['email'])
+            if(User.objects.get(email = request.data['email']).is_active == 1):
+                logger.info('This account is active: ' + request.data['email'])
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             userCode = CodesForUsers.objects.get(email = request.data['email'])
             now = datetime.now()
             delta = now - userCode.created_at.replace(tzinfo=None)
@@ -339,7 +345,7 @@ class show_score(APIView):
      def get(self , request):
         data = {}
         data['score'] = request.user.score
-        logger.info('score of user '+request.user.pk+' is '+request.user.score)
+        logger.info('score of user '+str(request.user.pk)+' is '+str(request.user.score))
         return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['GET','POST'])
