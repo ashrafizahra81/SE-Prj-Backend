@@ -11,9 +11,9 @@ from .serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
-# import datetime
+import logging
 
-# Create your views here.
+logger = logging.getLogger("django")
 
 
 
@@ -41,61 +41,84 @@ class EditProduct(APIView):
 
         serialized_data = EditProductSerializer(instance=product, data=request.data, partial=True)
         if serialized_data.is_valid():
+            logger.info('Data entered is valid')
             # print(request.user.email)
             edited_product = serialized_data.save()
 
             if data1['product_name'] != edited_product.product_name:
                 data['product_name'] = edited_product.product_name
+                logger.info('product_name of product '+product.pk+' change from '+data1['product_name']+' to '+
+                            edited_product.product_name)
             else:
                 data['product_name'] = ""
 
             if data1['product_price'] != edited_product.product_price:
                 data['product_price'] = edited_product.product_price
+                logger.info('product_price of product '+product.pk+' change from '+data1['product_price']+' to '+
+                            edited_product.product_price)
             else:
                 data['product_price'] = ""
 
             if data1['inventory'] != edited_product.inventory:
                 data['inventory'] = edited_product.inventory
+                logger.info('inventory of product '+product.pk+' change from '+data1['inventory']+' to '+
+                            edited_product.inventory)
             else:
                 data['inventory'] = ""
 
             if data1['product_size'] != edited_product.product_size:
                 data['product_size'] = edited_product.product_size
+                logger.info('product_size of product '+product.pk+' change from '+data1['product_size']+' to '+
+                            edited_product.product_size)
             else:
                 data['product_size'] = ""
 
             if data1['product_color'] != edited_product.product_color:
                 data['product_color'] = edited_product.product_color
+                logger.info('product_color of product '+product.pk+' change from '+data1['product_color']+' to '+
+                            edited_product.product_color)
             else:
                 data['product_color'] = ""
 
             if data1['product_height'] != edited_product.product_height:
                 data['product_height'] = edited_product.product_height
+                logger.info('product_height of product '+product.pk+' change from '+data1['product_height']+' to '+
+                            edited_product.product_height)
             else:
                 data['product_height'] = ""
 
             if data1['product_design'] != edited_product.product_design:
                 data['product_design'] = edited_product.product_design
+                logger.info('product_design of product '+product.pk+' change from '+data1['product_design']+' to '+
+                            edited_product.product_design)
             else:
                 data['product_design'] = ""
 
             if data1['product_material'] != edited_product.product_material:
                 data['product_material'] = edited_product.product_material
+                logger.info('product_material of product '+product.pk+' change from '+data1['product_material']+' to '+
+                            edited_product.product_material)
             else:
                 data['product_material'] = ""
 
             if data1['product_country'] != edited_product.product_country:
                 data['product_country'] = edited_product.product_country
+                logger.info('product_country of product '+product.pk+' change from '+data1['product_country']+' to '+
+                            edited_product.product_country)
             else:
                 data['product_country'] = ""
 
             if data1['product_off_percent'] != edited_product.product_off_percent:
                 data['product_off_percent'] = edited_product.product_off_percent
+                logger.info('product_off_percent of product '+product.pk+' change from '+data1['product_off_percent']+' to '+
+                            edited_product.product_off_percent)
             else:
                 data['product_off_percent'] = ""
 
             if data1['is_available'] != edited_product.is_available:
                 data['is_available'] = edited_product.is_available
+                logger.info('is_available of product '+product.pk+' change from '+data1['is_available']+' to '+
+                            edited_product.is_available)
             else:
                 data['is_available'] = ""
 
@@ -111,7 +134,7 @@ class DeleteProduct(APIView):
         self.check_object_permissions(request, product)
         product.is_deleted = True
         product.save()
-        # product.delete()
+        logger.info('product with id '+str(product.pk)+' deleted')
         return Response({'message': 'محصول موردنظر با موفقیت حذف شد'}, status=status.HTTP_200_OK)
 
 
@@ -119,6 +142,7 @@ class GetProductInfo(APIView):
 
     def get(self, request, pk):
         product = Product.objects.get(pk=pk)
+        logger.info('product with id '+str(product.pk)+' found')
         score = 0
         user_score_for_product = 0
         ret_val = {}
@@ -127,20 +151,19 @@ class GetProductInfo(APIView):
             if serialized_data.is_valid():
                 ret_val = serialized_data.data
                 is_fav = UserFavoriteProduct.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
+                if(is_fav):
+                    logger.info('product with id '+str(product.pk)+' is in favorite list')
                 in_cart = UserShoppingCart.objects.filter(user_id=request.user.id, product_id=product.pk).exists()
+                if(in_cart):
+                    logger.info('product with id '+str(product.pk)+' is in shopping cart')
                 ret_val['is_favorite'] = is_fav
                 ret_val['is_in_cart'] = in_cart
-                # product_score = list(ProductScore.objects.filter(user_id=request.user.id).values())
-                # for o1 in product_score:
-                #     # product1 = Product.objects.get(pk=product_id)
-                #     if o1['product_id'] == pk:
-                #         user_score_for_product = o1['score']
                 score = user_score_for_product
                 ret_val['score'] = score
                 return Response(ret_val, status=status.HTTP_200_OK)
             else:
                 return Response(serialized_data.errors, status=status.HTTP_417_EXPECTATION_FAILED)
-
+        logger.info('product with id '+str(product.pk)+' is deleted')
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -155,33 +178,11 @@ class AddProductsToShopViewSet(ModelViewSet):
         _serializer = self.serializer_class(data=request.data)
         data = {}
 
-        print(_serializer)
         if _serializer.is_valid():
+            logger.info('data entered is valid')
             data2 = request.data
-
-            # m = request.FILES['upload']
-            # fs = FileSystemStorage('uploads/')
-            # filename = fs.save(m.name, m)
-            # upload_url_file = fs.url(filename)
-            # print(upload_url_file)
-            #
-            # with open(f'./uploads{upload_url_file}', 'rb') as f:
-            #     data = f.read()
-            # r = requests.post("https://api.nft.storage/upload", headers={
-            #     'accept': 'application/json',
-            #     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEYwOEQxYmYyZEREMGNBMGM2Qzc1NENEOUMyMDFBY2NCOGUxMzNmN2EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MzcwODczOTg5MCwibmFtZSI6ImtleSJ9.vBoLYYzJSLqnLuqWVXWIJEZbEm8SqyfhSWKb-yPl-h8',
-            #     'Content-Type': 'image/*'},
-            #                   data=data)
-            # print(json.loads(r.text))
-            # str = json.loads(r.text)['value']['cid'].translate({ord(c): None for c in string.whitespace})
-            # print(str)
-            # str2 = "https://ipfs.io/ipfs/" + str
-            # print(str2)
-
-            # print(p.shop_id)
             data1 = {}
             product = Product(
-
                 shop=request.user,
                 product_name=data2['product_name'],
                 product_price=data2['product_price'],
@@ -193,10 +194,8 @@ class AddProductsToShopViewSet(ModelViewSet):
                 product_design=data2['product_design'],
                 product_material=data2['product_material'],
                 product_country=data2['product_country'],
-                # product_off_percent=data2['product_off_percent'],
                 inventory=data2['inventory'],
                 initial_inventory = data2['inventory'],
-                # upload=str2,
                 is_available=True,
             )
             product.save()
@@ -212,18 +211,10 @@ class AddProductsToShopViewSet(ModelViewSet):
             data1['product_material'] = data2['product_material']
             data1['product_country'] = data2['product_country']
             data1['inventory'] = data2['inventory']
-            # data1['upload'] = str2
-            # s = Style(product=product,
-            #           style_image_url=data1['product_image'],
-            #           style_param_1=data2['style_param_1'],
-            #           style_param_2=data2['style_param_2'],
-            #           style_param_3=data2['style_param_3'],
-            #           style_param_4=data2['style_param_4'],
-            #           style_param_5=data2['style_param_5']
-            #           )
-            # s.save()
+            logger.info('product with id '+str(product.id)+' saved')
             return Response(data=data1, status=status.HTTP_201_CREATED)  # NOQA
         else:
+            logger.warn('dara entered is not valid')
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # NOQA
 
 
@@ -232,11 +223,9 @@ class ShowProductsByShop(APIView):
     permission_classes = (IsAuthenticated, IsShopManager)
 
     def get(self, request):
-        print(request.user.shop_name)
         self.check_object_permissions(request, request.user)
         product_list = list(Product.objects.filter(shop=request.user.id).values())
         shop = User.objects.filter(id=request.user.id).values()
-        print(shop)
         data = {}
         data1 = list()
         for i in product_list:
@@ -244,8 +233,6 @@ class ShowProductsByShop(APIView):
             if i['is_deleted'] == False:
                 data['id'] = i['id']
                 data['product_name'] = i['product_name']
-                # data['product_size'] = i['product_size']
-                # data['product_color'] = i['product_color']
                 data['product_price'] = i['product_price']
                 price_off = 0
                 if int(i['product_off_percent']) > 0:
@@ -256,13 +243,15 @@ class ShowProductsByShop(APIView):
                 data['shop_id'] = i['shop_id']
             if len(data) != 0:
                 data1.append(data)
+            else:
+                logger.info('shop '+str(shop[0]['id'])+' has no products')
         data2 = {}
         data2["products"] = data1
         data2["shop_name"] = shop[0]['shop_name']
         data2["shop_address"] = shop[0]['shop_address']
         data2["shop_phone_number"] = shop[0]['shop_phone_number']
+        logger.info('products of shop '+str(shop[0]['id'])+' found')
         return Response(data2, status=status.HTTP_200_OK)
-        # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ShowAllProducts(APIView):
@@ -270,14 +259,10 @@ class ShowAllProducts(APIView):
         product_list = list(Product.objects.all().values())
         data = {}
         data1 = list()
-        print(product_list)
         for i in product_list:
             data = {}
             if i['is_deleted'] == False:
 
-                print(1)
-                print(i['id'])
-                print(2)
                 data['id'] = i['id']
                 data['product_name'] = i['product_name']
                 data['product_price'] = i['product_price']
@@ -290,6 +275,9 @@ class ShowAllProducts(APIView):
                 data['shop_id'] = i['shop_id']
             if len(data) != 0:
                 data1.append(data)
+            else:
+                logger.info('There is no product')
+        logger.info('products of all shops found')
         return Response(data1, status=status.HTTP_200_OK)
 
 
@@ -299,7 +287,6 @@ class Report(APIView):
     permission_classes = [IsAuthenticated, IsShopManager]
     
     def get(self , request):
-        print (datetime(2020, 5, 17))
         self.check_object_permissions(request, request.user)
         data = list()
         totalPriceOfShop = 0
@@ -314,13 +301,12 @@ class Report(APIView):
                 data1['price'] = product.product_price
                 data1['totalPriceOfProduct'] = totalPrice
                 if(product.last_product_sold_date != None):
-                    print(type(product.last_product_sold_date))
-                    print(datetime.date(product.last_product_sold_date))
                     data1['date'] = datetime.date(product.last_product_sold_date)
                 else :
                     data1['date'] = "تاکنون خریدی انجام نشده"
                 data.append(data1)
         data.append({'totalSell':totalPriceOfShop})
+        logger.info('report of shop '+request.user.id+' returned')
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -329,7 +315,6 @@ class Filters(APIView):
 
     def post(self, request):
         filter = request.data['group'][0]
-
         data1 = list()
         if filter == "pants" or filter == "shirt" or filter == "T-shirt" or filter == "hoodie":
             products = list(Product.objects.filter(product_group=filter).values())
@@ -337,16 +322,8 @@ class Filters(APIView):
                 data = {}
                 if p['is_deleted'] == False:
                     data['id'] = p['id']
-                    # print(product.pk)
                     data['product_name'] = p['product_name']
-                    # data['product_size'] = product['product_size']
-                    # data['product_color'] = product['product_color']
                     data['product_price'] = p['product_price']
-                    price_off = 0
-                    # if p[0]['product_off_percent'] > 0:
-                    #     price_off = ((100 - p[0]['product_off_percent']) / 100) * p[0]['product_price']
-                    # data['product_off_percent'] = price_off
-                    # data['inventory'] = i['inventory']
                     if p['upload']:
                         data['upload'] = p['upload']
                     else:
@@ -354,6 +331,8 @@ class Filters(APIView):
                     data['shop_id'] = p['shop_id']
                     data1.append(data)
         if data1:
+            logger.info('products with filter '+filter+' found')
             return Response(status=status.HTTP_200_OK, data=data1)
         else:
+            logger.info('no products with filter '+filter+' found')
             return Response(status=status.HTTP_204_NO_CONTENT)
