@@ -53,3 +53,5 @@ class TestCheckout(APITestCase):
 
         response = self.client.post(self.checkout_urls, data,format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
+
+    

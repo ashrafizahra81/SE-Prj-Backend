@@ -11,11 +11,6 @@ from .serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
-# import datetime
-
-# Create your views here.
-
-
 
 class EditProduct(APIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
