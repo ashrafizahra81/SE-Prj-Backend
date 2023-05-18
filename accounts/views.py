@@ -16,14 +16,16 @@ from . import send_mail
 from django.contrib.auth.hashers import make_password
 from datetime import datetime
 from permissions import IsShopOwner , IsShopManager
+import logging
 
-
+logger = logging.getLogger("django")
 
 def sendEmail(self , email):
     token=random.randint(1000,9999)
     to_emails = []
     to_emails.append(email)
     send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
+    logger.info('The verification code has been sent to the email')
     return token
 
 class UserRegister(APIView):
@@ -31,6 +33,7 @@ class UserRegister(APIView):
     def post(self, request):
         serialized_data = UserRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
+            logger.info('This email already exists: ' + request.data['email'])
             userCode = CodesForUsers.objects.get(email = request.data['email'])
             now = datetime.now()
             delta = now - userCode.created_at.replace(tzinfo=None)
@@ -40,12 +43,16 @@ class UserRegister(APIView):
                 userCode.created_at = datetime.now()
                 userCode.code = token
                 userCode.save()
+                logger.info('New verification code has been sent')
                 return Response({"message":"کد جدید به ایمیل ارسال شد"},
                             status=status.HTTP_201_CREATED)
+            logger.info('User has valid code')
             return Response({"message":"کد به ایمیل شما ارسال شده است"},
                             status=status.HTTP_202_ACCEPTED)
         data = {}
+        logger.info('no user with this email exists: '+request.data['email'])
         if serialized_data.is_valid():
+            logger.info('Data entered is valid')
             account = serialized_data.save()
             account.is_active = 0
             account.save()
@@ -56,28 +63,35 @@ class UserRegister(APIView):
                 email = account.email 
             )
             user_code.save()
+            logger.info('User ' + account.pk+ ' and its code stored in database')
             wallet = Wallet(
                 user = account,
                 balance = 0, 
             )
             wallet.save()
+            logger.info('User '+account.pk+ ' saved successfully')
             return Response(data = data , status=status.HTTP_200_OK)
+        logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors)
 
 class verfyUserToResgister(APIView):
     def post(self , request):
         if(not(request.data['code'] <=9999 and request.data['code'] >= 1000)):
+            logger.warn('The code entered is not in a right range')
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
-
+            logger.info('The code entered is valid')
             userCode = CodesForUsers.objects.get(code = request.data['code'])
             userCode.code=None
             userCode.save()
+            logger.info('code for user with email '+ userCode.email+' changed to null')
             user = User.objects.get(email = userCode.email)
             user.is_active = 1
             user.save()
+            logger.info('User with email '+ user.email+' is active now')
             data={}
             if(user.shop_name == None):
+                logger.info('The user is a customer')
                 data['username'] = user.username
                 data['email'] = user.email
                 data['user_phone_number'] = user.user_phone_number
@@ -87,6 +101,7 @@ class verfyUserToResgister(APIView):
                 data['access'] = str(refresh.access_token)
                 data['score'] = 0
             else:
+                logger.info('The user is a seller')
                 data['username'] = user.username
                 data['email'] = user.email
                 data['shop_name'] = user.shop_name
@@ -95,11 +110,15 @@ class verfyUserToResgister(APIView):
                 refresh = RefreshToken.for_user(user)
                 data['refresh'] = str(refresh)
                 data['access'] = str(refresh.access_token)
+            logger.info('The user is active now')
             return Response(data=data , status=status.HTTP_200_OK)
+        logger.warn('code not found')
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
     serializer_class = CustomTokenObtainPairSerializer
+    logger.info('The user logged in successfuly')
 
 
 class TokenVerifyView(TokenViewBase):
@@ -116,6 +135,7 @@ class UserEditProfile(APIView):
     serializer_class = UserEditProfileSerializer
     def post(self, request):
         user = User.objects.get(id=request.user.id)
+        logger.info('user found')
         data1 = {}
 
         data1['email'] = user.email
@@ -128,38 +148,51 @@ class UserEditProfile(APIView):
 
         serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
         if serialized_data.is_valid():
-
             if(not(request.data['user_postal_code'].isdigit())):
+                logger.warn('The user postal code entered is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             if(not(request.data['user_phone_number'].isdigit())):
+                logger.warn('The user phone number entered is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            logger.info('Data entered is valid')
             edited_user = serialized_data.save()
             if data1['email'] != edited_user.email:
                 data['email'] = edited_user.email
+                logger.info('Email changed from '+data1['email']+' to '+ edited_user.email)
             else:
                 data['email'] = ""
 
             if data1['username'] != edited_user.username:
                 data['username'] = edited_user.username
+                logger.info('username changed from '+data1['username']+' to '+ edited_user.username)
+
             else:
                 data['username'] = ""
 
             if data1['user_phone_number'] != edited_user.user_phone_number:
                 data['user_phone_number'] = edited_user.user_phone_number
+                logger.info('user_phone_number changed from '+data1['user_phone_number']+' to '+ edited_user.user_phone_number)
+
             else:
                 data['user_phone_number'] = ""
 
             if data1['user_postal_code'] != edited_user.user_postal_code:
                 data['user_postal_code'] = edited_user.user_postal_code
+                logger.info('user_postal_code changed from '+data1['user_postal_code']+' to '+ edited_user.user_postal_code)
+
             else:
                 data['user_postal_code'] = ""
 
             if data1['user_address'] != edited_user.user_address:
                 data['user_address'] = edited_user.user_address
+                logger.info('user_address changed from '+data1['user_address']+' to '+ edited_user.user_address)
+
             else:
                 data['user_address'] = ""
 
             return Response(serialized_data.data, status=status.HTTP_200_OK)
+        
+        logger.warn('The data entered is invalid')
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ShopManagerRegister(APIView):
@@ -167,6 +200,7 @@ class ShopManagerRegister(APIView):
     def post(self, request):
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
+            logger.info('This email already exists: ' + request.data['email'])
             userCode = CodesForUsers.objects.get(email = request.data['email'])
             now = datetime.now()
             delta = now - userCode.created_at.replace(tzinfo=None)
@@ -176,12 +210,16 @@ class ShopManagerRegister(APIView):
                 userCode.created_at = datetime.now()
                 userCode.code = token
                 userCode.save()
+                logger.info('New verification code has been sent')
                 return Response({"message":"کد جدید به ایمیل ارسال شد"},
                             status=status.HTTP_201_CREATED)
+            logger.info('User has valid code')
             return Response({"message":"کد به ایمیل شما ارسال شده است"},
                             status=status.HTTP_202_ACCEPTED)
         data = {}
+        logger.info('no user with this email exists: '+request.data['email'])
         if serialized_data.is_valid():
+            logger.info('Data entered is valid')
             account = serialized_data.save()
             account.is_active = 0
             account.save()
@@ -192,7 +230,9 @@ class ShopManagerRegister(APIView):
                 email = account.email 
             )
             user_code.save()
+            logger.info('User '+account.pk+ ' saved successfully')
             return Response(data)
+        logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors)
 
 
@@ -201,6 +241,7 @@ class EditShop(APIView):
     serializer_class = EditShopSerializer
     def post(self, request):
         self.check_object_permissions(request, request.user)
+        logger.info('The user is a shop owner')
         user = User.objects.get(id=request.user.id)
         data1 = {}
         data1['username'] = user.username
@@ -213,86 +254,67 @@ class EditShop(APIView):
         data = {}
         if serialized_data.is_valid():
             if(not(request.data['shop_phone_number'].isdigit())):
+                logger.warn('The shop phone number entered is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             if(not(request.data['user_phone_number'].isdigit())):
+                logger.warn('The user phone number entered is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+            logger.info('Data entered is valid')
             edited_shop = serialized_data.save()
 
             if data1['username'] != edited_shop.username:
                 data['username'] = edited_shop.username
+                logger.info('username changed from '+data1['username']+' to '+ edited_shop.username)
             else:
                 data['username'] = ""
 
             if data1['user_phone_number'] != edited_shop.user_phone_number:
                 data['user_phone_number'] = edited_shop.user_phone_number
+                logger.info('user_phone_number changed from '+data1['user_phone_number']+' to '+ edited_shop.user_phone_number)
             else:
                 data['user_phone_number'] = ""
 
             if data1['email'] != edited_shop.email:
                 data['email'] = edited_shop.email
+                logger.info('Email changed from '+data1['email']+' to '+ edited_shop.email)
             else:
                 data['email'] = ""
 
             if data1['shop_address'] != edited_shop.shop_address:
                 data['shop_address'] = edited_shop.shop_address
+                logger.info('shop_address changed from '+data1['shop_address']+' to '+ edited_shop.shop_address)
             else:
                 data['shop_address'] = ""
 
             if data1['shop_name'] != edited_shop.shop_name:
                 data['shop_name'] = edited_shop.shop_name
+                logger.info('shop_name changed from '+data1['shop_name']+' to '+ edited_shop.shop_name)
+
             else:
                 data['shop_name'] = ""
 
             if data1['shop_phone_number'] != edited_shop.shop_phone_number:
                 data['shop_phone_number'] = edited_shop.shop_phone_number
+                logger.info('shop_phone_number changed from '+data1['shop_phone_number']+' to '+ edited_shop.shop_phone_number)
+
             else:
                 data['shop_phone_number'] = ""
 
             return Response(serialized_data.data, status=status.HTTP_200_OK)
+        logger.warn('The data entered is invalid')
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
       
-class ChangePasswordView(generics.UpdateAPIView):
-    """
-    An endpoint for changing password.
-    """
-    serializer_class = ChangePasswordSerializer
-    model = User
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self, queryset=None):
-        obj = self.request.user
-        return obj
-
-    def update(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            # Check old password
-            if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
-            # set_password also hashes the password that the user will get
-            self.object.set_password(serializer.data.get("new_password"))
-            self.object.save()
-            response = {
-                'status': 'success',
-                'code': status.HTTP_200_OK,
-                'message': 'Password updated successfully',
-                'data': []
-            }
-
-            return Response(response)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ShowUserInfo(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
         userObj = User.objects.get(id=request.user.id)
+        logger.info('user found')
         data = {}
         if userObj.shop_name == None:
+            logger.info('user '+userObj.pk+ ' is a customer')
             data['email'] = userObj.email
             data['username'] = userObj.username
             data['user_phone_number'] = userObj.user_phone_number
@@ -301,6 +323,7 @@ class ShowUserInfo(APIView):
             wallet = Wallet.objects.get(user = userObj)
             data['inventory'] = wallet.balance
         else:
+            logger.info('user '+userObj.pk+ ' is a seller')
             data['email'] = userObj.email
             data['username'] = userObj.username
             data['shop_name'] = userObj.shop_name
@@ -311,22 +334,12 @@ class ShowUserInfo(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class Logout(APIView):
-    serializer_class = LogoutSerializer
-    permission_classes = [IsAuthenticated, ]
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class show_score(APIView):
      permission_classes = [IsAuthenticated, ]
      def get(self , request):
         data = {}
         data['score'] = request.user.score
+        logger.info('score of user '+request.user.pk+' is '+request.user.score)
         return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['GET','POST'])
@@ -340,13 +353,16 @@ def reset_password(request):
         password_again=data2['password2']
         used = User.objects.get(id=request.user.id)
         if int(token_recieved) !=used.random_integer:
+            logger.warn('token entered '+token_recieved+' is not equal with '+used.random_integer)
             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
 
         if password!=password_again:
+            logger.warn('password_again '+password_again+' is not equal with password'+password)
             return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         used.random_integer=None
         used.password = make_password(password)
         used.save()
+        logger.info('password of user '+used.pk+' changed successfuly')
         return Response('Password changed successfully')
     token1=random.randint(1000,9999)
     used=User.objects.get(id=request.user.id)
@@ -364,31 +380,21 @@ class ReceiveEmailForRecoverPassword(APIView):
         data = request.data
         email1 = data['email']
         user = CodesForUsers.objects.filter(email=email1).exists()
-        print(user)
-        print("model is ok")
-        f = 0
         if user != False:
+            logger.info('user with email '+email1+' has a code')
             user = CodesForUsers.objects.get(email=email1)
             now = datetime.now()
-            print("userrr")
-            print(user.id)
-            print(type(user.created_at))
             delta = now - user.created_at.replace(tzinfo=None)
-            print(now)
-            print(user.created_at.replace(tzinfo=None))
-            print("deltaaa")
-            print(delta)
             diff = delta.seconds
-            print("diiiiiff")
-            print(diff)
             if diff > 600:
+                logger.info('The code of user with email '+email1+' has expired')
                 token1=random.randint(1000,9999)
                 user.code = token1
                 user.created_at = datetime.now()
-                print("newww")
-                print(user.created_at)
                 user.save()
+                logger.info('a new code assigned user with email '+email1)
         else:
+            logger.info('user with email '+email1+'does not have a code')
             token1=random.randint(1000,9999)
             user = CodesForUsers(
                 code = token1,
@@ -396,6 +402,7 @@ class ReceiveEmailForRecoverPassword(APIView):
                 email= email1,
             )
             user.save()
+            logger.info('a new code assigned user with email '+email1)
         to_emails = []
         to_emails.append(user.email)
         send_mail.send_mail(html=user.code,text='Here is your password recovery token',subject='password recovery token',from_email='',to_emails=to_emails)
@@ -407,9 +414,7 @@ class ReceiveEmailForRecoverPassword(APIView):
 
 class RecoverPassword(APIView):
     def post(self, request, pk):
-        print("here in post 1")
         data2 = request.data
-        print("here in post 2")
         token_recieved=data2['token']
         password=data2['password']
         password_again=data2['password2']
@@ -417,10 +422,13 @@ class RecoverPassword(APIView):
         data3 = {}
         data3['code-id'] = user.id
         if token_recieved !=user.code:
+            logger.warn('token entered '+token_recieved+' is not equal with '+user.code)
             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
         if password!=password_again:
+            logger.warn('password_again '+password_again+' is not equal with password'+password)
             return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
         mainUser = User.objects.get(email=user.email)
         mainUser.password = make_password(password)
         mainUser.save()
+        logger.info('password of user with email '+mainUser.email+' changed successfuly')
         return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
