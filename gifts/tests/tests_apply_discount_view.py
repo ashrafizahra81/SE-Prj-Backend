@@ -20,14 +20,14 @@ class ShowGiftTest(APITestCase):
     def test_apply_discount_type_A_with_authentication(self):
         
         #Arrange
-        data = {'discount_code':'DG4T5H'}
+        data = {'discount_code':'HJ61R9B'}
         #Act
         response = self.client.post(self.apply_discount_url , data=data , format='json')
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data , {
                                             "total_cost": 470000.0,
-                                            "discounted_total_cost": 376000.0,
+                                            "discounted_total_cost": 329000.0,
                                             "shippingPrice": 30000
                                         })
         
