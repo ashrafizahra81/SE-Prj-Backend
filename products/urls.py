@@ -8,7 +8,7 @@ AddProductsToShop_list = views.AddProductsToShopViewSet.as_view({
 
 
 urlpatterns = [
-    path('edit_product/<int:pk>/', views.EditProduct.as_view(), name="edit product"),
+    path('edit_product/<int:pk>/', views.EditProduct.as_view(), name="edit-product"),
     path('delete_product/<int:pk>/', views.DeleteProduct.as_view(), name="delete-product"),
     path('product_info/<int:pk>/', views.GetProductInfo.as_view(), name="product-info"),
     path('add_products_to_shop/', AddProductsToShop_list, name="add-products-to-shop"),
