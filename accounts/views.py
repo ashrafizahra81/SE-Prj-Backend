@@ -57,6 +57,7 @@ class UserRegister(APIView):
         if serialized_data.is_valid():
             logger.info('Data entered is valid')
             if(not(request.data['user_phone_number'].isdigit())):
+                logger.warn('user_phone_number is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             account = serialized_data.save()
             account.is_active = 0
@@ -77,7 +78,7 @@ class UserRegister(APIView):
             logger.info('User '+str(account.pk)+ ' saved successfully')
             return Response(data = data , status=status.HTTP_200_OK)
         logger.warn('could not save new user due to invalid data')
-        return Response(serialized_data.errors)
+        return Response(serialized_data.errors , status=status.HTTP_400_BAD_REQUEST)
 
 class verfyUserToResgister(APIView):
     def post(self , request):
@@ -229,6 +230,9 @@ class ShopManagerRegister(APIView):
         logger.info('no user with this email exists: '+request.data['email'])
         if serialized_data.is_valid():
             logger.info('Data entered is valid')
+            if(not(request.data['shop_phone_number'].isdigit())):
+                logger.warn('shop_phone_number is invalid')
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             account = serialized_data.save()
             account.is_active = 0
             account.save()
@@ -239,10 +243,10 @@ class ShopManagerRegister(APIView):
                 email = account.email 
             )
             user_code.save()
-            logger.info('User '+account.pk+ ' saved successfully')
+            logger.info('User '+str(account.pk)+ ' saved successfully')
             return Response(data)
         logger.warn('could not save new user due to invalid data')
-        return Response(serialized_data.errors)
+        return Response(serialized_data.errors ,status=status.HTTP_400_BAD_REQUEST)
 
 
 class EditShop(APIView):

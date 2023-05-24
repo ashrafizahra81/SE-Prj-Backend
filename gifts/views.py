@@ -64,11 +64,12 @@ class ApplyDiscount(APIView):
             logger.warn('The discount code ' +request.data['discount_code']+' has expired')
             return Response({"message":"زمان استفاده از این کد تخفیف به انمام رسیده است"}
                         ,status=status.HTTP_204_NO_CONTENT)
-        if(gift.type=='C'):
+
+        if(gift.type =='C'):
             data["total_cost"] = off_price+30000
             data["discounted_total_cost"] = off_price
             logger.info('The discount code applied and total price of shopping cart changed to '+str(data['discounted_total_cost']))
-        if(gift.type == 'A'):
+        elif(gift.type == 'A'):
             data["total_cost"] = off_price+30000
             data["discounted_total_cost"] = (0.8) * (off_price+30000)
             logger.info('The discount code applied and total price of shopping cart changed to '+str(data['discounted_total_cost']))

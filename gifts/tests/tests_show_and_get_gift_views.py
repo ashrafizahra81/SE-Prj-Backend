@@ -41,22 +41,27 @@ class ShowGiftTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
-    # def test_show_gift_from_empty_table_with_authentication(self):
-    #     #Arrange
-    #     self.fixtures = None
-    #     #Act
-    #     response = self.client.get(self.show_gift_url)
-    #     #Assert
-    #     self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
+    def test_show_gift_from_empty_table_with_authentication(self):
+        #Arrange
+        gifts = Gift.objects.all()
+        for i in gifts:
+            i.delete()
+        #Act
+        response = self.client.get(self.show_gift_url)
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
 
-    # def test_get_gift_with_valid_score_with_authentication(self):
-    #     #Arrange
-    #     data = {'score': 100}
-    #     #Act
-    #     response = self.client.post(self.get_gift_url,data=data , format='json')
-    #     #Assert
-    #     self.assertEqual(response.status_code , status.HTTP_200_OK)
-    #     self.assertEqual(response.data , {'discount_code':'DG4T5H' , 'new_score':50})
+    def test_get_gift_with_valid_score_with_authentication(self):
+        #Arrange
+        data = {'score': 200}
+        user = User.objects.get(id = 1)
+        user.score = 250
+        user.save()
+        #Act
+        response = self.client.post(self.get_gift_url,data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data , {'discount_code':'HJ61R9B' , 'new_score':50})
 
 
     def test_get_gift_with_invalid_score_with_authentication(self):

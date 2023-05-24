@@ -60,6 +60,24 @@ class CustomerEditProfileTest(APITestCase):
 
         #Assert
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
+
+    def test_edit_user_profile_with_invalid_email_with_authentication(self):
+        
+        #Arrange
+        data = {'email': 'golnooshgmail.com',
+                'username' : 'golnooshasefi',
+                'user_phone_number':'09103335566',
+                'user_postal_code':'sd12',
+                'user_address':'Isfahan',
+                }
+
+        #Act
+        response = self.client.post(self.edit_profile_url , data , format = 'json')
+
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
+
+
     def test_edit_user_profile_with_invalid_phone_number_with_authentication(self):
             
         #Arrange
