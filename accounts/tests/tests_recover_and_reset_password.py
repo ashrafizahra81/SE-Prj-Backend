@@ -9,6 +9,7 @@ class ChangePasswordTest(APITestCase):
     fixtures = ['accounts']
     reset_password_url = reverse('accounts:reset_password')
     recover_password_url = reverse('accounts:recover_password' , args=[4])
+    recieve_email_url = reverse('accounts:receive_email')
 
     def setUp(self):
         self.user = User.objects.get(id=1)
@@ -109,3 +110,34 @@ class ChangePasswordTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
+
+    def test_recieve_code_with_email_which_does_not_have_code(self):
+
+        #Arrange
+        data = {"email":"a@gmail.com"}
+        #Act
+        response = self.client.post(self.recieve_email_url , data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+
+
+    def test_recieve_code_with_email_which_has_expired_code(self):
+    
+        #Arrange
+        data = {"email":"shamsabadimahla@gmail.com"}
+        #Act
+        response = self.client.post(self.recieve_email_url , data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+
+    def test_recieve_code_with_email_which_has_valid_code(self):
+        
+        #Arrange
+        data = {"email":"shamsabadimahla@gmail.com"}
+        usercode = CodesForUsers.objects.get(email = 'shamsabadimahla@gmail.com')
+        usercode.created_at = datetime.now()
+        usercode.save()
+        #Act
+        response = self.client.post(self.recieve_email_url , data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
