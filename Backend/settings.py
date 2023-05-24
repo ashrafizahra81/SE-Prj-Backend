@@ -173,3 +173,33 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'noreply.sabkino@gmail.com'
 EMAIL_HOST_PASSWORD = 'Salam@123456'
 EMAIL_PORT = 587
+
+
+LOGGING ={
+    'version':1,
+    'loggers':{
+        'django':{
+            'handlers':['console'],
+            'level':'INFO',
+        }
+    },
+    'handlers':{
+        # 'file':{
+        #     'level':'ERROR',
+        #     'class': 'logging.FileHandler',
+        #     'filename':'./logs/info.log',
+        #     'formatter':'formatter1',
+        # }
+        'console': {
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+            'formatter':'formatter1',
+        }
+    },
+    'formatters':{
+        'formatter1': {
+            'format': '{levelname} :: {asctime} :: {module} :: {message}',
+            'style': '{',
+        }
+    }
+}

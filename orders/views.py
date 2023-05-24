@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from permissions import IsShopOwner
-# Create your views here.
+import logging
 
+logger = logging.getLogger("django")
 
 class GetUserOrders(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -23,19 +24,17 @@ class GetUserOrders(APIView):
         user_orders = list(Order.objects.filter(user_id=request.user.id).values())
         data = list()
         for o in user_orders:
-            print(o)
             product = Product.objects.get(pk=o['product_id'])
             serialized_product = ProductsSerializer(instance=product)
             js = serialized_product.data
-            print('upload')
             js['cost'] = o['cost']
-            # js['order_date'] = o['order_date']
-            # js['complete_date'] = o['complete_date']
             js['status'] = o['status']
             data.append(js)
         if data:
+            logger.info('Orders of user '+str(request.user.id)+' found successfuly')
             return Response(status=status.HTTP_200_OK, data=data)
         else:
+            logger.warn('No order found for user '+str(request.user.id))
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -61,9 +60,9 @@ class CheckoutShoppingCart(APIView):
                 edited_product = serialized_data.save()
                 
             price += product1.product_price
-
         wallet = Wallet.objects.get(user_id = request.user)
         if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
+            logger.warn('wallet balance of user '+str(request.user.id)+ ' is not enough')
             return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)
         for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
@@ -78,11 +77,15 @@ class CheckoutShoppingCart(APIView):
                 )
                 c.save()
             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
+        logger.info('order of user '+str(request.user.id)+' saved successfuly')
         user = User.objects.get(email=request.user)
         user.score += off_price / 100000 # each 100,000 Toman, 1 score
         user.save()
+        logger.info('score of this shop added to scores of user ' +str(request.user.id))
         if(request.data['type'] == "wallet"):
+            logger.info('balance of wallet is '+str(wallet.balance))
             wallet.balance = wallet.balance - (off_price+30000)
+            logger.info('balance of wallet reduced to '+str(wallet.balance))
         data = {}
         data["message"] = "خرید با موفقیت انجام شد"
         data["balance"] = wallet.balance
@@ -97,10 +100,8 @@ class ShowOrdersToShop(APIView):
         
         product_list = list()
         for order in order_list:
-            # print(order)
             for product in Product.objects.all().values():
                 self.check_object_permissions(request, product)
-                print(product['id'])
                 if product['id'] == order['product_id']:
 
                     if product['shop_id'] == request.user.id:
@@ -115,5 +116,7 @@ class ShowOrdersToShop(APIView):
                         data['shop_id'] = product['shop_id']
                         product_list.append(data)
         if product_list:
+            logger.info('orders from products of seller '+request.user.id+' found')
             return Response(product_list, status=status.HTTP_200_OK)
+        logger.warn('no order found from seller '+str(request.user.id))
         return Response(status=status.HTTP_204_NO_CONTENT)

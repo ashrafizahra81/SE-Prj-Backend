@@ -8,7 +8,9 @@ from .models import *
 import django.contrib.auth.password_validation as validators
 from rest_framework import generics
 from wallets.models import Wallet
+import logging
 
+logger = logging.getLogger("django")
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -37,7 +39,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     def validate(self, attrs):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+        logger.info('Data entered is valid')
         if self.user.shop_name == None:
+            logger.info('The user entered is a customer')
             data.update({'type': 'user'})
             data.update({'username': self.user.username})
             data.update({'email':self.user.email})
@@ -46,6 +50,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data.update({'balance': wallet.balance})
             data.update({'score': self.user.score})
         else:
+            logger.info('The user entered is a seller')
             data.update({'type': 'seller'})
             data.update({'shop_name': self.user.shop_name})
             data.update({'email':self.user.email})
@@ -150,6 +155,7 @@ class LogoutSerializer(serializers.Serializer):
 class CustomTokenVerifySerializer(TokenVerifySerializer):
     def validate(self, attrs):
         data = super(CustomTokenVerifySerializer, self).validate(attrs)
+        logger.info('The token entered is valid')
         print(self)
         data.update({"status":"ok"})
         return data
