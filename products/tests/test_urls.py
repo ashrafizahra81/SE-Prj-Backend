@@ -8,6 +8,11 @@ class TestFiltersUrls(SimpleTestCase):
 
         delete_product_url = reverse('delete-product',  kwargs={'pk': 1})
         self.assertEqual(resolve(delete_product_url).func.view_class,  DeleteProduct)
+
+    def test_edit_product(self):
+
+        edit_product_url = reverse('edit-product',  kwargs={'pk': 4})
+        self.assertEqual(resolve(edit_product_url).func.view_class,  EditProduct)
     
     def test_get_product_info(self):
 

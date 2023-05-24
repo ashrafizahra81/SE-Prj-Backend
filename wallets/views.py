@@ -9,7 +9,6 @@ from rest_framework.response import Response
 import logging
 logger = logging.getLogger("django")
 
-
 class ChargeWallet(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
@@ -58,7 +57,9 @@ class ChargeWallet(APIView):
 #         print(totalPrice)
 #         wallet = Wallet.objects.get(user=request.user)
 
+
 #         if totalPrice > 0: 
+
 
 #             if wallet.balance >= totalPrice:
 #                 wallet.balance -= totalPrice

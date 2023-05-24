@@ -15,8 +15,6 @@ import logging
 
 logger = logging.getLogger("django")
 
-
-
 class EditProduct(APIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
 

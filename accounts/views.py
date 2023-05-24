@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger("django")
 
 def sendEmail(self , email):
-    token=random.randint(1000,9999)
+    token=random.randint(100000,999999)
     to_emails = []
     to_emails.append(email)
     send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
@@ -56,6 +56,8 @@ class UserRegister(APIView):
         logger.info('no user with this email exists: '+request.data['email'])
         if serialized_data.is_valid():
             logger.info('Data entered is valid')
+            if(not(request.data['user_phone_number'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             account = serialized_data.save()
             account.is_active = 0
             account.save()
@@ -79,8 +81,9 @@ class UserRegister(APIView):
 
 class verfyUserToResgister(APIView):
     def post(self , request):
-        if(not(request.data['code'] <=9999 and request.data['code'] >= 1000)):
+        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             logger.warn('The code entered is not in a right range')
+        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
             logger.info('The code entered is valid')
@@ -348,6 +351,7 @@ class show_score(APIView):
         logger.info('score of user '+str(request.user.pk)+' is '+str(request.user.score))
         return Response(data, status=status.HTTP_200_OK)
 
+
 @api_view(['GET','POST'])
 # @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -377,7 +381,7 @@ def reset_password(request):
     to_emails = []
     to_emails.append(used.email)
     send_mail.send_mail(html=token1,text='Here is your password reset token',subject='password reset token',from_email='',to_emails=to_emails)
-    return Response('working now')
+    return Response({'message':'a token was sent to the user'}, status=status.HTTP_200_OK)
 
 
 
@@ -394,7 +398,7 @@ class ReceiveEmailForRecoverPassword(APIView):
             diff = delta.seconds
             if diff > 600:
                 logger.info('The code of user with email '+email1+' has expired')
-                token1=random.randint(1000,9999)
+                token1=random.randint(100000,999999)
                 user.code = token1
                 user.created_at = datetime.now()
                 user.save()
@@ -415,7 +419,7 @@ class ReceiveEmailForRecoverPassword(APIView):
         data3 = {}
         data3['id'] = user.id
         
-        
+
         return Response(data3, status=status.HTTP_200_OK)
 
 class RecoverPassword(APIView):

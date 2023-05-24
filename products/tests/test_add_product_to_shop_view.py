@@ -94,3 +94,22 @@ class TestAddProductToShop(APITestCase):
                 }
         response = self.client.post(self.add_product_to_shop_urls, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
+    
+    def test_add_product_to_shop_by_a_shop_manager_and_invalid_data(self):
+
+        data = {
+                "product_name": "pants",
+                "product_price": "2330000",
+                "product_size": "38",
+                "product_group": "pants",
+                "product_image": "https://s29.picofile.com/file/8462477084/2.jpg",
+                "product_color": "light blue",
+                "product_height": "85 meters",
+                "product_design": "plain",
+                "product_material": "linen",
+                "product_country": "Iran",
+                "inventory": "10"
+                }
+        
+        response = self.client.post(self.add_product_to_shop_urls, data,  format = 'json')
+        self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)

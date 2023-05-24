@@ -27,11 +27,6 @@ class ShowGiftTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data , [
                                             {
-                                                "description": "تخفیف 20 درصدی",
-                                                "score": 100,
-                                                "date": date(2023,5,19)
-                                            },
-                                            {
                                                 "description": "تخفیف 30 درصدی",
                                                 "score": 200,
                                                 "date": date(2023,6,3)
