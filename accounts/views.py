@@ -20,7 +20,7 @@ from permissions import IsShopOwner , IsShopManager
 
 
 def sendEmail(self , email):
-    token=random.randint(1000,9999)
+    token=random.randint(100000,999999)
     to_emails = []
     to_emails.append(email)
     send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
@@ -46,6 +46,8 @@ class UserRegister(APIView):
                             status=status.HTTP_202_ACCEPTED)
         data = {}
         if serialized_data.is_valid():
+            if(not(request.data['user_phone_number'].isdigit())):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             account = serialized_data.save()
             account.is_active = 0
             account.save()
@@ -66,7 +68,7 @@ class UserRegister(APIView):
 
 class verfyUserToResgister(APIView):
     def post(self , request):
-        if(not(request.data['code'] <=9999 and request.data['code'] >= 1000)):
+        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
 
@@ -399,7 +401,7 @@ class ReceiveEmailForRecoverPassword(APIView):
         data3 = {}
         data3['id'] = user.id
         
-        
+
         return Response(data3, status=status.HTTP_200_OK)
 
 class RecoverPassword(APIView):
