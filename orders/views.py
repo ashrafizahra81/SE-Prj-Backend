@@ -116,7 +116,7 @@ class ShowOrdersToShop(APIView):
                         data['shop_id'] = product['shop_id']
                         product_list.append(data)
         if product_list:
-            logger.info('orders from products of seller '+request.user.id+' found')
+            logger.info('orders from products of seller '+str(request.user.id)+' found')
             return Response(product_list, status=status.HTTP_200_OK)
         logger.warn('no order found from seller '+str(request.user.id))
         return Response(status=status.HTTP_204_NO_CONTENT)

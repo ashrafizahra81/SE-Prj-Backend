@@ -45,77 +45,77 @@ class EditProduct(APIView):
 
             if data1['product_name'] != edited_product.product_name:
                 data['product_name'] = edited_product.product_name
-                logger.info('product_name of product '+product.pk+' change from '+data1['product_name']+' to '+
+                logger.info('product_name of product '+str(product.pk)+' change from '+data1['product_name']+' to '+
                             edited_product.product_name)
             else:
                 data['product_name'] = ""
 
             if data1['product_price'] != edited_product.product_price:
                 data['product_price'] = edited_product.product_price
-                logger.info('product_price of product '+product.pk+' change from '+data1['product_price']+' to '+
-                            edited_product.product_price)
+                logger.info('product_price of product '+str(product.pk)+' change from '+str(data1['product_price'])+' to '+
+                            str(edited_product.product_price))
             else:
                 data['product_price'] = ""
 
             if data1['inventory'] != edited_product.inventory:
                 data['inventory'] = edited_product.inventory
-                logger.info('inventory of product '+product.pk+' change from '+data1['inventory']+' to '+
-                            edited_product.inventory)
+                logger.info('inventory of product '+str(product.pk)+' change from '+str(data1['inventory'])+' to '+
+                            str(edited_product.inventory))
             else:
                 data['inventory'] = ""
 
             if data1['product_size'] != edited_product.product_size:
                 data['product_size'] = edited_product.product_size
-                logger.info('product_size of product '+product.pk+' change from '+data1['product_size']+' to '+
-                            edited_product.product_size)
+                logger.info('product_size of product '+str(product.pk)+' change from '+data1['product_size']+' to '+
+                            str(edited_product.product_size))
             else:
                 data['product_size'] = ""
 
             if data1['product_color'] != edited_product.product_color:
                 data['product_color'] = edited_product.product_color
-                logger.info('product_color of product '+product.pk+' change from '+data1['product_color']+' to '+
+                logger.info('product_color of product '+str(product.pk)+' change from '+data1['product_color']+' to '+
                             edited_product.product_color)
             else:
                 data['product_color'] = ""
 
             if data1['product_height'] != edited_product.product_height:
                 data['product_height'] = edited_product.product_height
-                logger.info('product_height of product '+product.pk+' change from '+data1['product_height']+' to '+
-                            edited_product.product_height)
+                logger.info('product_height of product '+str(product.pk)+' change from '+str(data1['product_height'])+' to '+
+                            str(edited_product.product_height))
             else:
                 data['product_height'] = ""
 
             if data1['product_design'] != edited_product.product_design:
                 data['product_design'] = edited_product.product_design
-                logger.info('product_design of product '+product.pk+' change from '+data1['product_design']+' to '+
+                logger.info('product_design of product '+str(product.pk)+' change from '+data1['product_design']+' to '+
                             edited_product.product_design)
             else:
                 data['product_design'] = ""
 
             if data1['product_material'] != edited_product.product_material:
                 data['product_material'] = edited_product.product_material
-                logger.info('product_material of product '+product.pk+' change from '+data1['product_material']+' to '+
+                logger.info('product_material of product '+str(product.pk)+' change from '+data1['product_material']+' to '+
                             edited_product.product_material)
             else:
                 data['product_material'] = ""
 
             if data1['product_country'] != edited_product.product_country:
                 data['product_country'] = edited_product.product_country
-                logger.info('product_country of product '+product.pk+' change from '+data1['product_country']+' to '+
+                logger.info('product_country of product '+str(product.pk)+' change from '+data1['product_country']+' to '+
                             edited_product.product_country)
             else:
                 data['product_country'] = ""
 
             if data1['product_off_percent'] != edited_product.product_off_percent:
                 data['product_off_percent'] = edited_product.product_off_percent
-                logger.info('product_off_percent of product '+product.pk+' change from '+data1['product_off_percent']+' to '+
-                            edited_product.product_off_percent)
+                logger.info('product_off_percent of product '+str(product.pk)+' change from '+str(data1['product_off_percent'])+' to '+
+                            str(edited_product.product_off_percent))
             else:
                 data['product_off_percent'] = ""
 
             if data1['is_available'] != edited_product.is_available:
                 data['is_available'] = edited_product.is_available
-                logger.info('is_available of product '+product.pk+' change from '+data1['is_available']+' to '+
+                logger.info('is_available of product '+str(product.pk)+' change from '+ data1['is_available']+' to '+
                             edited_product.is_available)
             else:
                 data['is_available'] = ""
@@ -304,7 +304,7 @@ class Report(APIView):
                     data1['date'] = "تاکنون خریدی انجام نشده"
                 data.append(data1)
         data.append({'totalSell':totalPriceOfShop})
-        logger.info('report of shop '+request.user.id+' returned')
+        logger.info('report of shop '+str(request.user.id)+' returned')
         return Response(data, status=status.HTTP_200_OK)
 
 

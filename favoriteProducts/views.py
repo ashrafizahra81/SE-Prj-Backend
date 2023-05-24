@@ -43,7 +43,7 @@ class ShowFavoriteProduct(APIView):
         data1 = list()
         for i in product_list:
             if i[0]['is_deleted'] == False:
-                logger.info('product with id ' +i[0]['id']+' from favorite list found')
+                logger.info('product with id ' +str(i[0]['id'])+' from favorite list found')
                 data = {}
                 data['id'] = i[0]['id']
                 data['product_name'] = i[0]['product_name']

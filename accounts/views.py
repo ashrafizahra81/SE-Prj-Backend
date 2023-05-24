@@ -68,13 +68,13 @@ class UserRegister(APIView):
                 email = account.email 
             )
             user_code.save()
-            logger.info('User ' + account.pk+ ' and its code stored in database')
+            logger.info('User ' + str(account.pk)+ ' and its code stored in database')
             wallet = Wallet(
                 user = account,
                 balance = 0, 
             )
             wallet.save()
-            logger.info('User '+account.pk+ ' saved successfully')
+            logger.info('User '+str(account.pk)+ ' saved successfully')
             return Response(data = data , status=status.HTTP_200_OK)
         logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors)
@@ -184,14 +184,14 @@ class UserEditProfile(APIView):
 
             if data1['user_postal_code'] != edited_user.user_postal_code:
                 data['user_postal_code'] = edited_user.user_postal_code
-                logger.info('user_postal_code changed from '+data1['user_postal_code']+' to '+ edited_user.user_postal_code)
+                logger.info('user_postal_code changed from '+str(data1['user_postal_code'])+' to '+ str(edited_user.user_postal_code))
 
             else:
                 data['user_postal_code'] = ""
 
             if data1['user_address'] != edited_user.user_address:
                 data['user_address'] = edited_user.user_address
-                logger.info('user_address changed from '+data1['user_address']+' to '+ edited_user.user_address)
+                logger.info('user_address changed from '+str(data1['user_address'])+' to '+ str(edited_user.user_address))
 
             else:
                 data['user_address'] = ""
@@ -280,7 +280,7 @@ class EditShop(APIView):
 
             if data1['user_phone_number'] != edited_shop.user_phone_number:
                 data['user_phone_number'] = edited_shop.user_phone_number
-                logger.info('user_phone_number changed from '+data1['user_phone_number']+' to '+ edited_shop.user_phone_number)
+                logger.info('user_phone_number changed from '+str(data1['user_phone_number'])+' to '+ str(edited_shop.user_phone_number))
             else:
                 data['user_phone_number'] = ""
 
@@ -323,7 +323,7 @@ class ShowUserInfo(APIView):
         logger.info('user found')
         data = {}
         if userObj.shop_name == None:
-            logger.info('user '+userObj.pk+ ' is a customer')
+            logger.info('user '+str(userObj.pk)+ ' is a customer')
             data['email'] = userObj.email
             data['username'] = userObj.username
             data['user_phone_number'] = userObj.user_phone_number
@@ -332,7 +332,7 @@ class ShowUserInfo(APIView):
             wallet = Wallet.objects.get(user = userObj)
             data['inventory'] = wallet.balance
         else:
-            logger.info('user '+userObj.pk+ ' is a seller')
+            logger.info('user '+str(userObj.pk)+ ' is a seller')
             data['email'] = userObj.email
             data['username'] = userObj.username
             data['shop_name'] = userObj.shop_name
@@ -363,7 +363,7 @@ def reset_password(request):
         password_again=data2['password2']
         used = User.objects.get(id=request.user.id)
         if int(token_recieved) !=used.random_integer:
-            logger.warn('token entered '+token_recieved+' is not equal with '+used.random_integer)
+            logger.warn('token entered '+str(token_recieved)+' is not equal with '+str(used.random_integer))
             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
 
         if password!=password_again:
@@ -372,7 +372,7 @@ def reset_password(request):
         used.random_integer=None
         used.password = make_password(password)
         used.save()
-        logger.info('password of user '+used.pk+' changed successfuly')
+        logger.info('password of user '+str(used.pk)+' changed successfuly')
         return Response('Password changed successfully')
     token1=random.randint(1000,9999)
     used=User.objects.get(id=request.user.id)

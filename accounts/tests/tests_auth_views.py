@@ -84,6 +84,9 @@ class UserAuthenticationTest(APITestCase):
                 "user_phone_number": "0910779555",
                 "password":1234
                 }
+        user = User.objects.get(email = "zarashrafi81@gmail.com")
+        user.is_active = False
+        user.save()
         #Act
         response = self.client.post(self.register_url , data , format = 'json')
 
