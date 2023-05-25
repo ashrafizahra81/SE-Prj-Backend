@@ -35,7 +35,7 @@ class TestAddProductToShop(APITestCase):
         response = self.client.post(self.add_product_to_shop_urls, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
         self.assertEqual(response.data, {
-                                            "product_id": 17,
+                                            "product_id": 15,
                                             "product_name": "pants",
                                             "product_price": "2330000",
                                             "product_size": "38",

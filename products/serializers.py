@@ -14,10 +14,10 @@ class ProductsSerializer(serializers.ModelSerializer):
     def validate(self, data):
         return data
 
-    def create(self, validated_data):
-        shop = validated_data.get('shop', None)
-        product = Product.objects.create(**validated_data)
-        return product
+    # def create(self, validated_data):
+    #     shop = validated_data.get('shop', None)
+    #     product = Product.objects.create(**validated_data)
+    #     return product
 
     class Meta:
         model = Product

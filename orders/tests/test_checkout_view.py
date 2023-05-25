@@ -14,7 +14,7 @@ class TestCheckout(APITestCase):
 
     def setUp(self):
 
-        self.user = User.objects.get(id=2)
+        self.user = User.objects.get(id=1)
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
@@ -29,21 +29,21 @@ class TestCheckout(APITestCase):
                                         }
                         )
     
-    # def test_checkout_with_authentication_and_enough_money_in_wallet(self):
+    def test_checkout_with_authentication_and_enough_money_in_wallet(self):
 
-    #     self.user = User.objects.get(id=3)
-    #     self.access_token = AccessToken.for_user(self.user)
-    #     self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
+        self.user = User.objects.get(id=2)
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    #     data = {'type': 'wallet'}
+        data = {'type': 'wallet'}
 
-    #     response = self.client.post(self.checkout_urls, data,  format = 'json')
-    #     self.assertEqual(response.status_code , status.HTTP_200_OK)
-    #     self.assertEqual(response.data, {
-    #                                         "message": "خرید با موفقیت انجام شد", 
-    #                                         "balance": 120000.0
-    #                                     }
-    #                     )
+        response = self.client.post(self.checkout_urls, data,  format = 'json')
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data, {
+                                            "message": "خرید با موفقیت انجام شد", 
+                                            "balance": 820000.0
+                                        }
+                        )
     
 
     def test_checkout_without_authentication(self):

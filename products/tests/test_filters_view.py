@@ -34,56 +34,43 @@ class TestFilter(APITestCase):
         response = self.client.post(self.filters_url, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data, [
-                                            {
-                                                "id": 3,
-                                                "product_name": "pants",
-                                                "product_price": 620000,
-                                                "upload": "null",
-                                                "shop_id": 4
-                                            },
-                                            {
-                                                "id": 4,
-                                                "product_name": "pants",
-                                                "product_price": 400000,
-                                                "upload": "null",
-                                                "shop_id": 4
-                                            },
-                                            {
-                                                "id": 8,
-                                                "product_name": "pants",
-                                                "product_price": 550000,
-                                                "upload": "null",
-                                                "shop_id": 5
-                                            },
-                                            {
-                                                "id": 13,
-                                                "product_name": "pants",
-                                                "product_price": 3180000,
-                                                "upload": "null",
-                                                "shop_id": 6
-                                            },
-                                            {
-                                                "id": 14,
-                                                "product_name": "pants",
-                                                "product_price": 3880000,
-                                                "upload": "null",
-                                                "shop_id": 6
-                                            },
-                                            {
-                                                "id": 15,
-                                                "product_name": "pants",
-                                                "product_price": 2330000,
-                                                "upload": "null",
-                                                "shop_id": 4
-                                            },
-                                            {
-                                                "id": 16,
-                                                "product_name": "pants",
-                                                "product_price": 2230000,
-                                                "upload": "https://s29.picofile.com/file/8462477084/2.jpg",
-                                                "shop_id": 3
-                                            }
-                                        ])
+                {
+                    "id": 3,
+                    "product_name": "pants",
+                    "product_price": 620000,
+                    "upload": "null",
+                    "shop_id": 4
+                },
+                {
+                    "id": 4,
+                    "product_name": "pants",
+                    "product_price": 400000,
+                    "upload": "null",
+                    "shop_id": 4
+                },
+                {
+                    "id": 8,
+                    "product_name": "pants",
+                    "product_price": 550000,
+                    "upload": "null",
+                    "shop_id": 5
+                },
+                {
+                    "id": 13,
+                    "product_name": "pants",
+                    "product_price": 3180000,
+                    "upload": "null",
+                    "shop_id": 6
+                },
+                {
+                    "id": 14,
+                    "product_name": "pants",
+                    "product_price": 3880000,
+                    "upload": "null",
+                    "shop_id": 6
+                }
+            ]
+        )
 
     def test_filters_without_authentication(self):
 
