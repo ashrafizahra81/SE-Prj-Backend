@@ -175,7 +175,10 @@ class UserEditProfile(APIView):
 
             else:
                 data['username'] = ""
-
+            print('**********************')
+            print(data1['user_phone_number'])
+            print('**********************')
+            print(edited_user.user_phone_number)
             if data1['user_phone_number'] != edited_user.user_phone_number:
                 data['user_phone_number'] = edited_user.user_phone_number
                 logger.info('user_phone_number changed from '+data1['user_phone_number']+' to '+ edited_user.user_phone_number)

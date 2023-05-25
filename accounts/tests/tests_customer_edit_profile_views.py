@@ -17,7 +17,8 @@ class CustomerEditProfileTest(APITestCase):
     def test_edit_user_profile_with_authentication(self):
 
         #Arrange
-        data = {'email': 'golnoosh@gmail.com',
+        data = {
+                'email': 'golnoosh@gmail.com',
                 'username' : 'golnooshasefi',
                 'user_phone_number':'09103335566',
                 'user_postal_code':'887799551',
@@ -32,7 +33,8 @@ class CustomerEditProfileTest(APITestCase):
     
         #Arrange
         self.client.force_authenticate(user=None , token = None)
-        data = {'email': 'golnoosh@gmail.com',
+        data = {
+                'email': 'golnoosh@gmail.com',
                 'username' : 'golnooshasefi',
                 'user_phone_number':'09103335566',
                 'user_postal_code':'887799551',
@@ -48,7 +50,8 @@ class CustomerEditProfileTest(APITestCase):
     def test_edit_user_profile_with_invalid_postal_code_with_authentication(self):
         
         #Arrange
-        data = {'email': 'golnoosh@gmail.com',
+        data = {
+                'email': 'golnoosh@gmail.com',
                 'username' : 'golnooshasefi',
                 'user_phone_number':'09103335566',
                 'user_postal_code':'sd12',
@@ -64,7 +67,8 @@ class CustomerEditProfileTest(APITestCase):
     def test_edit_user_profile_with_invalid_email_with_authentication(self):
         
         #Arrange
-        data = {'email': 'golnooshgmail.com',
+        data = {
+                'email': 'golnooshgmail.com',
                 'username' : 'golnooshasefi',
                 'user_phone_number':'09103335566',
                 'user_postal_code':'sd12',
@@ -81,7 +85,8 @@ class CustomerEditProfileTest(APITestCase):
     def test_edit_user_profile_with_invalid_phone_number_with_authentication(self):
             
         #Arrange
-        data = {'email': 'golnoosh@gmail.com',
+        data = {
+                'email': 'golnoosh@gmail.com',
                 'username' : 'golnooshasefi',
                 'user_phone_number':'09103335kk6',
                 'user_postal_code':'1245789636',
@@ -94,4 +99,32 @@ class CustomerEditProfileTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
-    
+
+    def test_edit_user_profile_with_new_email(self):
+
+        user = User.objects.get(id=1)
+        user.user_address = 'Isfahan'
+        user.user_postal_code = '12457896' 
+        user.save()   
+        #Arrange
+        data = {
+                'email': 'golnoosh3@gmail.com',
+                'username' : 'golnoosh',
+                'user_phone_number':'09108944555',
+                'user_postal_code':'12457896',
+                'user_address':'Isfahan',
+                }
+
+        #Act
+        response = self.client.post(self.edit_profile_url , data , format = 'json')
+
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data , {  
+                                            'email': 'golnoosh3@gmail.com',
+                                            'username' : 'golnoosh',
+                                            'user_phone_number':'09108944555',
+                                            'user_postal_code':'12457896',
+                                            'user_address':'Isfahan',
+                                        })
+        

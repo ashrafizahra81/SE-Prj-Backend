@@ -31,6 +31,34 @@ class SellerEditProfileTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
+
+    def test_edit_seller_profile_with_new_phone_number(self):
+            
+        #Arrange
+        user = User.objects.get(id = 4)
+        user.shop_address = "isfahan77"
+        user.user_phone_number = '09103445680'
+        data = {'email': 'shop1@gmail.com',
+                'username' : 'shop1',
+                'user_phone_number':'09103445680',
+                "shop_name": "shop1",
+                "shop_address": "isfahan77",
+                "shop_phone_number": "09808949238"
+                }
+
+        #Act
+        response = self.client.post(self.edit_shop_url , data , format = 'json')
+
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data , {  'email': 'shop1@gmail.com',
+                                            'username' : 'shop1',
+                                            'user_phone_number':'09103445680',
+                                            "shop_name": "shop1",
+                                            "shop_address": "isfahan77",
+                                            "shop_phone_number": "09808949238"
+                                        })
+
     def test_edit_seller_profile_with_authentication_as_a_customer(self):
             
         #Arrange
