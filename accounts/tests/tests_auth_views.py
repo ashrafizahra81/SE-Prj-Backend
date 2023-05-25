@@ -249,7 +249,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
-    def test_user_register_with_duplicated_and_inactive_email_with_expired_code(self):
+    def test_seller_register_with_duplicated_and_inactive_email_with_expired_code(self):
         #Arrange
         data = {
                 "username": "shop3",
@@ -268,7 +268,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
 
-    def test_user_register_with_duplicated_and_inactive_email_with_unexpired_code(self):
+    def test_seller_register_with_duplicated_and_inactive_email_with_unexpired_code(self):
         #Arrange
         data = {
                 "username": "shop3",
