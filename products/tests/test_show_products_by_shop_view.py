@@ -22,73 +22,117 @@ class TestShowProductsByShop(APITestCase):
         response = self.client.get(self.show_products_to_shop_urls, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data, {
-                                            "products": [
-                                                {
-                                                    "id": 1,
-                                                    "product_name": "T-shirt",
-                                                    "product_price": 120000,
-                                                    "product_off_percent": 0,
-                                                    "inventory": 5,
-                                                    "upload": "null",
-                                                    "shop_id": 4
-                                                },
-                                                {
-                                                    "id": 3,
-                                                    "product_name": "pants",
-                                                    "product_price": 620000,
-                                                    "product_off_percent": 0,
-                                                    "inventory": 15,
-                                                    "upload": "null",
-                                                    "shop_id": 4
-                                                },
-                                                {
-                                                    "id": 4,
-                                                    "product_name": "pants",
-                                                    "product_price": 400000,
-                                                    "product_off_percent": 0,
-                                                    "inventory": 18,
-                                                    "upload": "null",
-                                                    "shop_id": 4
-                                                },
-                                                {
-                                                    "id": 5,
-                                                    "product_name": "T-shirt",
-                                                    "product_price": 110000,
-                                                    "product_off_percent": 0,
-                                                    "inventory": 19,
-                                                    "upload": "null",
-                                                    "shop_id": 4
-                                                },
-                                                {
-                                                    "id": 15,
-                                                    "product_name": "pants",
-                                                    "product_price": 2330000,
-                                                    "product_off_percent": 0,
-                                                    "inventory": 10,
-                                                    "upload": "null",
-                                                    "shop_id": 4
-                                                }
-                                            ],
-                                            "shop_name": "shop1",
-                                            "shop_address": "isfahan",
-                                            "shop_phone_number": "09808949238"
-                                        })
+                "products": [
+                    {
+                        "id": 1,
+                        "product_name": "T-shirt",
+                        "product_price": 120000,
+                        "product_off_percent": 0,
+                        "inventory": 5,
+                        "upload": "null",
+                        "shop_id": 4
+                    },
+                    {
+                        "id": 3,
+                        "product_name": "pants",
+                        "product_price": 620000,
+                        "product_off_percent": 0,
+                        "inventory": 15,
+                        "upload": "null",
+                        "shop_id": 4
+                    },
+                    {
+                        "id": 4,
+                        "product_name": "pants",
+                        "product_price": 400000,
+                        "product_off_percent": 0,
+                        "inventory": 18,
+                        "upload": "null",
+                        "shop_id": 4
+                    },
+                    {
+                        "id": 5,
+                        "product_name": "T-shirt",
+                        "product_price": 110000,
+                        "product_off_percent": 0,
+                        "inventory": 19,
+                        "upload": "null",
+                        "shop_id": 4
+                    }
+                ],
+                "shop_name": "shop1",
+                "shop_address": "isfahan",
+                "shop_phone_number": "09808949238"
+                                            })
 
     def test_show_products_to_a_user_who_is_not_a_shop_manager(self): 
 
-        self.user = User.objects.get(id=2)
-        self.access_token = AccessToken.for_user(self.user)
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
+            self.user = User.objects.get(id=2)
+            self.access_token = AccessToken.for_user(self.user)
+            self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-        response = self.client.get(self.show_products_to_shop_urls, format = 'json')
-        self.assertEqual(response.status_code , status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, {
-                                            "detail": "You do not have permission to perform this action."
-                                        })
+            response = self.client.get(self.show_products_to_shop_urls, format = 'json')
+            self.assertEqual(response.status_code , status.HTTP_403_FORBIDDEN)
+            self.assertEqual(response.data, {
+                                                "detail": "You do not have permission to perform this action."
+                                            })
 
 
     def test_show_products_without_authentication(self):
 
-        self.client.force_authenticate(user=None , token = None)
+            self.client.force_authenticate(user=None , token = None)
+            response = self.client.get(self.show_products_to_shop_urls, format = 'json')
+            self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
+        
+    def test_show_products_with_off_percent_to_a_shop_manager(self):
+
+        self.user = User.objects.get(id=5)
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
+
         response = self.client.get(self.show_products_to_shop_urls, format = 'json')
-        self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data, {
+                "products": [
+                    {
+                    "id": 6,
+                    "product_name": "T-shirt",
+                    "product_price": 110000,
+                    "product_off_percent": 88000.0,
+                    "inventory": 17,
+                    "upload": "null",
+                    "shop_id": 5
+                },
+                    {
+                        "id": 7,
+                        "product_name": "T-shirt",
+                        "product_price": 110000,
+                        "product_off_percent": 0,
+                        "inventory": 20,
+                        "upload": "null",
+                        "shop_id": 5
+                    },
+                    {
+                        "id": 8,
+                        "product_name": "pants",
+                        "product_price": 550000,
+                        "product_off_percent": 0,
+                        "inventory": 0,
+                        "upload": "null",
+                        "shop_id": 5
+                    },
+                    {
+                        "id": 9,
+                        "product_name": "hoodie",
+                        "product_price": 2650000,
+                        "product_off_percent": 0,
+                        "inventory": 14,
+                        "upload": "null",
+                        "shop_id": 5
+                    }
+                ],
+                "shop_name": "shop2",
+                "shop_address": "isfahan",
+                "shop_phone_number": "09808949000"
+            }
+        )

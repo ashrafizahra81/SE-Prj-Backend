@@ -115,8 +115,8 @@ class EditProduct(APIView):
 
             if data1['is_available'] != edited_product.is_available:
                 data['is_available'] = edited_product.is_available
-                logger.info('is_available of product '+str(product.pk)+' change from '+ data1['is_available']+' to '+
-                            edited_product.is_available)
+                logger.info('is_available of product '+str(product.pk)+' change from '+ str(data1['is_available'])+' to '+
+                            str(edited_product.is_available))
             else:
                 data['is_available'] = ""
 
@@ -265,6 +265,8 @@ class ShowAllProducts(APIView):
                 data['product_name'] = i['product_name']
                 data['product_price'] = i['product_price']
                 price_off = 0
+                print("offfffff")
+                print(int(i['product_off_percent']) > 0)
                 if int(i['product_off_percent']) > 0:
                     price_off = ((100 - int(i['product_off_percent'])) * i['product_price']) / 100
                 data['product_off_percent'] = price_off

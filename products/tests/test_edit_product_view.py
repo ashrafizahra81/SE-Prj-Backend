@@ -68,3 +68,36 @@ class TestEditProduct(APITestCase):
         
         response = self.client.put(self.edit_product_url, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
+
+    
+    def test_edit_product_with_valid_data_2(self):
+
+        data = {
+                "product_name": "T-shirt",
+                "product_price": "400000",
+                "product_size": "38",
+                "product_color": "red",
+                "product_height": "110",
+                "product_design": "striped",
+                "product_material": "cotton",
+                "product_country": "Turkey",
+                "inventory": "18",
+                "product_off_percent": "20",
+                "is_available": "0"
+                }
+        
+        response = self.client.put(self.edit_product_url, data,  format = 'json')
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data, {
+                                            "product_name": "T-shirt",
+                                            "product_price": "",
+                                            "inventory": "",
+                                            "product_size": "38",
+                                            "product_color": "red",
+                                            "product_height": 110,
+                                            "product_design": "striped",
+                                            "product_material": "cotton",
+                                            "product_country": "Turkey",
+                                            "product_off_percent": 20,
+                                            "is_available": False
+                                        })
