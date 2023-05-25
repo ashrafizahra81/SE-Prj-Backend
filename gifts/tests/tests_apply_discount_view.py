@@ -4,7 +4,7 @@ from django.urls import path, reverse, include, resolve
 from accounts.models import User
 from products.models import Product
 from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
-from datetime import date
+from datetime import datetime , timedelta
 
 
 class ShowGiftTest(APITestCase):
@@ -20,7 +20,27 @@ class ShowGiftTest(APITestCase):
     def test_apply_discount_type_A_with_authentication(self):
         
         #Arrange
+        data = {'discount_code':'DG4T5H'}
+        gift = Gift.objects.get(discount_code = 'DG4T5H')
+        gift.date = datetime.now() + timedelta(days=1)
+        gift.save()
+        #Act
+        response = self.client.post(self.apply_discount_url , data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data , {
+                                            "total_cost": 470000.0,
+                                            "discounted_total_cost": 376000.0,
+                                            "shippingPrice": 30000
+                                        })
+        
+    def test_apply_discount_type_B_with_authentication(self):
+            
+        #Arrange
         data = {'discount_code':'HJ61R9B'}
+        gift = Gift.objects.get(discount_code = 'HJ61R9B')
+        gift.date = datetime.now() + timedelta(days=1)
+        gift.save()
         #Act
         response = self.client.post(self.apply_discount_url , data=data , format='json')
         #Assert
@@ -30,7 +50,24 @@ class ShowGiftTest(APITestCase):
                                             "discounted_total_cost": 329000.0,
                                             "shippingPrice": 30000
                                         })
-        
+
+    def test_apply_discount_type_C_with_authentication(self):
+            
+        #Arrange
+        data = {'discount_code':'V4D9X85'}
+        gift = Gift.objects.get(discount_code = 'V4D9X85')
+        gift.date = datetime.now() + timedelta(days=1)
+        gift.save()
+
+        #Act
+        response = self.client.post(self.apply_discount_url , data=data , format='json')
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_200_OK)
+        self.assertEqual(response.data , {
+                                            "total_cost": 470000.0,
+                                            "discounted_total_cost": 440000.0,
+                                            "shippingPrice": 30000
+                                        })
     def test_apply_discount_without_authentication(self):
 
         #Arrange

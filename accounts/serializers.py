@@ -125,18 +125,18 @@ class ChangePasswordSerializer(serializers.Serializer):
     serializers.ListField
 
 
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
+# class LogoutSerializer(serializers.Serializer):
+#     refresh = serializers.CharField()
 
-    def validate(self, attrs):
-        self.token = attrs['refresh']
-        return attrs
+#     def validate(self, attrs):
+#         self.token = attrs['refresh']
+#         return attrs
 
-    def save(self, **kwargs):
-        try:
-            RefreshToken(self.token).blacklist()
-        except TokenError:
-            self.fail('bad token')
+#     def save(self, **kwargs):
+#         try:
+#             RefreshToken(self.token).blacklist()
+#         except TokenError:
+#             self.fail('bad token')
 
 
 # class MoreQuestionsSerializer(serializers.ModelSerializer):
