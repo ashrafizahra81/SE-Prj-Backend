@@ -76,13 +76,13 @@ class TestAccountsUrls(SimpleTestCase):
         #Assert
         self.assertEqual(resolve(reset_password_url).func , reset_password)
 
-    def test_recover_password_url(self):
+    # def test_recover_password_url(self):
         
-        #Arrange
-        recover_password_url = reverse('accounts:recover_password', args=(1,))
+    #     #Arrange
+    #     recover_password_url = reverse('accounts:recover_password', args=(1,))
 
-        #Assert
-        self.assertEqual(resolve(recover_password_url).func.view_class , RecoverPassword)
+    #     #Assert
+    #     self.assertEqual(resolve(recover_password_url).func.view_class , RecoverPassword)
 
     def test_receive_password_url(self):
         

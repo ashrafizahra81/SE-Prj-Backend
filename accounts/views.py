@@ -401,56 +401,60 @@ class ReceiveEmailForRecoverPassword(APIView):
     def post(self, request):
         data = request.data
         email1 = data['email']
-        user = CodesForUsers.objects.filter(email=email1).exists()
-        if user != False:
-            logger.info('user with email '+email1+' has a code')
-            user = CodesForUsers.objects.get(email=email1)
-            now = datetime.now()
-            delta = now - user.created_at.replace(tzinfo=None)
-            diff = delta.seconds
-            if diff > 600:
-                logger.info('The code of user with email '+email1+' has expired')
-                token1=random.randint(100000,999999)
-                user.code = token1
-                user.created_at = datetime.now()
-                user.save()
-                logger.info('a new code assigned user with email '+email1)
-        else:
-            logger.info('user with email '+email1+'does not have a code')
-            token1=random.randint(1000,9999)
-            user = CodesForUsers(
-                code = token1,
-                created_at = datetime.now(),
-                email= email1,
-            )
-            user.save()
-            logger.info('a new code assigned user with email '+email1)
+        # user = CodesForUsers.objects.filter(email=email1).exists()
+        # if user != False:
+        #     logger.info('user with email '+email1+' has a code')
+        #     user = CodesForUsers.objects.get(email=email1)
+        #     now = datetime.now()
+        #     delta = now - user.created_at.replace(tzinfo=None)
+        #     diff = delta.seconds
+        #     if diff > 600:
+        #         logger.info('The code of user with email '+email1+' has expired')
+        #         token1=getUniqueCode()
+        #         user.code = token1
+        #         user.created_at = datetime.now()
+        #         user.save()
+        #         logger.info('a new code assigned user with email '+email1)
+        # else:
+        #     logger.info('user with email '+email1+'does not have a code')
+        #     token1=getUniqueCode()
+        #     user = CodesForUsers(
+        #         code = token1,
+        #         created_at = datetime.now(),
+        #         email= email1,
+        #     )
+        #     user.save()
+        #     logger.info('a new code assigned user with email '+email1)
+        user = User.objects.get(email=email1)
+        token1=getUniqueCode()
+        user.password = make_password(str(token1))
+        user.save()
         to_emails = []
         to_emails.append(user.email)
-        send_mail.send_mail(html=user.code,text='Here is your password recovery token',subject='password recovery token',from_email='',to_emails=to_emails)
+        send_mail.send_mail(html=token1,text='Here is your new password',subject='password recovery token',from_email='',to_emails=to_emails)
         data3 = {}
         data3['id'] = user.id
         
 
         return Response(data3, status=status.HTTP_200_OK)
 
-class RecoverPassword(APIView):
-    def post(self, request, pk):
-        data2 = request.data
-        token_recieved=data2['token']
-        password=data2['password']
-        password_again=data2['password2']
-        user = CodesForUsers.objects.get(pk=pk)
-        data3 = {}
-        data3['code-id'] = user.id
-        if token_recieved !=user.code:
-            logger.warn('token entered '+token_recieved+' is not equal with '+user.code)
-            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
-        if password!=password_again:
-            logger.warn('password_again '+password_again+' is not equal with password'+password)
-            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
-        mainUser = User.objects.get(email=user.email)
-        mainUser.password = make_password(password)
-        mainUser.save()
-        logger.info('password of user with email '+mainUser.email+' changed successfuly')
-        return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
+# class RecoverPassword(APIView):
+#     def post(self, request, pk):
+#         data2 = request.data
+#         token_recieved=data2['token']
+#         password=data2['password']
+#         password_again=data2['password2']
+#         user = CodesForUsers.objects.get(pk=pk)
+#         data3 = {}
+#         data3['code-id'] = user.id
+#         if token_recieved !=user.code:
+#             logger.warn('token entered '+token_recieved+' is not equal with '+user.code)
+#             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
+#         if password!=password_again:
+#             logger.warn('password_again '+password_again+' is not equal with password'+password)
+#             return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
+#         mainUser = User.objects.get(email=user.email)
+#         mainUser.password = make_password(password)
+#         mainUser.save()
+#         logger.info('password of user with email '+mainUser.email+' changed successfuly')
+#         return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)

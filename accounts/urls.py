@@ -16,6 +16,6 @@ urlpatterns = [
     path('show_score/', views.show_score.as_view(), name='show_score'),
     path('reset_password/', views.reset_password, name='reset_password'),
     path('receive_email_for_recover_password/', views.ReceiveEmailForRecoverPassword.as_view(), name='receive_email'),
-    path('recover_password/<int:pk>/', views.RecoverPassword.as_view(), name="recover_password"),
+    # path('recover_password/<int:pk>/', views.RecoverPassword.as_view(), name="recover_password"),
     path('verify_email/', views.verfyUserToResgister.as_view(), name='verify_email'),
 ]
