@@ -21,12 +21,19 @@ import logging
 logger = logging.getLogger("django")
 
 def sendEmail(self , email):
-    token=random.randint(100000,999999)
+    token=getUniqueCode()
     to_emails = []
     to_emails.append(email)
     send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
     logger.info('The verification code has been sent to the email')
     return token
+
+def getUniqueCode():
+    while(True):
+        token=random.randint(100000,999999)
+        if(not(CodesForUsers.objects.filter(code=token).exists())):
+            return token
+    
 
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
@@ -84,15 +91,13 @@ class verfyUserToResgister(APIView):
     def post(self , request):
         if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             logger.warn('The code entered is not in a right range')
-        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
             logger.info('The code entered is valid')
             userCode = CodesForUsers.objects.get(code = request.data['code'])
-            userCode.code=None
-            userCode.save()
-            logger.info('code for user with email '+ userCode.email+' changed to null')
+            logger.info('code for user with email '+ userCode.email+' deleted')
             user = User.objects.get(email = userCode.email)
+            CodesForUsers.objects.filter(code=request.data['code']).delete()
             user.is_active = 1
             user.save()
             logger.info('User with email '+ user.email+' is active now')

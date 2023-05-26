@@ -42,4 +42,17 @@ class DeleteFromFavoriteProductsTest(APITestCase):
 
         #Assert
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_show_favorite_products_with_authentication_with_empty_list(self):
+    
+        #Arrange
+        self.user = User.objects.get(id=1)
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
+        #Act
+        response = self.client.get(self.show_favorites_url , format = 'json')
+
+        #Assert
+        self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
      
