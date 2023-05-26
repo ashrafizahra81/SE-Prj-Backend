@@ -52,9 +52,4 @@ class TestShowUserCart(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
         response = self.client.get(self.show_user_cart_url, format = 'json')
-        self.assertEqual(response.status_code , status.HTTP_200_OK)
-        self.assertEqual(response.data, {
-                                            "products": [],
-                                            "total_price": 0,
-                                            "total_price_with_discount": 0
-                                        })
+        self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)

@@ -56,32 +56,34 @@ class ShowUserShoppingCart(APIView):
         data1 = list()
         total_price = 0
         total_price_with_discount = 0
-        for i in product_list:
-            if i[0]['is_deleted'] == False:
-                data = {}
-                data['id'] = i[0]['id']
-                data['product_name'] = i[0]['product_name']
-                data['product_size'] = i[0]['product_size']
-                data['product_color'] = i[0]['product_color']
-                data['product_price'] = i[0]['product_price']
-                if int(i[0]['inventory']) > 0:
-                    data['is_available'] = True
-                else:
-                    data['is_available'] = False
-                data['upload'] = i[0]['upload']
-                data['shop_id'] = i[0]['shop_id']
-                price_off = 0
-                price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
-                data['product_off_percent'] = price_off
-                total_price += i[0]['product_price']
-                total_price_with_discount += price_off
-                data1.append(data)
-        data2 = {}
-        data2["products"] = data1
-        data2["total_price"] = total_price
-        data2["total_price_with_discount"] = total_price_with_discount
-        logger.info('products of shopping cart of user '+ str(request.user.id)+' returned')
-        return Response(data2, status=status.HTTP_200_OK)
+        if user_cart:
+            for i in product_list:
+                if i[0]['is_deleted'] == False:
+                    data = {}
+                    data['id'] = i[0]['id']
+                    data['product_name'] = i[0]['product_name']
+                    data['product_size'] = i[0]['product_size']
+                    data['product_color'] = i[0]['product_color']
+                    data['product_price'] = i[0]['product_price']
+                    if int(i[0]['inventory']) > 0:
+                        data['is_available'] = True
+                    else:
+                        data['is_available'] = False
+                    data['upload'] = i[0]['upload']
+                    data['shop_id'] = i[0]['shop_id']
+                    price_off = 0
+                    price_off = ((100 - int(i[0]['product_off_percent'])) / 100) * int(i[0]['product_price'])
+                    data['product_off_percent'] = price_off
+                    total_price += i[0]['product_price']
+                    total_price_with_discount += price_off
+                    data1.append(data)
+            data2 = {}
+            data2["products"] = data1
+            data2["total_price"] = total_price
+            data2["total_price_with_discount"] = total_price_with_discount
+            logger.info('products of shopping cart of user '+ str(request.user.id)+' returned')
+            return Response(data2, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class show_checkout_info(APIView):
