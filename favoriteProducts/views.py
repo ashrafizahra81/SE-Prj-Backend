@@ -14,6 +14,7 @@ class AddToFavoriteProduct(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
+        logger.info('request recieved from POST /favoriteProducts/add_to_favorite/')
         message = ""
         for product in Product.objects.all():
             if product.pk == request.data['data']:
@@ -36,6 +37,7 @@ class ShowFavoriteProduct(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
+        logger.info('request recieved from GET /favoriteProducts/show_favorite/')
         user_favorite_product = list(UserFavoriteProduct.objects.filter(user_id=request.user.id).values())
         product_list = list()
         for i in user_favorite_product:
@@ -63,6 +65,7 @@ class DeleteFromFavoriteProducts(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
+        logger.info('request recieved from POST /favoriteProducts/delete_from_favorite/')
         deleted = UserFavoriteProduct.objects.filter(product_id=request.data['data']).delete()
         if(deleted[0] == 0):
             logger.warn('product with id ' +str(request.data['data'])+' has been deleted from product list')

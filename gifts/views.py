@@ -14,6 +14,7 @@ logger = logging.getLogger("django")
 class ShowGiftInfo(APIView):
     permission_classes = [IsAuthenticated, ]
     def get(self , request):
+        logger.info('request recieved from GET /gifts/show_gift/')
         data = []
         for i in Gift.objects.all().values():
             if(datetime(i["date"].year, i["date"].month, i["date"].day) >= datetime.now()):
@@ -31,6 +32,7 @@ class ShowGiftInfo(APIView):
 class GetGift(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self,request):
+        logger.info('request recieved from POST /gifts/get_gift/')
         if(type(request.data['score'])== str):
             if(not(request.data['score'].isdigit())):
                 logger.warn('format of score entered is not correct')
@@ -52,6 +54,7 @@ class GetGift(APIView):
 class ApplyDiscount(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
+        logger.info('request recieved from POST /gifts/apply_discount/')
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         off_price = 0
         for o1 in user_cart:

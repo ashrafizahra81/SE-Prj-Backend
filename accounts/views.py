@@ -38,6 +38,7 @@ def getUniqueCode():
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
     def post(self, request):
+        logger.info('request recieved from POST /accounts/register/')
         serialized_data = UserRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
             logger.info('This email already exists: ' + request.data['email'])
@@ -89,6 +90,7 @@ class UserRegister(APIView):
 
 class verfyUserToResgister(APIView):
     def post(self , request):
+        logger.info('request recieved from POST /accounts/verify_email/')
         if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             logger.warn('The code entered is not in a right range')
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -138,7 +140,7 @@ class TokenVerifyView(TokenViewBase):
     Takes a token and indicates if it is valid.  This view provides no
     information about a token's fitness for a particular use.
     """
-
+    logger.info('request recieved from POST /accounts/token/verify/')
     serializer_class = CustomTokenVerifySerializer
 
 
@@ -146,6 +148,7 @@ class UserEditProfile(APIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserEditProfileSerializer
     def post(self, request):
+        logger.info('request recieved from POST /accounts/edit_profile/')
         user = User.objects.get(id=request.user.id)
         logger.info('user found')
         data1 = {}
@@ -180,10 +183,6 @@ class UserEditProfile(APIView):
 
             else:
                 data['username'] = ""
-            print('**********************')
-            print(data1['user_phone_number'])
-            print('**********************')
-            print(edited_user.user_phone_number)
             if data1['user_phone_number'] != edited_user.user_phone_number:
                 data['user_phone_number'] = edited_user.user_phone_number
                 logger.info('user_phone_number changed from '+data1['user_phone_number']+' to '+ edited_user.user_phone_number)
@@ -213,6 +212,7 @@ class UserEditProfile(APIView):
 class ShopManagerRegister(APIView):
     serializer_class = ShopManagerRegisterSerializer
     def post(self, request):
+        logger.info('request recieved from POST /accounts/create_shop/')
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
             logger.info('This email already exists: ' + request.data['email'])
@@ -261,6 +261,7 @@ class EditShop(APIView):
     permission_classes = [IsAuthenticated ,IsShopManager]
     serializer_class = EditShopSerializer
     def post(self, request):
+        logger.info('request recieved from POST /accounts/edit_shop/')
         self.check_object_permissions(request, request.user)
         logger.info('The user is a shop owner')
         user = User.objects.get(id=request.user.id)
@@ -331,6 +332,7 @@ class ShowUserInfo(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
+        logger.info('request recieved from GET /accounts/show_user_info/')
         userObj = User.objects.get(id=request.user.id)
         logger.info('user found')
         data = {}
@@ -358,6 +360,7 @@ class ShowUserInfo(APIView):
 class show_score(APIView):
      permission_classes = [IsAuthenticated, ]
      def get(self , request):
+        logger.info('request recieved from GET /accounts/show_score/')
         data = {}
         data['score'] = request.user.score
         logger.info('score of user '+str(request.user.pk)+' is '+str(request.user.score))
@@ -369,6 +372,7 @@ class show_score(APIView):
 @permission_classes([IsAuthenticated])
 def reset_password(request):
     if request.method =='POST':
+        logger.info('request recieved from POST /accounts/reset_password/')
         data2 = request.data
         token_recieved=data2['token']
         password=data2['password']
@@ -386,6 +390,7 @@ def reset_password(request):
         used.save()
         logger.info('password of user '+str(used.pk)+' changed successfuly')
         return Response('Password changed successfully')
+    logger.info('request recieved from GET /accounts/reset_password/')
     token1=random.randint(1000,9999)
     used=User.objects.get(id=request.user.id)
     used.random_integer=token1
@@ -399,6 +404,7 @@ def reset_password(request):
 
 class ReceiveEmailForRecoverPassword(APIView):
     def post(self, request):
+        logger.info('request recieved from POST /accounts/receive_email_for_recover_password/')
         data = request.data
         email1 = data['email']
         # user = CodesForUsers.objects.filter(email=email1).exists()

@@ -12,6 +12,7 @@ class AddToShoppingCartView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
+        logger.info('request recieved from POST /shoppingCarts/add_to_cart/')
         message = ""
         for product in Product.objects.all():
             if product.pk == request.data['data']:
@@ -33,7 +34,7 @@ class DeleteFromShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-
+        logger.info('request recieved from POST /shoppingCarts/delete_from_cart/')
         message = ""
         for userCart in UserShoppingCart.objects.all():
             if userCart.user_id == request.user.id:
@@ -49,6 +50,7 @@ class ShowUserShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
+        logger.info('request recieved from GET /shoppingCarts/show_cart/')
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         product_list = list()
         for i in user_cart:
@@ -89,6 +91,7 @@ class ShowUserShoppingCart(APIView):
 class show_checkout_info(APIView):
     permission_classes = [IsAuthenticated, ]
     def get(self , request):
+        logger.info('request recieved from GET /shoppingCarts/show_checkout_info/')
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         off_price = 0
         for o1 in user_cart:

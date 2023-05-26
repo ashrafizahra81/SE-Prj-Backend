@@ -19,6 +19,7 @@ class EditProduct(APIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
 
     def put(self, request, pk):
+        logger.info('request recieved from PUT /products/edit_product/<int:pk>/')
         product = Product.objects.get(pk=pk)
         self.check_object_permissions(request, product)
 
@@ -128,6 +129,7 @@ class DeleteProduct(APIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
 
     def delete(self, request, pk):
+        logger.info('request recieved from DELETE /products/delete_product/<int:pk>/')
         product = Product.objects.get(pk=pk)
         self.check_object_permissions(request, product)
         product.is_deleted = True
@@ -139,6 +141,7 @@ class DeleteProduct(APIView):
 class GetProductInfo(APIView):
 
     def get(self, request, pk):
+        logger.info('request recieved from GET /products/product_info/<int:pk>/')
         product = Product.objects.get(pk=pk)
         logger.info('product with id '+str(product.pk)+' found')
         score = 0
@@ -172,6 +175,7 @@ class AddProductsToShopViewSet(ModelViewSet):
     http_method_names = ['post', ]
 
     def create(self, request, *args, **kwargs):
+        logger.info('request recieved from POST /products/add_products_to_shop/')
         self.check_object_permissions(request, request.user)
         _serializer = self.serializer_class(data=request.data)
         data = {}
@@ -221,6 +225,7 @@ class ShowProductsByShop(APIView):
     permission_classes = (IsAuthenticated, IsShopManager)
 
     def get(self, request):
+        logger.info('request recieved from GET /products/show_products_of_shop/')
         self.check_object_permissions(request, request.user)
         product_list = list(Product.objects.filter(shop=request.user.id).values())
         shop = User.objects.filter(id=request.user.id).values()
@@ -254,6 +259,7 @@ class ShowProductsByShop(APIView):
 
 class ShowAllProducts(APIView):
     def get(self, request):
+        logger.info('request recieved from GET /products/show_all_products/')
         product_list = list(Product.objects.all().values())
         data = {}
         data1 = list()
@@ -287,6 +293,7 @@ class Report(APIView):
     permission_classes = [IsAuthenticated, IsShopManager]
     
     def get(self , request):
+        logger.info('request recieved from GET /products/report/')
         self.check_object_permissions(request, request.user)
         data = list()
         totalPriceOfShop = 0
@@ -314,6 +321,7 @@ class Filters(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
+        logger.info('request recieved from POST /products/filters/')
         filter = request.data['group'][0]
         data1 = list()
         if filter == "pants" or filter == "shirt" or filter == "T-shirt" or filter == "hoodie":
