@@ -91,7 +91,6 @@ class verfyUserToResgister(APIView):
     def post(self , request):
         if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             logger.warn('The code entered is not in a right range')
-        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
             logger.info('The code entered is valid')
