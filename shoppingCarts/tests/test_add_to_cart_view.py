@@ -17,7 +17,7 @@ class TestAddToCart(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_add_to_cart_with_authentication_and_existing_product(self):
+    def test_add_to_cart_should_succeed_when_with_authentication_and_existing_product(self):
 
         data = {'data': 1}
 
@@ -28,7 +28,7 @@ class TestAddToCart(APITestCase):
 
         self.assertEqual(response.data, {"message": "محصول مورد نظر به سبد خرید اضافه شد"})
     
-    def test_add_to_cart_with_authentication_and_non_existing_product(self):
+    def test_add_to_cart_should_succeed_when_with_authentication_and_non_existing_product(self):
 
         data = {'data': 8}
 
@@ -39,7 +39,7 @@ class TestAddToCart(APITestCase):
 
         self.assertEqual(response.data, {"message": "محصول مورد نظر موجود نیست"} )
     
-    def test_add_to_cart_with_authentication(self):
+    def test_add_to_cart_should_raise_error_when_without_authentication(self):
 
         self.client.force_authenticate(user=None , token = None)
         data = {'data': 1}
@@ -47,12 +47,3 @@ class TestAddToCart(APITestCase):
         response = self.client.post(self.add_to_cart_url, data,format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
     
-    def test_add_to_cart_without_authentication(self):
-
-
-        self.client.force_authenticate(user=None , token = None)
-
-        data = {'data': 1}
-
-        response = self.client.post(self.add_to_cart_url, format = 'json')
-        self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)

@@ -16,7 +16,7 @@ class TestFilter(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
     
-    def test_filters_with_authentication_and_non_existing_products(self):
+    def test_filters_should_succeed_with_authentication_when_there_are_not_any_matching_products(self):
 
         data = {
             'group': ['shirt']
@@ -25,7 +25,7 @@ class TestFilter(APITestCase):
         response = self.client.post(self.filters_url, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
 
-    def test_filters_with_authentication_and_existing_products(self):
+    def test_filters_should_succeed_with_authentication_when_there_are_some_matching_products(self):
 
         data = {
             'group': ['pants']
@@ -72,7 +72,7 @@ class TestFilter(APITestCase):
             ]
         )
 
-    def test_filters_without_authentication(self):
+    def test_filters_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.filters_url, format = 'json')

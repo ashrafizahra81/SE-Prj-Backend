@@ -17,7 +17,7 @@ class TestShowUserCart(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
     
-    def test_show_user_cart_with_authentication(self):
+    def test_show_user_cart_should_succeed_when_with_authentication(self):
 
         response = self.client.get(self.show_user_cart_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -39,13 +39,13 @@ class TestShowUserCart(APITestCase):
                                             "total_price_with_discount": 620000.0
                                         })
     
-    def test_show_user_cart_without_authentication(self):
+    def test_show_user_cart_should_raise_error_when_without_authentication(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.show_user_cart_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
     
-    def test_show_user_cart_with_authentication_and_an_empty_cart(self):
+    def test_show_user_cart_should_succeed_when_with_authentication_and_an_empty_cart(self):
         
         self.user = User.objects.get(id=3)
         self.access_token = AccessToken.for_user(self.user)

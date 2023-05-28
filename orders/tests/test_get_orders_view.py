@@ -17,7 +17,7 @@ class TestGetOrders(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
     
-    def test_get_orders_with_authentication(self):
+    def test_get_orders_with_authentication_should_succeed_when_some_orders_exist(self):
 
         #Act
         response = self.client.get(self.get_orders_urls, format = 'json')
@@ -51,7 +51,7 @@ class TestGetOrders(APITestCase):
                                                 "status": "Accepted"
                                             }
                                         ])
-    def test_get_orders_with_authentication_and_with_no_orders(self):
+    def test_get_orders_with_authentication_should_succeed_when_there_are_not_any_orders(self):
         
         self.user = User.objects.get(id=1)
         self.access_token = AccessToken.for_user(self.user)
@@ -59,7 +59,7 @@ class TestGetOrders(APITestCase):
         response = self.client.get(self.get_orders_urls, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
 
-    def test_get_orders_without_authentication(self):
+    def test_get_orders_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.get_orders_urls, format = 'json')

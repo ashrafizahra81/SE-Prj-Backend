@@ -18,7 +18,7 @@ class TestEditProduct(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
     
-    def test_edit_product_with_valid_data(self):
+    def test_edit_product_should_succeed_when_data_is_valid(self):
 
         data = {
                 "product_name": "pants",
@@ -50,7 +50,7 @@ class TestEditProduct(APITestCase):
                                             "is_available": ""
                                         })
     
-    def test_edit_product_with_invalid_data(self):
+    def test_edit_product_should_raise_error_when_data_is_invalid(self):
 
         data = {
                 "product_name": "pants",
@@ -70,7 +70,7 @@ class TestEditProduct(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
     
-    def test_edit_product_with_valid_data_2(self):
+    def test_edit_product_with_other_info_should_succeed_when_data_is_valid(self):
 
         data = {
                 "product_name": "T-shirt",

@@ -10,7 +10,7 @@ class TestGetProductInfo(APITestCase):
     fixtures = ['accounts', 'products']
     get_product_info_url = reverse('product-info', kwargs={'pk': 1})
 
-    def test_get_existing_product_info(self):
+    def test_get_product_info_should_succeed_when_the_produt_exists(self):
         
         response = self.client.get(self.get_product_info_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -40,7 +40,7 @@ class TestGetProductInfo(APITestCase):
                                             "is_in_cart": False
                                         })
     
-    def test_get_non_existing_product_info(self):
+    def test_get_product_info_should_succeed_when_the_product_does_not_exist(self):
 
         self.get_product_info_url = reverse('product-info', kwargs={'pk': 2})
         response = self.client.get(self.get_product_info_url, kwargs={'pk': 2}, format = 'json')

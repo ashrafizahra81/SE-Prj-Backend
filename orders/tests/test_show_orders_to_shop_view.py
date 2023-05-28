@@ -19,7 +19,7 @@ class TestShowOrdersToShop(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
     
-    def test_show_orders_to_shop_with_authentication(self):
+    def test_show_orders_to_shop_should_succeed_when_the_user_has_been_authorized(self):
 
         response = self.client.get(self.show_orders_to_shop_urls, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -36,7 +36,7 @@ class TestShowOrdersToShop(APITestCase):
                                             }
                                         ])
     
-    def test_show_orders_to_shop_without_authentication(self):
+    def test_show_orders_to_shop_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.show_orders_to_shop_urls, format = 'json')
@@ -44,7 +44,7 @@ class TestShowOrdersToShop(APITestCase):
 
     # def test_show_orders_to_a_user_which_is_not_a_shop(self):
 
-    def test_show_orders_to_shop_with_authentication_and_no_any_orders(self):
+    def test_show_orders_to_shop_with_authentication_should_succeed_when_there_are_not_any_orders(self):
 
 
         self.user = User.objects.get(id=5)

@@ -16,7 +16,7 @@ class TestDeleteFromCart(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
     
-    def test_delete_from_cart_with_authentication(self):
+    def test_delete_from_cart_should_succeed_when_with_authentication(self):
 
         data = {'data': 3}
 
@@ -27,7 +27,7 @@ class TestDeleteFromCart(APITestCase):
 
         self.assertEqual(response.data, {"message": "محصول مورد نظر با موفقیت از سبد خرید حذف شد"} )
 
-    def test_delete_from_cart_without_authentication(self):
+    def test_delete_from_cart_should_raise_error_when_without_authentication(self):
 
 
         self.client.force_authenticate(user=None , token = None)

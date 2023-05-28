@@ -16,7 +16,7 @@ class TestAddProductToShop(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_add_product_to_shop_by_a_shop_manager(self):
+    def test_add_product_to_shop_should_succeed_when_done_by_a_shop_manager_with_authentication(self):
         
         data = {
                 "product_name": "pants",
@@ -49,7 +49,7 @@ class TestAddProductToShop(APITestCase):
                                             "inventory": "10"
                                         })
 
-    def test_add_product_to_shop_by_a_user_who_is_not_a_shop_manager(self):
+    def test_add_product_to_shop_should_raise_error_when_done_by_a_customer_not_a_shop_manager(self):
 
         self.user = User.objects.get(id=2)
         self.access_token = AccessToken.for_user(self.user)
@@ -76,7 +76,7 @@ class TestAddProductToShop(APITestCase):
 
     
 
-    def test_add_product_to_shop_without_authentication(self):
+    def test_add_product_to_shop_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         data = {
@@ -95,7 +95,7 @@ class TestAddProductToShop(APITestCase):
         response = self.client.post(self.add_product_to_shop_urls, data,  format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
     
-    def test_add_product_to_shop_by_a_shop_manager_and_invalid_data(self):
+    def test_add_product_to_shop_by_a_shop_manager_should_raise_error_when_the_data_is_invalid(self):
 
         data = {
                 "product_name": "pants",

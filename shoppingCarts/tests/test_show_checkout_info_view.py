@@ -17,7 +17,7 @@ class TestShowCheckoutInfo(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_show_checkout_info_with_authentication(self):
+    def test_show_checkout_info_should_succeed_when_with_authentication(self):
 
         response = self.client.get(self.show_checkout_info_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -28,7 +28,7 @@ class TestShowCheckoutInfo(APITestCase):
                                             "shippingPrice": 30000
                                         })
     
-    def test_show_checkout_info_with_authentication_and_changed_cart(self):
+    def test_show_checkout_info_should_succeed_when_with_authentication_and_changed_cart(self):
 
         self.user = User.objects.get(id=1)
         self.access_token = AccessToken.for_user(self.user)
@@ -40,13 +40,13 @@ class TestShowCheckoutInfo(APITestCase):
                                             "message": "سبد خرید شما تغییر یافته است"
                                         })
     
-    def test_show_checkout_info_without_authentication(self):
+    def test_show_checkout_info_should_raise_error_when_without_authentication(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.show_checkout_info_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
-    def test_show_checkout_info_with_authentication_but_has_nothing_in_cart(self):
+    def test_show_checkout_info_should_succeed_when_with_authentication_but_has_nothing_in_cart(self):
 
         self.user = User.objects.get(id=3)
         self.access_token = AccessToken.for_user(self.user)

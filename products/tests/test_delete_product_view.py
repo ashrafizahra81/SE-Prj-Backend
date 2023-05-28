@@ -16,13 +16,13 @@ class TestDeleteProduct(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_delete_product_by_shop_owner(self):
+    def test_delete_product_by_shop_owner_should_succeed_when_the_user_has_been_authorized(self):
 
         response = self.client.delete(self.delete_product_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data,{'message': 'محصول موردنظر با موفقیت حذف شد'})
     
-    def test_delete_product_without_authentication(self):
+    def test_delete_product_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.delete(self.delete_product_url, format = 'json')

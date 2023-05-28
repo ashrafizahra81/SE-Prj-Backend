@@ -17,7 +17,7 @@ class TestReport(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_show_reports_to_a_shop_manager(self):
+    def test_show_reports_should_succeed_when_to_a_shop_manager(self):
 
         response = self.client.get(self.report_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -68,7 +68,7 @@ class TestReport(APITestCase):
             ]
         )
     
-    def test_show_reports_to_a_user_who_is_not_a_shop_manager(self):
+    def test_show_reports_should_raise_error_when_to_a_user_who_is_not_a_shop_manager(self):
 
         self.user = User.objects.get(id=2)
         self.access_token = AccessToken.for_user(self.user)
@@ -81,7 +81,7 @@ class TestReport(APITestCase):
                                         })
     
 
-    def test_show_reports_without_authentication(self):
+    def test_show_reports_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         response = self.client.get(self.report_url, format = 'json')

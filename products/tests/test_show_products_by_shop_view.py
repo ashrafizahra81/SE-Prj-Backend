@@ -17,7 +17,7 @@ class TestShowProductsByShop(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
 
-    def test_show_products_to_a_shop_manager(self):
+    def test_show_products_of_shop_should_succeed_when_to_a_shop_manager(self):
 
         response = self.client.get(self.show_products_to_shop_urls, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
@@ -65,7 +65,7 @@ class TestShowProductsByShop(APITestCase):
                 "shop_phone_number": "09808949238"
                                             })
 
-    def test_show_products_to_a_user_who_is_not_a_shop_manager(self): 
+    def test_show_products_of_shop_should_raise_error_when_to_a_customer_not_a_shop_manager(self): 
 
             self.user = User.objects.get(id=2)
             self.access_token = AccessToken.for_user(self.user)
@@ -78,13 +78,13 @@ class TestShowProductsByShop(APITestCase):
                                             })
 
 
-    def test_show_products_without_authentication(self):
+    def test_show_products_should_raise_error_when_without_authentication(self):
 
             self.client.force_authenticate(user=None , token = None)
             response = self.client.get(self.show_products_to_shop_urls, format = 'json')
             self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
         
-    def test_show_products_with_off_percent_to_a_shop_manager(self):
+    def test_show_products_with_off_percent_should_succeed_when_to_a_shop_manager(self):
 
         self.user = User.objects.get(id=5)
         self.access_token = AccessToken.for_user(self.user)

@@ -10,7 +10,7 @@ class TestShowAllProducts(APITestCase):
     fixtures = ['accounts', 'products']
     show_all_products_url = reverse('show-all-products')
 
-    def test_show_all_products(self):
+    def test_show_all_products_should_succeed_when_the_user_has_been_authorized_or_not(self):
 
         response = self.client.get(self.show_all_products_url, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)

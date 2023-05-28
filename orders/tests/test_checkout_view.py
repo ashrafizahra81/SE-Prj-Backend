@@ -18,7 +18,7 @@ class TestCheckout(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_checkout_with_authentication_and_not_enough_money_in_wallet(self):
+    def test_checkout_with_authentication_should_succeed_when_there_is_not_enough_money_in_wallet(self):
 
         data = {'type': 'wallet'}
 
@@ -29,7 +29,7 @@ class TestCheckout(APITestCase):
                                         }
                         )
     
-    def test_checkout_with_authentication_and_enough_money_in_wallet(self):
+    def test_checkout_with_authentication_should_succeed_when_there_is_enough_money_in_wallet(self):
 
         self.user = User.objects.get(id=2)
         self.access_token = AccessToken.for_user(self.user)
@@ -46,7 +46,7 @@ class TestCheckout(APITestCase):
                         )
     
 
-    def test_checkout_without_authentication(self):
+    def test_checkout_should_raise_error_when_the_user_has_not_been_authorized(self):
 
         self.client.force_authenticate(user=None , token = None)
         data = {'type': 'wallet'}
