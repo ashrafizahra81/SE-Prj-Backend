@@ -175,31 +175,211 @@ EMAIL_HOST_PASSWORD = 'Salam@123456'
 EMAIL_PORT = 587
 
 
-LOGGING ={
-    'version':1,
-    'loggers':{
-        'django':{
-            'handlers':['console'],
-            'level':'INFO',
-        }
+
+# LOGGING ={
+#     'version':1,
+#     'loggers':{
+#         'django':{
+#             'handlers':['console'],
+#             'level':'INFO',
+#         }
+#     },
+#     'handlers':{
+#         # 'file':{
+#         #     'level':'ERROR',
+#         #     'class': 'logging.FileHandler',
+#         #     'filename':'./logs/info.log',
+#         #     'formatter':'formatter1',
+#         # }
+#         'console': {
+#             'level':'INFO',
+#             'class':'logging.StreamHandler',
+#             'formatter':'formatter1',
+#         }
+#     },
+#     'formatters':{
+#         'formatter1': {
+#             'format': '{levelname} :: {asctime} :: {module} :: {message}',
+#             'style': '{',
+#         }
+#     }
+# }
+
+# LOGGING ={
+#     'version':1,
+#     'loggers':{
+#         'django':{
+#             'handlers':['file'],
+#             'level':'INFO',
+#         },
+#         'django.request':{
+#             'handlers':['file2'],
+#             'level':'ERROR',
+#         }
+#     },
+#     'handlers':{
+#         'file':{
+#             'level':'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename':'./logs/INFO.log',
+#             'formatter':'formatter1',
+#         },
+#         'file2':{
+#             'level':'ERROR',
+#             'class': 'logging.FileHandler',
+#             'filename':'./logs/ERROR.log',
+#             'formatter':'formatter1',
+#         }
+#         # 'console': {
+#         #     'level':'INFO',
+#         #     'class':'logging.StreamHandler',
+#         #     'formatter':'formatter1',
+#         # }
+#     },
+#     'formatters':{
+#         'formatter1': {
+#             'format': '{levelname} {asctime:s} {name} {threadName} {thread:d} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}',
+#             'style': '{',
+#         }
+#     }
+# }
+
+
+# FORMATTERS = (
+#     {
+#         "verbose": {
+#             "format": "{levelname} {asctime:s} {name} {threadName} {thread:d} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}",
+#             "style": "{",
+#         },
+#         "simple": {
+#             "format": "{levelname} {asctime:s} {name} {module} {filename} {lineno:d} {funcName} {message}",
+#             "style": "{",
+#         },
+#     },
+# )
+
+
+# HANDLERS = {
+#     "console_handler": {
+#         "class": "logging.StreamHandler",
+#         "formatter": "simple",
+#         "level": "DEBUG"
+#     },
+#     "info_handler": {
+#         "class": "logging.handlers.RotatingFileHandler",
+#         "filename": f"{BASE_DIR}/logs/blogthedata_info.log",
+#         "mode": "a",
+#         "encoding": "utf-8",
+#         "formatter": "verbose",
+#         "level": "INFO",
+#         "backupCount": 5,
+#         "maxBytes": 1024 * 1024 * 5,  # 5 MB
+#     },
+#     "error_handler": {
+#         "class": "logging.handlers.RotatingFileHandler",
+#         "filename": f"{BASE_DIR}/logs/blogthedata_error.log",
+#         "mode": "a",
+#         "formatter": "verbose",
+#         "level": "WARNING",
+#         "backupCount": 5,
+#         "maxBytes": 1024 * 1024 * 5,  # 5 MB
+#     },
+# }
+
+# LOGGERS = (
+#     {
+#         "django": {
+#             "handlers": ["console_handler", "info_handler"],
+#             "level": "INFO",
+#         },
+#         "django.request": {
+#             "handlers": ["error_handler"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#         "django.template": {
+#             "handlers": ["error_handler"],
+#             "level": "DEBUG",
+#             "propagate": True,
+#         },
+#         "django.server": {
+#             "handlers": ["error_handler"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+# )
+
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": FORMATTERS[0],
+#     "handlers": HANDLERS,
+#     "loggers": LOGGERS[0],
+# }
+
+
+
+FORMATTERS = (
+    {
+        "verbose": {
+            "format": "{levelname} {asctime:s} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {asctime:s} {module} {filename} {lineno:d} {funcName} {message}",
+            "style": "{",
+        },
     },
-    'handlers':{
-        # 'file':{
-        #     'level':'ERROR',
-        #     'class': 'logging.FileHandler',
-        #     'filename':'./logs/info.log',
-        #     'formatter':'formatter1',
-        # }
-        'console': {
-            'level':'INFO',
-            'class':'logging.StreamHandler',
-            'formatter':'formatter1',
-        }
+)
+
+
+HANDLERS = {
+    "console_handler": {
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
     },
-    'formatters':{
-        'formatter1': {
-            'format': '{levelname} :: {asctime} :: {module} :: {message}',
-            'style': '{',
-        }
-    }
+    "my_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/blogthedata.log",
+        "mode": "a",
+        "encoding": "utf-8",
+        "formatter": "simple",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+    "my_handler_detailed": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/blogthedata_detailed.log",
+        "mode": "a",
+        "formatter": "simple",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+}
+
+LOGGERS = (
+    {
+        "django": {
+            "handlers": ["console_handler", "my_handler_detailed"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["my_handler"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+)
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": FORMATTERS[0],
+    "handlers": HANDLERS,
+    "loggers": LOGGERS[0],
+
 }
