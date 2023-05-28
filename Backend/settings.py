@@ -210,6 +210,7 @@ HANDLERS = {
         "class": "logging.handlers.RotatingFileHandler",
         "filename": "./logs/ERROR.log",
         "mode": "a",
+        "encoding": "utf-8",
         "formatter": "verbose",
         "level": "WARNING",
         "backupCount": 5,
