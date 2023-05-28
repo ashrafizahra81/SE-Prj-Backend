@@ -200,7 +200,7 @@ HANDLERS = {
     },
     "info_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": "./logs/INFO.log",
+        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/INFO.log",
         "mode": "a",
         "encoding": "utf-8",
         "formatter": "verbose",
@@ -208,16 +208,16 @@ HANDLERS = {
         "backupCount": 5,
         "maxBytes": 1024 * 1024 * 5,  # 5 MB
     },
-    # "error_handler": {
-    #     "class": "logging.handlers.RotatingFileHandler",
-    #     "filename": "./logs/ERROR.log",
-    #     "mode": "a",
-    #     "encoding": "utf-8",
-    #     "formatter": "verbose",
-    #     "level": "WARNING",
-    #     "backupCount": 5,
-    #     "maxBytes": 1024 * 1024 * 5,  # 5 MB
-    # },
+    "error_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/ERROR.log",
+        "mode": "a",
+        "encoding": "utf-8",
+        "formatter": "verbose",
+        "level": "WARNING",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
 }
 
 LOGGERS = (
