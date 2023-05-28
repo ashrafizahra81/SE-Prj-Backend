@@ -1,0 +1,287 @@
+INFO :: 2023-05-27 01:13:27,159 :: views :: request recieved from POST /accounts/api/token/
+INFO :: 2023-05-27 01:13:27,160 :: views :: The user logged in successfuly
+INFO :: 2023-05-27 01:13:27,160 :: views :: request recieved from POST /accounts/token/verify/
+INFO :: 2023-05-27 01:13:28,151 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:13:28,151 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:13:28,302 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:13:28,303 :: serializers :: The user entered is a seller
+INFO :: 2023-05-27 01:13:28,448 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:28,449 :: views :: This email already exists: shop3@gmail.com
+INFO :: 2023-05-27 01:13:31,464 :: views :: The verification code has been sent to the email
+INFO :: 2023-05-27 01:13:31,472 :: views :: New verification code has been sent
+INFO :: 2023-05-27 01:13:31,478 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:31,479 :: views :: This email already exists: shop3@gmail.com
+INFO :: 2023-05-27 01:13:31,480 :: views :: User has valid code
+INFO :: 2023-05-27 01:13:31,484 :: serializers :: The token entered is valid
+INFO :: 2023-05-27 01:13:31,487 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:31,488 :: views :: This email already exists: shop3@gmail.com
+INFO :: 2023-05-27 01:13:31,489 :: views :: This account is active: shop3@gmail.com
+INFO :: 2023-05-27 01:13:31,491 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:31,491 :: views :: no user with this email exists: shop7gmail.com
+WARNING :: 2023-05-27 01:13:31,494 :: views :: could not save new user due to invalid data
+INFO :: 2023-05-27 01:13:31,497 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:31,497 :: views :: no user with this email exists: shop7@gmail.com
+INFO :: 2023-05-27 01:13:31,502 :: views :: Data entered is valid
+WARNING :: 2023-05-27 01:13:31,503 :: views :: shop_phone_number is invalid
+INFO :: 2023-05-27 01:13:31,504 :: views :: request recieved from POST /accounts/create_shop/
+INFO :: 2023-05-27 01:13:31,505 :: views :: no user with this email exists: shop7@gmail.com
+INFO :: 2023-05-27 01:13:31,506 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:33,886 :: views :: The verification code has been sent to the email
+INFO :: 2023-05-27 01:13:33,888 :: views :: User 18 saved successfully
+INFO :: 2023-05-27 01:13:33,892 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:33,893 :: views :: This email already exists: golnoosh@gmail.com
+INFO :: 2023-05-27 01:13:33,894 :: views :: This account is active: golnoosh@gmail.com
+INFO :: 2023-05-27 01:13:33,896 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:33,896 :: views :: This email already exists: zarashrafi81@gmail.com
+INFO :: 2023-05-27 01:13:36,283 :: views :: The verification code has been sent to the email
+INFO :: 2023-05-27 01:13:36,286 :: views :: The code stored in database for user zarashrafi81@gmail.com
+INFO :: 2023-05-27 01:13:36,292 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:36,293 :: views :: This email already exists: shamsabadimahla@gmail.com
+INFO :: 2023-05-27 01:13:36,295 :: views :: User has valid code
+INFO :: 2023-05-27 01:13:36,297 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:36,297 :: views :: no user with this email exists: maryamgmail.com
+WARNING :: 2023-05-27 01:13:36,299 :: views :: could not save new user due to invalid data
+INFO :: 2023-05-27 01:13:36,301 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:36,301 :: views :: no user with this email exists: maryam@gmail.com
+INFO :: 2023-05-27 01:13:36,302 :: views :: Data entered is valid
+WARNING :: 2023-05-27 01:13:36,302 :: views :: user_phone_number is invalid
+INFO :: 2023-05-27 01:13:36,305 :: views :: request recieved from POST /accounts/register/
+INFO :: 2023-05-27 01:13:36,306 :: views :: no user with this email exists: maryam@gmail.com
+INFO :: 2023-05-27 01:13:36,308 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:38,872 :: views :: The verification code has been sent to the email
+INFO :: 2023-05-27 01:13:38,874 :: views :: User 18 and its code stored in database
+INFO :: 2023-05-27 01:13:38,876 :: views :: User 18 saved successfully
+INFO :: 2023-05-27 01:13:38,879 :: views :: request recieved from POST /accounts/verify_email/
+WARNING :: 2023-05-27 01:13:38,879 :: views :: The code entered is not in a right range
+INFO :: 2023-05-27 01:13:38,881 :: views :: request recieved from POST /accounts/verify_email/
+WARNING :: 2023-05-27 01:13:38,882 :: views :: code not found
+INFO :: 2023-05-27 01:13:38,883 :: views :: request recieved from POST /accounts/verify_email/
+INFO :: 2023-05-27 01:13:38,884 :: views :: The code entered is valid
+INFO :: 2023-05-27 01:13:38,885 :: views :: code for user with email shamsabadimahla@gmail.com deleted
+INFO :: 2023-05-27 01:13:38,888 :: views :: User with email shamsabadimahla@gmail.com is active now
+INFO :: 2023-05-27 01:13:38,888 :: views :: The user is a customer
+INFO :: 2023-05-27 01:13:38,890 :: views :: The user is active now
+INFO :: 2023-05-27 01:13:38,892 :: views :: request recieved from POST /accounts/verify_email/
+INFO :: 2023-05-27 01:13:38,892 :: views :: The code entered is valid
+INFO :: 2023-05-27 01:13:38,893 :: views :: code for user with email shop3@gmail.com deleted
+INFO :: 2023-05-27 01:13:38,894 :: views :: User with email shop3@gmail.com is active now
+INFO :: 2023-05-27 01:13:38,894 :: views :: The user is a seller
+INFO :: 2023-05-27 01:13:38,894 :: views :: The user is active now
+INFO :: 2023-05-27 01:13:39,048 :: views :: request recieved from POST /accounts/edit_profile/
+INFO :: 2023-05-27 01:13:39,048 :: views :: user found
+INFO :: 2023-05-27 01:13:39,049 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:39,050 :: views :: username changed from golnoosh to golnooshasefi
+INFO :: 2023-05-27 01:13:39,051 :: views :: user_phone_number changed from 09108944555 to 09103335566
+INFO :: 2023-05-27 01:13:39,051 :: views :: user_postal_code changed from None to 887799551
+INFO :: 2023-05-27 01:13:39,051 :: views :: user_address changed from None to Isfahan
+INFO :: 2023-05-27 01:13:39,056 :: views :: request recieved from POST /accounts/edit_profile/
+INFO :: 2023-05-27 01:13:39,056 :: views :: user found
+WARNING :: 2023-05-27 01:13:39,058 :: views :: The data entered is invalid
+INFO :: 2023-05-27 01:13:39,063 :: views :: request recieved from POST /accounts/edit_profile/
+INFO :: 2023-05-27 01:13:39,063 :: views :: user found
+WARNING :: 2023-05-27 01:13:39,064 :: views :: The user phone number entered is invalid
+INFO :: 2023-05-27 01:13:39,069 :: views :: request recieved from POST /accounts/edit_profile/
+INFO :: 2023-05-27 01:13:39,069 :: views :: user found
+WARNING :: 2023-05-27 01:13:39,070 :: views :: The user postal code entered is invalid
+INFO :: 2023-05-27 01:13:39,078 :: views :: request recieved from POST /accounts/edit_profile/
+INFO :: 2023-05-27 01:13:39,079 :: views :: user found
+INFO :: 2023-05-27 01:13:39,080 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:39,080 :: views :: Email changed from golnoosh@gmail.com to golnoosh3@gmail.com
+INFO :: 2023-05-27 01:13:39,222 :: views :: request recieved from POST /accounts/reset_password/
+INFO :: 2023-05-27 01:13:39,353 :: views :: password of user 1 changed successfuly
+INFO :: 2023-05-27 01:13:39,358 :: views :: request recieved from POST /accounts/reset_password/
+WARNING :: 2023-05-27 01:13:39,359 :: views :: token entered 1 is not equal with 0
+INFO :: 2023-05-27 01:13:39,364 :: views :: request recieved from POST /accounts/reset_password/
+WARNING :: 2023-05-27 01:13:39,364 :: views :: password_again 123456 is not equal with password12345
+INFO :: 2023-05-27 01:13:39,369 :: views :: request recieved from GET /accounts/reset_password/
+INFO :: 2023-05-27 01:13:42,168 :: views :: request recieved from POST /accounts/receive_email_for_recover_password/
+INFO :: 2023-05-27 01:13:45,183 :: views :: request recieved from POST /accounts/receive_email_for_recover_password/
+INFO :: 2023-05-27 01:13:47,824 :: views :: request recieved from GET /accounts/show_score/
+INFO :: 2023-05-27 01:13:47,824 :: views :: score of user 1 is 0
+INFO :: 2023-05-27 01:13:48,047 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,051 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,051 :: views :: The user is a shop owner
+INFO :: 2023-05-27 01:13:48,053 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:48,054 :: views :: user_phone_number changed from None to 09103335566
+INFO :: 2023-05-27 01:13:48,054 :: views :: Email changed from shop1@gmail.com to shop11@gmail.com
+INFO :: 2023-05-27 01:13:48,054 :: views :: shop_address changed from isfahan to isfahan77
+INFO :: 2023-05-27 01:13:48,054 :: views :: shop_phone_number changed from 09808949238 to 12345
+INFO :: 2023-05-27 01:13:48,057 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,057 :: views :: The user is a shop owner
+WARNING :: 2023-05-27 01:13:48,059 :: views :: The data entered is invalid
+INFO :: 2023-05-27 01:13:48,063 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,063 :: views :: The user is a shop owner
+WARNING :: 2023-05-27 01:13:48,065 :: views :: The shop phone number entered is invalid
+INFO :: 2023-05-27 01:13:48,069 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,069 :: views :: The user is a shop owner
+WARNING :: 2023-05-27 01:13:48,073 :: views :: The user phone number entered is invalid
+INFO :: 2023-05-27 01:13:48,078 :: views :: request recieved from POST /accounts/edit_shop/
+INFO :: 2023-05-27 01:13:48,078 :: views :: The user is a shop owner
+INFO :: 2023-05-27 01:13:48,079 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:48,080 :: views :: user_phone_number changed from None to 09103445680
+INFO :: 2023-05-27 01:13:48,080 :: views :: shop_address changed from isfahan to isfahan77
+INFO :: 2023-05-27 01:13:48,256 :: views :: request recieved from GET /accounts/show_user_info/
+INFO :: 2023-05-27 01:13:48,257 :: views :: user found
+INFO :: 2023-05-27 01:13:48,257 :: views :: user 1 is a customer
+INFO :: 2023-05-27 01:13:48,261 :: views :: request recieved from GET /accounts/show_user_info/
+INFO :: 2023-05-27 01:13:48,262 :: views :: user found
+INFO :: 2023-05-27 01:13:48,262 :: views :: user 4 is a seller
+INFO :: 2023-05-27 01:13:48,484 :: views :: request recieved from POST /favoriteProducts/add_to_favorite/
+WARNING :: 2023-05-27 01:13:48,484 :: views :: product with id14 not found
+INFO :: 2023-05-27 01:13:48,487 :: views :: request recieved from POST /favoriteProducts/add_to_favorite/
+INFO :: 2023-05-27 01:13:48,489 :: views :: product 1 added to favorite list of user 2
+INFO :: 2023-05-27 01:13:48,676 :: views :: request recieved from POST /favoriteProducts/delete_from_favorite/
+WARNING :: 2023-05-27 01:13:48,677 :: views :: product with id 22 has been deleted from product list
+INFO :: 2023-05-27 01:13:48,680 :: views :: request recieved from POST /favoriteProducts/delete_from_favorite/
+INFO :: 2023-05-27 01:13:48,681 :: views :: product with id 1 deleted from favorite list
+INFO :: 2023-05-27 01:13:48,905 :: views :: request recieved from GET /favoriteProducts/show_favorite/
+INFO :: 2023-05-27 01:13:48,906 :: views :: product with id 1 from favorite list found
+WARNING :: 2023-05-27 01:13:48,907 :: views :: product with id 1 has been deleted from product list
+INFO :: 2023-05-27 01:13:48,911 :: views :: request recieved from GET /favoriteProducts/show_favorite/
+INFO :: 2023-05-27 01:13:49,174 :: views :: request recieved from POST /gifts/apply_discount/
+INFO :: 2023-05-27 01:13:49,175 :: views :: total price of shopping cart calculated: 440000.0
+INFO :: 2023-05-27 01:13:49,176 :: views :: The discount code applied and total price of shopping cart changed to 376000.0
+INFO :: 2023-05-27 01:13:49,181 :: views :: request recieved from POST /gifts/apply_discount/
+INFO :: 2023-05-27 01:13:49,182 :: views :: total price of shopping cart calculated: 440000.0
+INFO :: 2023-05-27 01:13:49,183 :: views :: The discount code applied and total price of shopping cart changed to 329000.0
+INFO :: 2023-05-27 01:13:49,189 :: views :: request recieved from POST /gifts/apply_discount/
+INFO :: 2023-05-27 01:13:49,191 :: views :: total price of shopping cart calculated: 440000.0
+INFO :: 2023-05-27 01:13:49,191 :: views :: The discount code applied and total price of shopping cart changed to 440000.0
+INFO :: 2023-05-27 01:13:49,195 :: views :: request recieved from POST /gifts/apply_discount/
+INFO :: 2023-05-27 01:13:49,196 :: views :: total price of shopping cart calculated: 0
+WARNING :: 2023-05-27 01:13:49,197 :: views :: The discount code V4D9X85 has expired
+INFO :: 2023-05-27 01:13:49,412 :: views :: request recieved from POST /gifts/get_gift/
+WARNING :: 2023-05-27 01:13:49,412 :: views :: format of score entered is not correct
+INFO :: 2023-05-27 01:13:49,419 :: views :: request recieved from POST /gifts/get_gift/
+WARNING :: 2023-05-27 01:13:49,420 :: views :: the score of user 2 is not enough for gift 1
+INFO :: 2023-05-27 01:13:49,424 :: views :: request recieved from POST /gifts/get_gift/
+INFO :: 2023-05-27 01:13:49,425 :: views :: The gifts with id 2 assigned to the user with id 1
+INFO :: 2023-05-27 01:13:49,436 :: views :: request recieved from GET /gifts/show_gift/
+WARNING :: 2023-05-27 01:13:49,436 :: views :: No gift is available
+INFO :: 2023-05-27 01:13:49,442 :: views :: request recieved from GET /gifts/show_gift/
+INFO :: 2023-05-27 01:13:49,443 :: views :: gift with id 2 found
+INFO :: 2023-05-27 01:13:49,784 :: views :: request recieved from POST /orders/checkout/
+INFO :: 2023-05-27 01:13:49,790 :: views :: order of user 2 saved successfuly
+INFO :: 2023-05-27 01:13:49,791 :: views :: score of this shop added to scores of user 2
+INFO :: 2023-05-27 01:13:49,792 :: views :: balance of wallet is 1470000.0
+INFO :: 2023-05-27 01:13:49,792 :: views :: balance of wallet reduced to 820000.0
+INFO :: 2023-05-27 01:13:49,795 :: views :: request recieved from POST /orders/checkout/
+WARNING :: 2023-05-27 01:13:49,800 :: views :: wallet balance of user 1 is not enough
+INFO :: 2023-05-27 01:13:50,058 :: views :: request recieved from GET /orders/user_orders/
+INFO :: 2023-05-27 01:13:50,059 :: views :: Orders of user 2 found successfuly
+INFO :: 2023-05-27 01:13:50,064 :: views :: request recieved from GET /orders/user_orders/
+WARNING :: 2023-05-27 01:13:50,065 :: views :: No order found for user 1
+INFO :: 2023-05-27 01:13:50,240 :: views :: request recieved from GET /orders/show_order_to_shop/
+INFO :: 2023-05-27 01:13:50,241 :: views :: orders from products of seller 4 found
+INFO :: 2023-05-27 01:13:50,246 :: views :: request recieved from GET /orders/show_order_to_shop/
+WARNING :: 2023-05-27 01:13:50,248 :: views :: no order found from seller 5
+INFO :: 2023-05-27 01:13:50,461 :: views :: request recieved from POST /products/add_products_to_shop/
+INFO :: 2023-05-27 01:13:50,462 :: views :: data entered is valid
+INFO :: 2023-05-27 01:13:50,462 :: views :: product with id 15 saved
+INFO :: 2023-05-27 01:13:50,465 :: views :: request recieved from POST /products/add_products_to_shop/
+WARNING :: 2023-05-27 01:13:50,466 :: views :: dara entered is not valid
+INFO :: 2023-05-27 01:13:50,470 :: views :: request recieved from POST /products/add_products_to_shop/
+INFO :: 2023-05-27 01:13:50,672 :: views :: request recieved from DELETE /products/delete_product/<int:pk>/
+INFO :: 2023-05-27 01:13:50,673 :: views :: product with id 1 deleted
+INFO :: 2023-05-27 01:13:50,896 :: views :: request recieved from PUT /products/edit_product/<int:pk>/
+INFO :: 2023-05-27 01:13:50,902 :: views :: request recieved from PUT /products/edit_product/<int:pk>/
+INFO :: 2023-05-27 01:13:50,905 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:50,905 :: views :: product_price of product 4 change from 400000 to 2330000
+INFO :: 2023-05-27 01:13:50,906 :: views :: inventory of product 4 change from 18 to 5
+INFO :: 2023-05-27 01:13:50,911 :: views :: request recieved from PUT /products/edit_product/<int:pk>/
+INFO :: 2023-05-27 01:13:50,914 :: views :: Data entered is valid
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_name of product 4 change from pants to T-shirt
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_size of product 4 change from 36 to 38
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_color of product 4 change from light blue to red
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_height of product 4 change from 100 to 110
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_design of product 4 change from plain to striped
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_material of product 4 change from denim to cotton
+INFO :: 2023-05-27 01:13:50,915 :: views :: product_country of product 4 change from Iran to Turkey
+INFO :: 2023-05-27 01:13:50,916 :: views :: product_off_percent of product 4 change from 0 to 20
+INFO :: 2023-05-27 01:13:50,916 :: views :: is_available of product 4 change from True to False
+INFO :: 2023-05-27 01:13:51,101 :: views :: request recieved from POST /products/filters/
+INFO :: 2023-05-27 01:13:51,102 :: views :: products with filter pants found
+INFO :: 2023-05-27 01:13:51,105 :: views :: request recieved from POST /products/filters/
+INFO :: 2023-05-27 01:13:51,106 :: views :: no products with filter shirt found
+INFO :: 2023-05-27 01:13:51,281 :: views :: request recieved from GET /products/product_info/<int:pk>/
+INFO :: 2023-05-27 01:13:51,282 :: views :: product with id 1 found
+INFO :: 2023-05-27 01:13:51,287 :: views :: request recieved from GET /products/product_info/<int:pk>/
+INFO :: 2023-05-27 01:13:51,288 :: views :: product with id 2 found
+INFO :: 2023-05-27 01:13:51,288 :: views :: product with id 2 is deleted
+INFO :: 2023-05-27 01:13:51,509 :: views :: request recieved from GET /products/report/
+INFO :: 2023-05-27 01:13:51,509 :: views :: report of shop 4 returned
+INFO :: 2023-05-27 01:13:51,513 :: views :: request recieved from GET /products/report/
+INFO :: 2023-05-27 01:13:51,712 :: views :: request recieved from GET /products/show_all_products/
+INFO :: 2023-05-27 01:13:51,713 :: views :: There is no product
+INFO :: 2023-05-27 01:13:51,718 :: views :: products of all shops found
+INFO :: 2023-05-27 01:13:51,931 :: views :: request recieved from GET /products/show_products_of_shop/
+INFO :: 2023-05-27 01:13:51,934 :: views :: shop 4 has no products
+INFO :: 2023-05-27 01:13:51,934 :: views :: products of shop 4 found
+INFO :: 2023-05-27 01:13:51,938 :: views :: request recieved from GET /products/show_products_of_shop/
+INFO :: 2023-05-27 01:13:51,941 :: views :: request recieved from GET /products/show_products_of_shop/
+INFO :: 2023-05-27 01:13:51,944 :: views :: products of shop 5 found
+INFO :: 2023-05-27 01:13:52,187 :: views :: request recieved from POST /shoppingCarts/add_to_cart/
+INFO :: 2023-05-27 01:13:52,188 :: views :: product 1 added to shopping cart of user 2
+INFO :: 2023-05-27 01:13:52,190 :: views :: request recieved from POST /shoppingCarts/add_to_cart/
+WARNING :: 2023-05-27 01:13:52,191 :: views :: product 8 is not available and could not add to shopping cart
+INFO :: 2023-05-27 01:13:52,402 :: views :: request recieved from POST /shoppingCarts/delete_from_cart/
+INFO :: 2023-05-27 01:13:52,404 :: views :: product 3 deleted from shopping cart of user 2
+INFO :: 2023-05-27 01:13:52,598 :: views :: request recieved from GET /shoppingCarts/show_checkout_info/
+INFO :: 2023-05-27 01:13:52,599 :: views :: checkout information of user 2 returned
+INFO :: 2023-05-27 01:13:52,602 :: views :: request recieved from GET /shoppingCarts/show_checkout_info/
+INFO :: 2023-05-27 01:13:52,606 :: views :: request recieved from GET /shoppingCarts/show_checkout_info/
+INFO :: 2023-05-27 01:13:52,608 :: views :: checkout information of user 3 returned
+INFO :: 2023-05-27 01:13:52,785 :: views :: request recieved from GET /shoppingCarts/show_cart/
+INFO :: 2023-05-27 01:13:52,787 :: views :: products of shopping cart of user 2 returned
+INFO :: 2023-05-27 01:13:52,791 :: views :: request recieved from GET /shoppingCarts/show_cart/
+INFO :: 2023-05-27 01:13:52,940 :: views :: request recieved from POST /wallets/charge_wallet/
+INFO :: 2023-05-27 01:13:52,940 :: views :: amount of 100 added to wallet of user 1
+INFO :: 2023-05-27 01:13:52,944 :: views :: request recieved from POST /wallets/charge_wallet/
+WARNING :: 2023-05-27 01:13:52,945 :: views :: data entered is invalid
+INFO :: 2023-05-27 01:16:17,282 :: autoreload :: Watching for file changes with StatReloader
+INFO :: 2023-05-27 01:16:17,636 :: views :: request recieved from POST /accounts/api/token/
+INFO :: 2023-05-27 01:16:17,636 :: views :: The user logged in successfuly
+INFO :: 2023-05-27 01:16:17,636 :: views :: request recieved from POST /accounts/token/verify/
+INFO :: 2023-05-27 01:16:41,561 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:16:41,562 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:16:41,565 :: basehttp :: "POST /accounts/api/token/ HTTP/1.1" 200 606
+INFO :: 2023-05-27 01:17:08,726 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:17:08,727 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:17:08,729 :: basehttp :: "POST /accounts/api/token/ HTTP/1.1" 200 606
+INFO :: 2023-05-27 01:17:38,519 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:17:38,519 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:17:38,520 :: basehttp :: "POST /accounts/api/token/ HTTP/1.1" 200 606
+WARNING :: 2023-05-27 01:18:11,304 :: basehttp :: "GET /gifts/get_gift/ HTTP/1.1" 405 40
+INFO :: 2023-05-27 01:18:25,632 :: views :: request recieved from GET /gifts/show_gift/
+WARNING :: 2023-05-27 01:18:25,632 :: views :: No gift is available
+INFO :: 2023-05-27 01:18:25,632 :: basehttp :: "GET /gifts/show_gift/ HTTP/1.1" 204 69
+INFO :: 2023-05-27 01:19:07,467 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:19:07,467 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:19:07,468 :: basehttp :: "POST /accounts/api/token/ HTTP/1.1" 200 606
+INFO :: 2023-05-27 01:19:43,023 :: autoreload :: D:\term8\OOAD\SE-Prj-Backend\accounts\views.py changed, reloading.
+INFO :: 2023-05-27 01:19:44,139 :: autoreload :: Watching for file changes with StatReloader
+INFO :: 2023-05-27 01:19:44,496 :: views :: The user logged in successfuly
+INFO :: 2023-05-27 01:19:44,496 :: views :: request recieved from POST /accounts/token/verify/
+INFO :: 2023-05-27 01:19:52,417 :: autoreload :: D:\term8\OOAD\SE-Prj-Backend\accounts\serializers.py changed, reloading.
+INFO :: 2023-05-27 01:19:53,581 :: autoreload :: Watching for file changes with StatReloader
+INFO :: 2023-05-27 01:19:53,929 :: views :: The user logged in successfuly
+INFO :: 2023-05-27 01:19:53,929 :: views :: request recieved from POST /accounts/token/verify/
+INFO :: 2023-05-27 01:19:55,632 :: serializers :: request recieved from POST /accounts/api/token/
+INFO :: 2023-05-27 01:19:55,981 :: serializers :: Data entered is valid
+INFO :: 2023-05-27 01:19:55,981 :: serializers :: The user entered is a customer
+INFO :: 2023-05-27 01:19:55,984 :: basehttp :: "POST /accounts/api/token/ HTTP/1.1" 200 606
+WARNING :: 2023-05-27 01:20:31,439 :: basehttp :: "GET /accounts/api/token/ HTTP/1.1" 405 40
+INFO :: 2023-05-27 01:24:17,293 :: autoreload :: D:\term8\OOAD\SE-Prj-Backend\Backend\settings.py changed, reloading.
+INFO :: 2023-05-27 01:26:16,981 :: autoreload :: django.utils.autoreload :: Watching for file changes with StatReloader
+INFO :: 2023-05-27 01:26:17,324 :: views :: django :: The user logged in successfuly
+INFO :: 2023-05-27 01:26:17,324 :: views :: django :: request recieved from POST /accounts/token/verify/
+WARNING :: 2023-05-27 01:26:21,992 :: basehttp :: django.server :: "GET /accounts/api/token/ HTTP/1.1" 405 40
+INFO :: 2023-05-27 01:27:23,768 :: autoreload :: django.utils.autoreload :: D:\term8\OOAD\SE-Prj-Backend\Backend\settings.py changed, reloading.
+INFO 2023-05-27 01:27:24,911 django.utils.autoreload MainThread 26716 autoreload autoreload.py 677 django.utils.autoreload run_with_reloader 6416 Watching for file changes with StatReloader
+INFO 2023-05-27 01:27:25,268 django MainThread 26716 views views.py 135 django CustomTokenObtainPairView 6416 The user logged in successfuly
+INFO 2023-05-27 01:27:25,268 django MainThread 26716 views views.py 143 django TokenVerifyView 6416 request recieved from POST /accounts/token/verify/
+WARNING 2023-05-27 01:27:28,145 django.server Thread-1 (process_request_thread) 3660 basehttp basehttp.py 187 django.server log_message 6416 "GET /accounts/api/token/ HTTP/1.1" 405 40
+INFO 2023-05-27 01:28:56,156 django.utils.autoreload MainThread 26716 autoreload autoreload.py 266 django.utils.autoreload trigger_reload 6416 D:\term8\OOAD\SE-Prj-Backend\Backend\settings.py changed, reloading.
+INFO 2023-05-27 01:28:57,496 django.utils.autoreload MainThread 4384 autoreload autoreload.py 677 django.utils.autoreload run_with_reloader 12808 Watching for file changes with StatReloader
+INFO 2023-05-27 01:28:57,856 django MainThread 4384 views views.py 135 django CustomTokenObtainPairView 12808 The user logged in successfuly
+INFO 2023-05-27 01:28:57,856 django MainThread 4384 views views.py 143 django TokenVerifyView 12808 request recieved from POST /accounts/token/verify/

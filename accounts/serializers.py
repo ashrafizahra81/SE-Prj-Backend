@@ -38,6 +38,7 @@ class UserEditProfileSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     def validate(self, attrs):
+        logger.info('request recieved from POST /accounts/api/token/')
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         logger.info('Data entered is valid')
         if self.user.shop_name == None:

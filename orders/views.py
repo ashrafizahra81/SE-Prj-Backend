@@ -20,7 +20,7 @@ class GetUserOrders(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-
+        logger.info('request recieved from GET /orders/user_orders/')
         user_orders = list(Order.objects.filter(user_id=request.user.id).values())
         data = list()
         for o in user_orders:
@@ -42,7 +42,7 @@ class CheckoutShoppingCart(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-
+        logger.info('request recieved from POST /orders/checkout/')
         user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         price = 0
         off_price = 0
@@ -96,6 +96,7 @@ class ShowOrdersToShop(APIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
 
     def get(self, request):
+        logger.info('request recieved from GET /orders/show_order_to_shop/')
         order_list = list(Order.objects.all().values())
         
         product_list = list()
