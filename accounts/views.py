@@ -91,15 +91,15 @@ class UserRegister(APIView):
 class verfyUserToResgister(APIView):
     def post(self , request):
         logger.info('request recieved from POST /accounts/verify_email/')
-        if(not(request.data['code'] <=999999 and request.data['code'] >= 100000)):
+        if(not(int(request.data['code']) <=999999 and int(request.data['code']) >= 100000)):
             logger.warn('The code entered is not in a right range')
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        if(CodesForUsers.objects.filter(code=request.data['code']).exists()):
+        if(CodesForUsers.objects.filter(code=int(request.data['code'])).exists()):
             logger.info('The code entered is valid')
-            userCode = CodesForUsers.objects.get(code = request.data['code'])
+            userCode = CodesForUsers.objects.get(code = int(request.data['code']))
             logger.info('code for user with email '+ userCode.email+' deleted')
             user = User.objects.get(email = userCode.email)
-            CodesForUsers.objects.filter(code=request.data['code']).delete()
+            CodesForUsers.objects.filter(code=int(request.data['code'])).delete()
             user.is_active = 1
             user.save()
             logger.info('User with email '+ user.email+' is active now')
