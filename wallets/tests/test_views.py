@@ -15,7 +15,7 @@ class TestWallet(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_charge_wallet_with_authentication(self):
+    def test_charge_wallet_should_succeed_when_user_is_authenticated(self):
 
         #Arrange
         data = {'insert': 100}
@@ -26,7 +26,7 @@ class TestWallet(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
-    def test_charge_wallet_without_authentication(self):
+    def test_charge_wallet_should_raise_erro_when_user_is_not_authenticated(self):
     
         #Arrange
         self.client.force_authenticate(user=None , token = None)
@@ -38,7 +38,7 @@ class TestWallet(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
-    def test_charge_wallet_with_invalid_data(self):
+    def test_charge_wallet_should_raise_error_when_data_is_invalid(self):
 
         #Arrange
         data = {'insert':0}

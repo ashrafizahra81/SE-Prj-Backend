@@ -14,7 +14,7 @@ class FavoriteProductsTest(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
         
-    def test_add_to_favoriteProducts_with_authentication(self):
+    def test_add_to_favoriteProducts_should_succeed_when_user_is_authenticated(self):
 
         #Arrange
         data = {'data': 1}
@@ -25,7 +25,7 @@ class FavoriteProductsTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
     
-    def test_add_to_favoriteProducts_without_authentication(self):
+    def test_add_to_favoriteProducts_should_raise_error_when_user_is_not_authenticated(self):
 
         #Arrange
         self.client.force_authenticate(user=None , token = None)
@@ -37,7 +37,7 @@ class FavoriteProductsTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
-    def test_add_non_existing_product_to_favorite_with_authentication(self):
+    def test_add_to_favoriteProducts_should_raise_error_when_id_of_product_does_not_exist(self):
 
         #Arrange
         data = {'data': 22}

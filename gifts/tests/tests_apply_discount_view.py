@@ -17,7 +17,7 @@ class ShowGiftTest(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_apply_discount_type_A_with_authentication(self):
+    def test_apply_discount_should_succeed_when_type_of_code_is_A_when_user_is_authenticated(self):
         
         #Arrange
         data = {'discount_code':'DG4T5H'}
@@ -34,7 +34,7 @@ class ShowGiftTest(APITestCase):
                                             "shippingPrice": 30000
                                         })
         
-    def test_apply_discount_type_B_with_authentication(self):
+    def test_apply_discount_should_succeed_when_type_of_code_is_B_when_user_is_authenticated(self):
             
         #Arrange
         data = {'discount_code':'HJ61R9B'}
@@ -51,7 +51,7 @@ class ShowGiftTest(APITestCase):
                                             "shippingPrice": 30000
                                         })
 
-    def test_apply_discount_type_C_with_authentication(self):
+    def test_apply_discount_should_succeed_when_type_of_code_is_C_when_user_is_authenticated(self):
             
         #Arrange
         data = {'discount_code':'V4D9X85'}
@@ -68,7 +68,7 @@ class ShowGiftTest(APITestCase):
                                             "discounted_total_cost": 440000.0,
                                             "shippingPrice": 30000
                                         })
-    def test_apply_discount_without_authentication(self):
+    def test_apply_discount_should_raise_error_when_user_is_not_authenticated(self):
 
         #Arrange
         self.client.force_authenticate(user=None , token = None)
@@ -79,7 +79,7 @@ class ShowGiftTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
 
-    def test_apply_discount_with_invalid_code_with_authentication(self):
+    def test_apply_discount_should_succeed_when_code_is_not_found(self):
         
         #Arrange
         self.user = User.objects.get(id=3)

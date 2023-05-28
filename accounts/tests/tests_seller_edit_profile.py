@@ -14,7 +14,7 @@ class SellerEditProfileTest(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_edit_seller_profile_with_authentication_as_a_seller(self):
+    def test_edit_seller_profile_should_succeed_when_seller_is_authenticated(self):
             
         #Arrange
         data = {'email': 'shop11@gmail.com',
@@ -32,7 +32,7 @@ class SellerEditProfileTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
 
-    def test_edit_seller_profile_with_new_phone_number(self):
+    def test_edit_seller_profile_should_succeed_when_new_phone_number_entered(self):
             
         #Arrange
         user = User.objects.get(id = 4)
@@ -59,7 +59,7 @@ class SellerEditProfileTest(APITestCase):
                                             "shop_phone_number": "09808949238"
                                         })
 
-    def test_edit_seller_profile_with_authentication_as_a_customer(self):
+    def test_edit_seller_profile_should_raise_error_when_user_does_not_have_permission(self):
             
         #Arrange
         self.user = User.objects.get(id=1)
@@ -79,7 +79,7 @@ class SellerEditProfileTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_403_FORBIDDEN)
 
-    def test_edit_seller_profile_without_authentication(self):
+    def test_edit_seller_profile_should_raise_error_when_user_is_not_authenticated(self):
             
         #Arrange
         self.client.force_authenticate(user=None , token = None)
@@ -97,7 +97,7 @@ class SellerEditProfileTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
         
-    def test_edit_seller_profile_with_invalid_user_phone_number_with_authentication(self):
+    def test_edit_seller_profile_should_raise_error_when_user_phone_number_is_invalid(self):
                 
         #Arrange
         data = {'email': 'shop11@gmail.com',
@@ -115,7 +115,7 @@ class SellerEditProfileTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
 
-    def test_edit_seller_profile_with_invalid_email_with_authentication(self):
+    def test_edit_seller_profile_should_raise_error_when_email_is_invalid(self):
                 
         #Arrange
         data = {'email': 'shop11gmail.com',
@@ -134,7 +134,7 @@ class SellerEditProfileTest(APITestCase):
 
 
 
-    def test_edit_seller_profile_with_invalid_shop_phone_number_with_authentication(self):
+    def test_edit_seller_profile_should_raise_error_when_shop_phone_number_is_invalid(self):
                 
         #Arrange
         data = {'email': 'shop11@gmail.com',

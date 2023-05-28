@@ -13,7 +13,7 @@ class UserAuthenticationTest(APITestCase):
     create_shop_url = reverse('accounts:create_shop')
     verify_email_url = reverse('accounts:verify_email')
     verify_token_url = reverse('accounts:token_verify')
-    def test_login_user_with_existed_data_as_customer(self):
+    def test_login_user_should_succeed_when_data_exist_as_a_customer(self):
         #Arrange
         data = {'email':'golnoosh@gmail.com',
                 'password':'1234'}
@@ -24,7 +24,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data['type'] , 'user')
 
-    def test_login_user_with_existed_data_as_seller(self):
+    def test_login_user_should_succeed_when_data_exist_as_a_seller(self):
         #Arrange
         data = {'email':'shop1@gmail.com',
                 'password':'1234'}
@@ -36,7 +36,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.data['type'] , 'seller')
 
 
-    def test_login_user_with_non_existed_data(self):
+    def test_login_user_with_shoul_raise_error_when_email_does_not_exist(self):
         #Arrange
         data = {'email':'golnoosh1@gmail.com',
                 'password':'1234'}
@@ -47,7 +47,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_401_UNAUTHORIZED)
 
 
-    def test_user_register_with_valid_info_without_duplicated_email(self):
+    def test_user_register_should_succeed_when_data_is_valid(self):
         #Arrange
         data = {
                 "username": "maryam",
@@ -62,7 +62,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
 
-    def test_user_register_with_invalid_info_without_duplicated_email(self):
+    def test_user_register_should_raise_error_when_user_phone_number_is_invalid(self):
         #Arrange
         data = {
                 "username": "maryam",
@@ -77,7 +77,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
     
 
-    def test_user_register_with_invalid_email(self):
+    def test_user_register_should_raise_error_when_email_is_invalid(self):
             #Arrange
         data = {
                 "username": "maryam",
@@ -92,7 +92,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
 
-    def test_user_register_with_duplicated_and_active_email_(self):
+    def test_user_register_should_raise_error_when_email_is_duplicated_and_active(self):
         #Arrange
         data = {
                 "username": "goli",
@@ -106,7 +106,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
-    def test_user_register_with_duplicated_and_inactive_email_with_expired_code(self):
+    def test_user_register_should_succeed_when_email_is_duplicated_and_inactive_and_usercode_has_expired(self):
         #Arrange
         data = {
                 "username": "zahra_Ashrafi5",
@@ -123,7 +123,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
 
-    def test_user_register_with_duplicated_and_inactive_email_with_unexpired_code(self):
+    def test_user_register_should_succeed_when_email_is_duplicated_and_inactive_and_usercode_is_valid(self):
         #Arrange
         data = {
                 "username": "mahlashams",
@@ -141,7 +141,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_202_ACCEPTED)
 
 
-    def test_verify_email_with_invalid_code(self):
+    def test_verify_email_should_raise_error_when_code_is_invalid(self):
         #Arrange
         data = {'code' : 1234}
         #Act
@@ -151,7 +151,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
     
-    def test_verify_email_with_non_existed_code(self):
+    def test_verify_email_should_raise_error_when_code_does_not_exist(self):
         #Arrange
         data = {'code' : 123456}
         #Act
@@ -161,7 +161,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_404_NOT_FOUND)
 
 
-    def test_verify_email_with_valid_code_as_a_customer(self):
+    def test_verify_email_should_succeed_when_code_is_valid_and_user_is_customer(self):
         #Arrange
         data = {'code' : 710500}
         #Act
@@ -172,7 +172,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual('shop_name' in response.data , False)
 
 
-    def test_verify_email_with_valid_code_as_a_seller(self):
+    def test_verify_email_should_succeed_when_code_is_valid_and_user_is_seller(self):
         #Arrange
         data = {'code' : 458269}
         #Act
@@ -183,7 +183,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual('shop_name' in response.data , True)
 
 
-    def test_user_create_shop_with_valid_info_without_duplicated_email(self):
+    def test_user_create_shop_should_succeed_when_info_is_valid(self):
         #Arrange
         data = {
                 "username": "shop7",
@@ -199,7 +199,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)
 
-    def test_user_create_shop_with_invalid_email(self):
+    def test_user_create_shop_should_raise_error_when_email_is_invalid(self):
         #Arrange
         data = {
                 "username": "shop7",
@@ -216,7 +216,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
 
-    def test_user_create_shop_with_invalid_info_without_duplicated_email(self):
+    def test_user_create_shop_should_raise_error_when_shop_phone_number_is_invalid(self):
         #Arrange
         data = {
                 "username": "sho7",
@@ -233,7 +233,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
 
-    def test_user_create_shop_with_duplicated_and_active_email_(self):
+    def test_user_create_shop_should_raise_error_when_email_is_duplicated_and_active(self):
         #Arrange
         data = {
                 "username": "shop3",
@@ -249,7 +249,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
 
-    def test_seller_register_with_duplicated_and_inactive_email_with_expired_code(self):
+    def test_seller_register_should_succeed_when_email_is_duplicated_and_inactive_and_usercode_has_expired(self):
         #Arrange
         data = {
                 "username": "shop3",
@@ -268,7 +268,7 @@ class UserAuthenticationTest(APITestCase):
         #Assert
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
 
-    def test_seller_register_with_duplicated_and_inactive_email_with_unexpired_code(self):
+    def test_seller_register_should_succeed_when_email_is_duplicated_and_inactive_and_usercode_is_valid(self):
         #Arrange
         data = {
                 "username": "shop3",
@@ -291,7 +291,7 @@ class UserAuthenticationTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_202_ACCEPTED)
 
 
-    def test_token_verification(self):
+    def test_token_verification_should_succeed_when_token_is_valid(self):
         #Arrange
         self.user = User.objects.get(id=1)
         self.access_token = AccessToken.for_user(self.user)

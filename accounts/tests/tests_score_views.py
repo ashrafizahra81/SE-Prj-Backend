@@ -14,7 +14,7 @@ class ScoreTest(APITestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
-    def test_show_score_with_authentication(self):
+    def test_show_score_should_succeed_when_user_is_authenticated(self):
             
         #Arrange
 
@@ -25,7 +25,7 @@ class ScoreTest(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data['score'] , 0)
 
-    def test_show_score_without_authentication(self):
+    def test_show_score_should_raise_error_when_user_is_not_authenticated(self):
             
         #Arrange
         self.client.force_authenticate(user=None , token = None)

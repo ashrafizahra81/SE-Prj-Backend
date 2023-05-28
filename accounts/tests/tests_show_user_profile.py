@@ -13,7 +13,7 @@ class ScoreTest(APITestCase):
         self.user = User.objects.get(id=1)
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
-    def test_show_customer_profile_with_authentication(self):
+    def test_show_customer_profile_should_succeed_when_user_is_authenticated(self):
     
         #Arrange
 
@@ -31,7 +31,7 @@ class ScoreTest(APITestCase):
                                             "inventory": 0.0
                                         })
         
-    def test_show_seller_profile_with_authentication(self):
+    def test_show_seller_profile_should_succeed_when_user_is_authenticated(self):
         
         #Arrange
         self.user = User.objects.get(id=4)
@@ -52,7 +52,7 @@ class ScoreTest(APITestCase):
                                             "shop_address": "isfahan"
                                         })
         
-    def test_show_user_profile_without_authentication(self):
+    def test_show_user_profile_should_raise_error_when_user_is_not_authenticated(self):
             
         #Arrange
         self.client.force_authenticate(user=None , token = None)
