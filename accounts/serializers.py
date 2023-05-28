@@ -56,7 +56,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data.update({'shop_name': self.user.shop_name})
             data.update({'email':self.user.email})
             data.update({'shop_phone_number': self.user.shop_phone_number})
-
+        logger.info('The user logged in successfuly')
         return data
 
 
@@ -155,6 +155,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class CustomTokenVerifySerializer(TokenVerifySerializer):
     def validate(self, attrs):
+        logger.info('request recieved from POST /accounts/token/verify/')
         data = super(CustomTokenVerifySerializer, self).validate(attrs)
         logger.info('The token entered is valid')
         print(self)

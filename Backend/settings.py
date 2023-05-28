@@ -179,11 +179,11 @@ EMAIL_PORT = 587
 FORMATTERS = (
     {
         "verbose": {
-            "format": "{levelname} {asctime:s} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}",
+            "format": "{levelname} {asctime:s} {name} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {asctime:s} {module} {filename} {lineno:d} {funcName} {message}",
+            "format": "{levelname} {asctime:s} {name} {module} {filename} {lineno:d} {funcName} {message}",
             "style": "{",
         },
     },
@@ -194,21 +194,24 @@ HANDLERS = {
     "console_handler": {
         "class": "logging.StreamHandler",
         "formatter": "simple",
-    }
-    "my_handler": {
+        "level": "INFO"
+    },
+    "info_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": f"{BASE_DIR}/logs/blogthedata.log",
+        "filename": "./logs/INFO.log",
         "mode": "a",
         "encoding": "utf-8",
-        "formatter": "simple",
+        "formatter": "verbose",
+        "level": "INFO",
         "backupCount": 5,
         "maxBytes": 1024 * 1024 * 5,  # 5 MB
     },
-    "my_handler_detailed": {
+    "error_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": f"{BASE_DIR}/logs/blogthedata_detailed.log",
+        "filename": "./logs/ERROR.log",
         "mode": "a",
-        "formatter": "simple",
+        "formatter": "verbose",
+        "level": "WARNING",
         "backupCount": 5,
         "maxBytes": 1024 * 1024 * 5,  # 5 MB
     },
@@ -217,15 +220,14 @@ HANDLERS = {
 LOGGERS = (
     {
         "django": {
-            "handlers": ["console_handler"],
+            "handlers": ["console_handler", "info_handler"],
             "level": "INFO",
-            "propagate": False,
         },
         "django.request": {
-            "handlers": ["console_handler"],
-            "level": "WARNING",
-            "propagate": False,
-        },
+            "handlers": ["error_handler"],
+            "level": "INFO",
+            "propagate": True,
+        }
     },
 )
 
@@ -236,6 +238,5 @@ LOGGING = {
     "formatters": FORMATTERS[0],
     "handlers": HANDLERS,
     "loggers": LOGGERS[0],
-
 }
 

@@ -134,7 +134,7 @@ class verfyUserToResgister(APIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
     serializer_class = CustomTokenObtainPairSerializer
-    logger.info('The user logged in successfuly')
+    
 
 
 class TokenVerifyView(TokenViewBase):
@@ -142,7 +142,7 @@ class TokenVerifyView(TokenViewBase):
     Takes a token and indicates if it is valid.  This view provides no
     information about a token's fitness for a particular use.
     """
-    logger.info('request recieved from POST /accounts/token/verify/')
+    
     serializer_class = CustomTokenVerifySerializer
 
 
