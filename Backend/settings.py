@@ -362,12 +362,12 @@ HANDLERS = {
 LOGGERS = (
     {
         "django": {
-            "handlers": ["console_handler", "my_handler_detailed"],
+            "handlers": ["console_handler"],
             "level": "INFO",
             "propagate": False,
         },
         "django.request": {
-            "handlers": ["my_handler"],
+            "handlers": ["console_handler"],
             "level": "WARNING",
             "propagate": False,
         },
