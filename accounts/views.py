@@ -113,6 +113,7 @@ class verfyUserToResgister(APIView):
                 data['refresh'] = str(refresh)
                 data['access'] = str(refresh.access_token)
                 data['score'] = 0
+                data['type'] = "user"
             else:
                 logger.info('The user is a seller')
                 data['username'] = user.username
@@ -123,6 +124,7 @@ class verfyUserToResgister(APIView):
                 refresh = RefreshToken.for_user(user)
                 data['refresh'] = str(refresh)
                 data['access'] = str(refresh.access_token)
+                data['type'] = "seller"
             logger.info('The user is active now')
             return Response(data=data , status=status.HTTP_200_OK)
         logger.warn('code not found')
