@@ -200,7 +200,7 @@ HANDLERS = {
     },
     "info_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/INFO.log",
+        "filename": "./logs/INFO.log",
         "mode": "a",
         "encoding": "utf-8",
         "formatter": "verbose",
@@ -210,7 +210,7 @@ HANDLERS = {
     },
     "error_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/ERROR.log",
+        "filename": "./logs/ERROR.log",
         "mode": "a",
         "encoding": "utf-8",
         "formatter": "verbose",
