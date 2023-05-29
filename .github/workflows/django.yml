@@ -28,9 +28,3 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
-    - name: Publish code coverage reports to codecove.io
-      uses: codecov/codecov-action@v1
-      with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./**/coverage.cobertura.xml
-          fail_ci_if_error: true
