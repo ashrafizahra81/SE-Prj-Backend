@@ -43,7 +43,7 @@ Django Rest Framework was used to write the apis. The project includes following
 * orders
 
 ### How To Run The Project
-To run the project first install all the libraries which have been witten in the [requirements file](https://github.com/ashrafizahra81/SE-Prj-Backend/requirements.txt). Then, use "py manage.py runserver" command in the terminal.
+To run the project first install all the libraries which have been witten in the [requirements file](https://github.com/ashrafizahra81/SE-Prj-Backend/blob/main/requirements.txt). Then, use "py manage.py runserver" command in the terminal.
 
 ## Tests
 144 tests were written for all the apps, with 99% of coverage. 
@@ -55,7 +55,7 @@ To run the project first install all the libraries which have been witten in the
 All the apis were logged, and the results were saved in two files called INFO.log and ERROR.log.
 
 ## Dockerization
-A [dockerfile](https://github.com/ashrafizahra81/SE-Prj-Backend/Dockerfile) was written for the project, and an image and a container were created. Then the project was dockerized.
+A [dockerfile](https://github.com/ashrafizahra81/SE-Prj-Backend/blob/main/Dockerfile) was written for the project, and an image and a container were created. Then the project was dockerized.
 
 ### How to Run
 To run the container of this project, first use "docker pull zarashrafi/drf-app" command. Then run the container with "docker run -d -p 8080:8000 zarashrafi/drf-app" command.
