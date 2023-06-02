@@ -14,14 +14,14 @@ Sabkino is an online clothes shop website for both customers and sellers. This p
 
 ### Usecase Diagrams
 First, all the usecases were extracted from the requirements, and then, related diagrams were drawn.
-[The link of the usecase diagrams]()
+[The link of the usecase diagrams](https://docs.google.com/document/d/1L7DJF3ENqhRNaRq4YHdCvt2wwoNdE3STtiCGfPKpFfw/edit?usp=sharing)
 
 ### Write Scenarios
 [The link of Sabkino's scenarios](https://docs.google.com/document/d/1AEV4EWQozmOpbjI8UFH5tvYHM67fCUc_6IZIAeQJ6NA/edit?usp=sharing)
 
 ### Sequence Diagrams
 The sequence diagrams were drawn based on the scenarios.
-[The link of the sequence diagrams]()
+[The link of the sequence diagrams](https://docs.google.com/document/d/11iaT9wSOwHk4IPVuD3S-Ql2D4EYfr887AqO58CZ69VE/edit?usp=sharing)
 
 ### Class Diagram
 The class diagram was drawn based on the sequence diagrams and the requirements.
