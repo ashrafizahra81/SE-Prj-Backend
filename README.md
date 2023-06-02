@@ -17,7 +17,7 @@ First, all the usecases were extracted from the requirements, and then, related 
 [The link of the usecase diagrams]()
 
 ### Write Scenarios
-[The link of Sabkino's scenarios]()
+[The link of Sabkino's scenarios](https://docs.google.com/document/d/1AEV4EWQozmOpbjI8UFH5tvYHM67fCUc_6IZIAeQJ6NA/edit?usp=sharing)
 
 ### Sequence Diagrams
 The sequence diagrams were drawn based on the scenarios.
@@ -29,7 +29,7 @@ The class diagram was drawn based on the sequence diagrams and the requirements.
 
 ### System's Architecture
 The module based architecture was chosen for this system.
-[The link of the diagram and its descriptions]()
+[The link of the diagram and its descriptions](https://docs.google.com/document/d/1-iI7lRHndX9pLfUV0vwTH-IEA7BxyDL47pLU6yHSdGI/edit?usp=sharing)
 
 ## API Implementation
 Django Rest Framework was used to write the apis. The project includes following apps:
