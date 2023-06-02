@@ -2,11 +2,11 @@
 Sabkino is an online clothes shop website for both customers and sellers. This project is the implementation of the backend part of this website.
 
 ## Table of content
-[Analysis](##-analysis)
-[API Implementation](##-api-implementation)
-[Tests](##-tests)
-[Logging APIs](##-logging-apis)
-[Dockerization](##-dockerization)
+* [Analysis](##analysis)
+* [API Implementation](##api-implementation)
+* [Tests](##tests)
+* [Logging APIs](##logging-apis)
+* [Dockerization](##dockerization)
 
 ## Analysis
 ### Define Recuirements
