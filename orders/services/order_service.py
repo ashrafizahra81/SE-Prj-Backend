@@ -24,7 +24,7 @@ class UserOrderService(UserOrderServiceInterface):
 class Purchase(PurchaseInterface):
 
     def decrease_number_of_product(self, product):
-        data = []
+        data = {}
         product_inventory = product.inventory - 1
         product.last_product_sold_date = datetime.today()
         if(product.inventory==0):
