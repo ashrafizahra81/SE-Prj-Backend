@@ -28,3 +28,8 @@ class ProductAndStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         exclude = ['shop', 'product_off_percent','upload']
+
+class ProductsOfOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['product_name', 'product_size','product_color','product_price','inventory','upload','shop_id']

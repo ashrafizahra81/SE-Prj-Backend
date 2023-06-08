@@ -1,4 +1,4 @@
-from .orders_interface import UserOrderServiceInterface , PurchaseInterface
+from .orders_interface import UserOrderServiceInterface , PurchaseInterface , CreateOrderService
 from ..models import Order
 from products.serializers import ProductsSerializer , EditProductSerializer
 from products.models import Product
@@ -18,9 +18,6 @@ class UserOrderService(UserOrderServiceInterface):
             data.append(js)
         return data
     
-
-
-
 class Purchase(PurchaseInterface):
 
     def decrease_number_of_product(self, product):
@@ -42,4 +39,14 @@ class Purchase(PurchaseInterface):
         return None
         
     
-
+class ConcreteCreateOrder(CreateOrderService):
+    def createOrder(self, user, product, cost, total_cost, off_cost, status):
+        c = Order(
+                    user=user,
+                    product=product,
+                    cost=cost,
+                    total_cost=total_cost,
+                    off_cost=off_cost,
+                    status=status,
+                )
+        c.save()    

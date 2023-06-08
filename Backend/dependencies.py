@@ -40,3 +40,8 @@ register_for_existed_user_service_instance = register_for_existed_user_service_c
 register_for_new_user_service_class_name = settings.REGISTER_FOR_NEW_USER_SERVICE
 register_for_new_user_service_class = getattr(importlib.import_module(register_for_new_user_service_class_name.rsplit('.', 1)[0]), register_for_new_user_service_class_name.rsplit('.', 1)[1])
 register_for_new_user_service_instance = register_for_new_user_service_class()
+
+
+cerate_order_service_class_name = settings.CREATE_ORDER_SERVICE
+cerate_order_service_class = getattr(importlib.import_module(cerate_order_service_class_name.rsplit('.', 1)[0]), cerate_order_service_class_name.rsplit('.', 1)[1])
+cerate_order_service_instance = cerate_order_service_class()

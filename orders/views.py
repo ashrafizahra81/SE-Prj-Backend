@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import *
 from products.models import Product
 from shoppingCarts.models import UserShoppingCart
-from products.serializers import ProductsSerializer, EditProductSerializer
+from products.serializers import ProductsSerializer, EditProductSerializer, ProductsOfOrderSerializer
 from accounts.models import User
 from wallets.models import Wallet
 from rest_framework.views import APIView
@@ -15,20 +15,12 @@ from permissions import IsShopOwner
 import logging
 from Backend import settings
 import importlib
+from Backend import dependencies
+
 logger = logging.getLogger("django")
 
 
-userOrderService_name = settings.ORDER_SERVICE
-userOrderService_class = getattr(importlib.import_module(userOrderService_name.rsplit('.', 1)[0]), userOrderService_name.rsplit('.', 1)[1])
-userOrderService_instance = userOrderService_class()
 
-userCartService_name = settings.GET_USER_SHOPPING_CART_SERVICE
-userCartService_class = getattr(importlib.import_module(userCartService_name.rsplit('.', 1)[0]), userCartService_name.rsplit('.', 1)[1])
-userCartService_instance = userCartService_class()
-
-purchaseService_name = settings.PURCHASE_SERVICE
-purchaseService_class = getattr(importlib.import_module(purchaseService_name.rsplit('.', 1)[0]), purchaseService_name.rsplit('.', 1)[1])
-purchaseService_instance = purchaseService_class()
 
 class GetUserOrders(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -36,7 +28,7 @@ class GetUserOrders(APIView):
     def get(self, request):
         logger.info('request recieved from GET /orders/user_orders/')
 
-        user_orders = userOrderService_instance.get_user_orders(request.user.id) 
+        user_orders = dependencies.userOrderService_instance.get_user_orders(request.user.id) 
         if user_orders:
             logger.info('Orders of user '+str(request.user.id)+' found successfuly')
             return Response(status=status.HTTP_200_OK, data=user_orders)
@@ -50,19 +42,20 @@ class CheckoutShoppingCart(APIView):
 
     def post(self, request):
         logger.info('request recieved from POST /orders/checkout/')
-        user_cart = userCartService_instance.get_user_shopping_cart(request.user.id) 
+        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
         price = 0
         off_price = 0
         for o1 in user_cart:
             product = Product.objects.get(pk=o1['product_id'])
-            purchaseService_instance.decrease_number_of_product(product)
+            dependencies.purchaseService_instance.decrease_number_of_product(product)
             off_price += ((100 - product.product_off_percent) / 100) * product.product_price
             price += product.product_price
         
         wallet = Wallet.objects.get(user_id = request.user)
+        balance = wallet.balance
         if(request.data['type']=="wallet"):
             logger.info('balance of wallet is '+str(wallet.balance))
-            balance = purchaseService_instance.buy_from_wallet(wallet , off_price+30000)
+            balance = dependencies.purchaseService_instance.buy_from_wallet(wallet , off_price+30000)
             if balance != None:
                 logger.info('balance of wallet reduced to '+str(balance))
             else:
@@ -71,20 +64,10 @@ class CheckoutShoppingCart(APIView):
         for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
             if product.is_deleted == False:
-                c = Order(
-                    user=request.user,
-                    product=product,
-                    cost=product.product_price,
-                    total_cost=price+30000,
-                    off_cost=off_price+30000,
-                    status="Accepted",
-                )
-                c.save()
+                dependencies.cerate_order_service_instance(request.user , product, product.product_price ,price+30000 ,off_price+30000,"Accepted")
             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
         logger.info('order of user '+str(request.user.id)+' saved successfuly')
-        user = User.objects.get(email=request.user)
-        user.score += off_price / 100000 # each 100,000 Toman, 1 score
-        user.save()
+        dependencies.user_service_instance.updateUserScore(off_price / 100000 , request.user)
         logger.info('score of this shop added to scores of user ' +str(request.user.id))            
         data = {}
         data["message"] = "خرید با موفقیت انجام شد"
@@ -97,24 +80,14 @@ class ShowOrdersToShop(APIView):
     def get(self, request):
         logger.info('request recieved from GET /orders/show_order_to_shop/')
         order_list = list(Order.objects.all().values())
-        
         product_list = list()
         for order in order_list:
             for product in Product.objects.all().values():
                 self.check_object_permissions(request, product)
                 if product['id'] == order['product_id']:
-
                     if product['shop_id'] == request.user.id:
-                        data = {}
-                        data['id'] = product['id']
-                        data['product_name'] = product['product_name']
-                        data['product_size'] = product['product_size']
-                        data['product_color'] = product['product_color']
-                        data['product_price'] = product['product_price']
-                        data['inventory'] = product['inventory']
-                        data['upload'] = product['upload']
-                        data['shop_id'] = product['shop_id']
-                        product_list.append(data)
+                        data = ProductsOfOrderSerializer(product)
+                        product_list.append(data.data)
         if product_list:
             logger.info('orders from products of seller '+str(request.user.id)+' found')
             return Response(product_list, status=status.HTTP_200_OK)

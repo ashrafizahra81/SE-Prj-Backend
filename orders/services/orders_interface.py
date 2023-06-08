@@ -15,3 +15,8 @@ class PurchaseInterface(ABC):
     @abstractmethod
     def buy_from_wallet(self, wallet, price):
         pass
+
+class CreateOrderService(ABC):
+    @abstractmethod
+    def createOrder(self, user, product,cost,total_cost,off_cost,status):
+        pass
