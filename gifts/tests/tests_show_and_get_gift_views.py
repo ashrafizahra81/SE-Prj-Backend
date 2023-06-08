@@ -4,7 +4,7 @@ from django.urls import path, reverse, include, resolve
 from accounts.models import User
 from products.models import Product
 from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
-from datetime import date
+from datetime import date , timedelta
 
 
 class ShowGiftTest(APITestCase):
@@ -20,7 +20,9 @@ class ShowGiftTest(APITestCase):
     def test_show_gift_should_succeed_when_user_is_authenticated(self):
         
         #Arrange
-        
+        gift = Gift.objects.get(pk = 2)
+        gift.date = datetime.now() + timedelta(days=1)
+        gift.save()
         #Act
         response = self.client.get(self.show_gift_url)
         #Assert
@@ -29,7 +31,7 @@ class ShowGiftTest(APITestCase):
                                             {
                                                 "description": "تخفیف 30 درصدی",
                                                 "score": 200,
-                                                "date": date(2023,6,3)
+                                                "date": date(2023,6,9)
                                             }
                                         ])
 
