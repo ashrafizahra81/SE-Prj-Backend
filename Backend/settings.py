@@ -200,7 +200,7 @@ HANDLERS = {
     },
     "info_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/INFO.log",
+        "filename": "./logs/INFO.log",
         "mode": "a",
         "encoding": "utf-8",
         "formatter": "verbose",
@@ -210,7 +210,7 @@ HANDLERS = {
     },
     "error_handler": {
         "class": "logging.handlers.RotatingFileHandler",
-        "filename": "/home/MahlaShamsabadi/SE-Prj-Backend/logs/ERROR.log",
+        "filename": "./logs/ERROR.log",
         "mode": "a",
         "encoding": "utf-8",
         "formatter": "verbose",
@@ -227,7 +227,7 @@ LOGGERS = (
             "level": "INFO",
         },
         "django.request": {
-            "handlers": ["info_handler"],
+            "handlers": ["error_handler"],
             "level": "INFO",
             "propagate": True,
         }
@@ -243,3 +243,6 @@ LOGGING = {
     "loggers": LOGGERS[0],
 }
 
+ORDER_SERVICE = 'orders.services.order_service.UserOrderService'
+GET_USER_SHOPPING_CART_SERVICE = 'shoppingCarts.services.shopping_cart_service.GetShoppingCartByUserId'
+PURCHASE_SERVICE = 'orders.services.order_service.Purchase'

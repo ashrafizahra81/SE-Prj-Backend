@@ -13,26 +13,33 @@ from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from permissions import IsShopOwner
 import logging
-
+from Backend import settings
+import importlib
 logger = logging.getLogger("django")
+
+
+userOrderService_name = settings.ORDER_SERVICE
+userOrderService_class = getattr(importlib.import_module(userOrderService_name.rsplit('.', 1)[0]), userOrderService_name.rsplit('.', 1)[1])
+userOrderService_instance = userOrderService_class()
+
+userCartService_name = settings.GET_USER_SHOPPING_CART_SERVICE
+userCartService_class = getattr(importlib.import_module(userCartService_name.rsplit('.', 1)[0]), userCartService_name.rsplit('.', 1)[1])
+userCartService_instance = userCartService_class()
+
+purchaseService_name = settings.PURCHASE_SERVICE
+purchaseService_class = getattr(importlib.import_module(purchaseService_name.rsplit('.', 1)[0]), purchaseService_name.rsplit('.', 1)[1])
+purchaseService_instance = purchaseService_class()
 
 class GetUserOrders(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
         logger.info('request recieved from GET /orders/user_orders/')
-        user_orders = list(Order.objects.filter(user_id=request.user.id).values())
-        data = list()
-        for o in user_orders:
-            product = Product.objects.get(pk=o['product_id'])
-            serialized_product = ProductsSerializer(instance=product)
-            js = serialized_product.data
-            js['cost'] = o['cost']
-            js['status'] = o['status']
-            data.append(js)
-        if data:
+
+        user_orders = userOrderService_instance.get_user_orders(request.user.id) 
+        if user_orders:
             logger.info('Orders of user '+str(request.user.id)+' found successfuly')
-            return Response(status=status.HTTP_200_OK, data=data)
+            return Response(status=status.HTTP_200_OK, data=user_orders)
         else:
             logger.warn('No order found for user '+str(request.user.id))
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -43,27 +50,24 @@ class CheckoutShoppingCart(APIView):
 
     def post(self, request):
         logger.info('request recieved from POST /orders/checkout/')
-        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
+        user_cart = userCartService_instance.get_user_shopping_cart(request.user.id) 
         price = 0
         off_price = 0
-        p_data = {}
         for o1 in user_cart:
-            product1 = Product.objects.get(pk=o1['product_id'])
-            product_inventory = product1.inventory - 1
-            product1.last_product_sold_date = datetime.today()
-            if(product1.inventory==0):
-                product1.is_available = 0
-            p_data['inventory'] = product_inventory
-            serialized_data = EditProductSerializer(instance=product1, data=p_data, partial=True)
-            off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-            if serialized_data.is_valid():
-                edited_product = serialized_data.save()
-                
-            price += product1.product_price
+            product = Product.objects.get(pk=o1['product_id'])
+            purchaseService_instance.decrease_number_of_product(product)
+            off_price += ((100 - product.product_off_percent) / 100) * product.product_price
+            price += product.product_price
+        
         wallet = Wallet.objects.get(user_id = request.user)
-        if(request.data['type']=="wallet" and wallet.balance < off_price+30000):
-            logger.warn('wallet balance of user '+str(request.user.id)+ ' is not enough')
-            return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)
+        if(request.data['type']=="wallet"):
+            logger.info('balance of wallet is '+str(wallet.balance))
+            balance = purchaseService_instance.buy_from_wallet(wallet , off_price+30000)
+            if balance != None:
+                logger.info('balance of wallet reduced to '+str(balance))
+            else:
+                logger.warn('wallet balance of user '+str(request.user.id)+ ' is not enough')
+                return Response({"message":"موجودی کیف پول شما برای این خرید کافی نیست"}, status=status.HTTP_204_NO_CONTENT)
         for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
             if product.is_deleted == False:
@@ -81,15 +85,10 @@ class CheckoutShoppingCart(APIView):
         user = User.objects.get(email=request.user)
         user.score += off_price / 100000 # each 100,000 Toman, 1 score
         user.save()
-        logger.info('score of this shop added to scores of user ' +str(request.user.id))
-        if(request.data['type'] == "wallet"):
-            logger.info('balance of wallet is '+str(wallet.balance))
-            wallet.balance = wallet.balance - (off_price+30000)
-            logger.info('balance of wallet reduced to '+str(wallet.balance))
+        logger.info('score of this shop added to scores of user ' +str(request.user.id))            
         data = {}
         data["message"] = "خرید با موفقیت انجام شد"
-        data["balance"] = wallet.balance
-        wallet.save()
+        data["balance"] = balance
         return Response(data, status=status.HTTP_200_OK)
 
 class ShowOrdersToShop(APIView):
