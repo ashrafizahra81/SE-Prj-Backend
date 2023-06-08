@@ -8,7 +8,6 @@ from .serializers import *
 from .models import *
 from rest_framework import status
 from datetime import datetime
-from datetime import datetime
 import random
 from wallets.models import Wallet
 from rest_framework.decorators import api_view, permission_classes
@@ -17,27 +16,22 @@ from django.contrib.auth.hashers import make_password
 from datetime import datetime
 from permissions import IsShopOwner , IsShopManager
 import logging
+from Backend import dependencies
+
+mail_service_instance = dependencies.mail_service_instance
+uniqueCode_service_instance = dependencies.uniqueCode_service_instance
+codeForUsers_service_instance = dependencies.codeForUsers_service_instance
+register_for_existed_user_service_instance = dependencies.register_for_existed_user_service_instance
+register_for_new_user_service_instance = dependencies.register_for_new_user_service_instance
+
 
 logger = logging.getLogger("django")
 
-def sendEmail(self , email):
-    token=getUniqueCode()
-    to_emails = []
-    to_emails.append(email)
-    send_mail.send_mail(html=token,text='Here is the code ',subject='verification',from_email='',to_emails=to_emails)
-    logger.info('The verification code has been sent to the email')
-    return token
-
-def getUniqueCode():
-    while(True):
-        token=random.randint(100000,999999)
-        if(not(CodesForUsers.objects.filter(code=token).exists())):
-            return token
-    
 
 class UserRegister(APIView):
     serializer_class = UserRegisterSerializer
     def post(self, request):
+
         logger.info('request recieved from POST /accounts/register/')
         serialized_data = UserRegisterSerializer(data=request.data)
         if(User.objects.filter(email=request.data['email']).exists()):
@@ -45,18 +39,12 @@ class UserRegister(APIView):
             if(User.objects.get(email = request.data['email']).is_active == 1):
                 logger.info('This account is active: ' + request.data['email'])
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            userCode = CodesForUsers.objects.get(email = request.data['email'])
-            now = datetime.now()
-            delta = now - userCode.created_at.replace(tzinfo=None)
-            diff = delta.seconds
-            if(diff > 600):
-                token = sendEmail(self , userCode.email)
-                userCode.created_at = datetime.now()
-                userCode.code = token
-                userCode.save()
-                logger.info('The code stored in database for user '+userCode.email)
+            
+            if(codeForUsers_service_instance.hasExpired(request.data['email'])):
+                register_for_existed_user_service_instance.userRegister(serialized_data)
                 return Response({"message":"کد جدید به ایمیل ارسال شد"},
                             status=status.HTTP_201_CREATED)
+
             logger.info('User has valid code')
             return Response({"message":"کد به ایمیل شما ارسال شده است"},
                             status=status.HTTP_202_ACCEPTED)
@@ -67,24 +55,10 @@ class UserRegister(APIView):
             if(not(request.data['user_phone_number'].isdigit())):
                 logger.warn('user_phone_number is invalid')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            account = serialized_data.save()
-            account.is_active = 0
-            account.save()
-            token = sendEmail(self , account.email)
-            user_code = CodesForUsers(
-                code = token,
-                created_at = datetime.now(),
-                email = account.email 
-            )
-            user_code.save()
-            logger.info('User ' + str(account.pk)+ ' and its code stored in database')
-            wallet = Wallet(
-                user = account,
-                balance = 0, 
-            )
-            wallet.save()
-            logger.info('User '+str(account.pk)+ ' saved successfully')
+            
+            register_for_new_user_service_instance.userRegister(serialized_data)
             return Response(data = data , status=status.HTTP_200_OK)
+        
         logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors , status=status.HTTP_400_BAD_REQUEST)
 
