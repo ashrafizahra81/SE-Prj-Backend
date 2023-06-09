@@ -162,3 +162,10 @@ class CustomTokenVerifySerializer(TokenVerifySerializer):
         data.update({"status":"ok"})
         return data
 
+class ShowShopManagerInfoSerializer(serializers.ModelSerializer):
+
+     class Meta:
+        model = User
+        fields = (
+            'email', 'username', 'user_phone_number', 'shop_name', 'shop_address',
+            'shop_phone_number')

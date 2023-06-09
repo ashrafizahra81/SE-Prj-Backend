@@ -45,3 +45,35 @@ register_for_new_user_service_instance = register_for_new_user_service_class()
 cerate_order_service_class_name = settings.CREATE_ORDER_SERVICE
 cerate_order_service_class = getattr(importlib.import_module(cerate_order_service_class_name.rsplit('.', 1)[0]), cerate_order_service_class_name.rsplit('.', 1)[1])
 cerate_order_service_instance = cerate_order_service_class()
+
+get_gift_service_class_name = settings.GET_GIFT_SERVICE
+get_gift_service_class = getattr(importlib.import_module(get_gift_service_class_name.rsplit('.', 1)[0]), get_gift_service_class_name.rsplit('.', 1)[1])
+get_gift_service_instance = get_gift_service_class()
+
+apply_discount_service_class_name = settings.APPLY_DISCOUNT_SERVICE
+apply_discount_service_class = getattr(importlib.import_module(apply_discount_service_class_name.rsplit('.', 1)[0]), apply_discount_service_class_name.rsplit('.', 1)[1])
+apply_discount_service_instance = apply_discount_service_class()
+
+charge_wallet_service_class_name = settings.CHARGE_WALLET_SERVICE
+charge_wallet_service_class = getattr(importlib.import_module(charge_wallet_service_class_name.rsplit('.', 1)[0]), charge_wallet_service_class_name.rsplit('.', 1)[1])
+charge_wallet_service_instance = charge_wallet_service_class()
+
+favorite_product_service_class_name = settings.FAVORITE_PRODUCT_SERVICE
+favorite_product_service_class = getattr(importlib.import_module(favorite_product_service_class_name.rsplit('.', 1)[0]), favorite_product_service_class_name.rsplit('.', 1)[1])
+favorite_product_service_instance = favorite_product_service_class()
+
+show_favorite_products_service_class_name = settings.SHOW_FAVORITE_PRODUCTS_SERVICE
+show_favorite_products_service_class = getattr(importlib.import_module(show_favorite_products_service_class_name.rsplit('.', 1)[0]), show_favorite_products_service_class_name.rsplit('.', 1)[1])
+show_favorite_products_service_instance = show_favorite_products_service_class()
+
+verify_user_to_register_service_class_name = settings.VERIFY_USER_TO_REGISTER_SERVICE
+verify_user_to_register_service_class = getattr(importlib.import_module(verify_user_to_register_service_class_name.rsplit('.', 1)[0]), verify_user_to_register_service_class_name.rsplit('.', 1)[1])
+verify_user_to_register_service_instance = verify_user_to_register_service_class()
+
+show_user_info_service_class_name = settings.SHOW_USER_INFO_SERVICE
+show_user_info_service_class = getattr(importlib.import_module(show_user_info_service_class_name.rsplit('.', 1)[0]), show_user_info_service_class_name.rsplit('.', 1)[1])
+show_user_info_service_instance = show_user_info_service_class()
+
+show_shop_manager_info_service_class_name = settings.SHOW_SHOP_MANAGER_INFO_SERVICE
+show_shop_manager_info_service_class = getattr(importlib.import_module(show_shop_manager_info_service_class_name.rsplit('.', 1)[0]), show_shop_manager_info_service_class_name.rsplit('.', 1)[1])
+show_shop_manager_info_service_instance = show_shop_manager_info_service_class()
