@@ -5,10 +5,6 @@ userOrderService_name = settings.ORDER_SERVICE
 userOrderService_class = getattr(importlib.import_module(userOrderService_name.rsplit('.', 1)[0]), userOrderService_name.rsplit('.', 1)[1])
 userOrderService_instance = userOrderService_class()
 
-userCartService_name = settings.GET_USER_SHOPPING_CART_SERVICE
-userCartService_class = getattr(importlib.import_module(userCartService_name.rsplit('.', 1)[0]), userCartService_name.rsplit('.', 1)[1])
-userCartService_instance = userCartService_class()
-
 purchaseService_name = settings.PURCHASE_SERVICE
 purchaseService_class = getattr(importlib.import_module(purchaseService_name.rsplit('.', 1)[0]), purchaseService_name.rsplit('.', 1)[1])
 purchaseService_instance = purchaseService_class()
@@ -46,6 +42,27 @@ cerate_order_service_class_name = settings.CREATE_ORDER_SERVICE
 cerate_order_service_class = getattr(importlib.import_module(cerate_order_service_class_name.rsplit('.', 1)[0]), cerate_order_service_class_name.rsplit('.', 1)[1])
 cerate_order_service_instance = cerate_order_service_class()
 
+update_product_after_deleting_service_class_name = settings.UPDATE_PRODUCT_AFTER_DELETING_SERVICE
+update_product_after_deleting_service_class = getattr(importlib.import_module(update_product_after_deleting_service_class_name.rsplit('.', 1)[0]), update_product_after_deleting_service_class_name.rsplit('.', 1)[1])
+update_product_after_deleting_service_instance = update_product_after_deleting_service_class()
+
+update_product_from_editing_service_class_name = settings.UPDATE_PRODUCT_FROM_EDITING_SERVICE
+update_product_from_editing_service_class = getattr(importlib.import_module(update_product_from_editing_service_class_name.rsplit('.', 1)[0]), update_product_from_editing_service_class_name.rsplit('.', 1)[1])
+update_product_from_editing_service_instance = update_product_from_editing_service_class()
+
+
+create_product_service_class_name = settings.CREATE_PRODUCT_SERVICE
+create_product_service_class = getattr(importlib.import_module(create_product_service_class_name.rsplit('.', 1)[0]), create_product_service_class_name.rsplit('.', 1)[1])
+create_product_service_instance = create_product_service_class()
+
+filter_product_service_class_name = settings.FILTER_PRODUCT_SERVICE
+filter_product_service_class = getattr(importlib.import_module(filter_product_service_class_name.rsplit('.', 1)[0]), filter_product_service_class_name.rsplit('.', 1)[1])
+filter_product_service_instance = filter_product_service_class()
+
+shopping_cart_service_class_name = settings.SHOPPING_CART_SERVICE
+shopping_cart_service_class = getattr(importlib.import_module(shopping_cart_service_class_name.rsplit('.', 1)[0]), shopping_cart_service_class_name.rsplit('.', 1)[1])
+shopping_cart_service_instance = shopping_cart_service_class()
+
 get_gift_service_class_name = settings.GET_GIFT_SERVICE
 get_gift_service_class = getattr(importlib.import_module(get_gift_service_class_name.rsplit('.', 1)[0]), get_gift_service_class_name.rsplit('.', 1)[1])
 get_gift_service_instance = get_gift_service_class()
@@ -77,3 +94,4 @@ show_user_info_service_instance = show_user_info_service_class()
 show_shop_manager_info_service_class_name = settings.SHOW_SHOP_MANAGER_INFO_SERVICE
 show_shop_manager_info_service_class = getattr(importlib.import_module(show_shop_manager_info_service_class_name.rsplit('.', 1)[0]), show_shop_manager_info_service_class_name.rsplit('.', 1)[1])
 show_shop_manager_info_service_instance = show_shop_manager_info_service_class()
+

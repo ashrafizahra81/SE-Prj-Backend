@@ -23,44 +23,36 @@ class TestReport(APITestCase):
         self.assertEqual(response.status_code , status.HTTP_200_OK)
         self.assertEqual(response.data, [
                 {
-                    "productName": "T-shirt",
+                    "product_name": "T-shirt",
                     "inventory": 5,
                     "initial_inventory": 12,
-                    "price": 120000,
-                    "totalPriceOfProduct": 840000,
-                    "date": datetime.date(2023, 5, 14)
+                    "product_price": 120000,
+                    "date": datetime.date(2023, 5, 14),
+                    "totalPriceOfProduct": 840000
                 },
                 {
-                    "productName": "hoodie",
-                    "inventory": 5,
-                    "initial_inventory": 5,
-                    "price": 320000,
-                    "totalPriceOfProduct": 0,
-                    "date": "تاکنون خریدی انجام نشده"
-                },
-                {
-                    "productName": "pants",
+                    "product_name": "pants",
                     "inventory": 15,
                     "initial_inventory": 15,
-                    "price": 620000,
-                    "totalPriceOfProduct": 0,
-                    "date": "تاکنون خریدی انجام نشده"
+                    "product_price": 620000,
+                    "date": "تاکنون خریدی انجام نشده",
+                    "totalPriceOfProduct": 0
                 },
                 {
-                    "productName": "pants",
+                    "product_name": "pants",
                     "inventory": 18,
                     "initial_inventory": 18,
-                    "price": 400000,
-                    "totalPriceOfProduct": 0,
-                    "date": "تاکنون خریدی انجام نشده"
+                    "product_price": 400000,
+                    "date": "تاکنون خریدی انجام نشده",
+                    "totalPriceOfProduct": 0
                 },
                 {
-                    "productName": "T-shirt",
+                    "product_name": "T-shirt",
                     "inventory": 19,
                     "initial_inventory": 19,
-                    "price": 110000,
-                    "totalPriceOfProduct": 0,
-                    "date": "تاکنون خریدی انجام نشده"
+                    "product_price": 110000,
+                    "date": "تاکنون خریدی انجام نشده",
+                    "totalPriceOfProduct": 0
                 },
                 {
                     "totalSell": 840000

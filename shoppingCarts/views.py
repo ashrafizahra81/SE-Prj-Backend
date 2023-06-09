@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 import logging
+from Backend import dependencies
 logger = logging.getLogger("django")
 
 class AddToShoppingCartView(APIView):
@@ -14,19 +15,12 @@ class AddToShoppingCartView(APIView):
     def post(self, request):
         logger.info('request recieved from POST /shoppingCarts/add_to_cart/')
         message = ""
-        for product in Product.objects.all():
-            if product.pk == request.data['data']:
-                if product.inventory > 0:
-                    cart = UserShoppingCart(
-                        user=request.user,
-                        product=product
-                    )
-                    message = {"message": "محصول مورد نظر به سبد خرید اضافه شد"}
-                    cart.save()
-                    logger.info('product '+str(request.data['data'])+' added to shopping cart of user '+str(request.user.id))
-                else:
-                    message = {"message": "محصول مورد نظر موجود نیست"}
-                    logger.warn('product '+str(request.data['data'])+ ' is not available and could not add to shopping cart')
+        if(dependencies.shopping_cart_service_instance.create_shopping_cart(request.user , request.data['data'])):
+            message = {"message": "محصول مورد نظر به سبد خرید اضافه شد"}
+            logger.info('product '+str(request.data['data'])+' added to shopping cart of user '+str(request.user.id))
+        else:
+            message = {"message": "محصول مورد نظر موجود نیست"}
+            logger.warn('product '+str(request.data['data'])+ ' is not available and could not add to shopping cart')
         return Response(status=status.HTTP_200_OK, data=message)
 
 
@@ -92,17 +86,8 @@ class show_checkout_info(APIView):
     permission_classes = [IsAuthenticated, ]
     def get(self , request):
         logger.info('request recieved from GET /shoppingCarts/show_checkout_info/')
-        user_cart = list(UserShoppingCart.objects.filter(user_id=request.user.id).values())
-        off_price = 0
-        for o1 in user_cart:
-            product1 = Product.objects.get(pk=o1['product_id'])
-            if(product1.is_deleted == 1 or product1.is_available == 0):
-                return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_204_NO_CONTENT)
-            off_price += ((100 - product1.product_off_percent) / 100) * product1.product_price
-        data={}
-        data["discounted_price"] = off_price
-        data["total_cost"] = off_price+30000
-        data["score"] = int((off_price+30000)/100000)
-        data["shippingPrice"] = 30000
+        data = dependencies.shopping_cart_service_instance.calculate_checkout_info(request.user.id)
+        if(data == False):
+            return Response({"message":"سبد خرید شما تغییر یافته است"},status=status.HTTP_204_NO_CONTENT)
         logger.info('checkout information of user '+ str(request.user.id)+' returned')
         return Response(data,status=status.HTTP_200_OK)

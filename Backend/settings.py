@@ -244,7 +244,6 @@ LOGGING = {
 }
 
 ORDER_SERVICE = 'orders.services.order_service.UserOrderService'
-GET_USER_SHOPPING_CART_SERVICE = 'shoppingCarts.services.shopping_cart_service.GetShoppingCartByUserId'
 PURCHASE_SERVICE = 'orders.services.order_service.Purchase'
 MAIL_SERVICE = 'accounts.services.mail_service.ConcreteMailService'
 UNIQUECODE_SERVICE = 'accounts.services.uniqueCode_service.ConcreteUniqueCodeService'
@@ -254,6 +253,13 @@ WALLET_SERVICE = 'wallets.services.wallet_service.ConcreteWalletService'
 REGISTER_FOR_EXISTED_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForExistedUser'
 REGISTER_FOR_NEW_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForNewUser'
 CREATE_ORDER_SERVICE = 'orders.services.order_service.ConcreteCreateOrder'
+
+UPDATE_PRODUCT_AFTER_DELETING_SERVICE = 'products.services.product_services.ConcreteUpdateProductForDeletedProduct'
+UPDATE_PRODUCT_FROM_EDITING_SERVICE = 'products.services.product_services.ConcreteUpdateProductByEditing'
+CREATE_PRODUCT_SERVICE = 'products.services.product_services.ConcreteCreateProduct' 
+FILTER_PRODUCT_SERVICE = 'products.services.product_services.ConcreteFilterProduct' 
+SHOPPING_CART_SERVICE = 'shoppingCarts.services.shopping_cart_service.ConcreteShoppingCart' 
+
 GET_GIFT_SERVICE = 'gifts.services.get_gift_service.ConcreteGetGiftService'
 APPLY_DISCOUNT_SERVICE = 'gifts.services.apply_discount_service.ConcreteApplyDiscountService'
 CHARGE_WALLET_SERVICE = 'wallets.services.charge_wallet_service.ConcreteChargeWalletService'
@@ -262,3 +268,4 @@ SHOW_FAVORITE_PRODUCTS_SERVICE = 'favoriteProducts.services.show_favorite_produc
 VERIFY_USER_TO_REGISTER_SERVICE = 'accounts.services.verify_user_to_register_service.ConcreteVerfyUserToResgisterService'
 SHOW_USER_INFO_SERVICE = 'accounts.services.show_user_info_service.ConcreteShowUserInfoService'
 SHOW_SHOP_MANAGER_INFO_SERVICE = 'accounts.services.show_user_info_service.ConcreteShowShopManagerInfoService'
+

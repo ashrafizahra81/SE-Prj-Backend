@@ -29,7 +29,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 120000,
                         "product_off_percent": 0,
                         "inventory": 5,
-                        "upload": "null",
+                        "upload": "https://s28.picofile.com/file/8462477276/u1ktrbrvf0_rvca_f_4409_frt1.jpg",
                         "shop_id": 4
                     },
                     {
@@ -38,7 +38,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 620000,
                         "product_off_percent": 0,
                         "inventory": 15,
-                        "upload": "null",
+                        "upload": "https://s29.picofile.com/file/8462060092/images.jpg",
                         "shop_id": 4
                     },
                     {
@@ -47,7 +47,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 400000,
                         "product_off_percent": 0,
                         "inventory": 18,
-                        "upload": "null",
+                        "upload": "https://s28.picofile.com/file/8462477126/DSC_7010_91576.jpg",
                         "shop_id": 4
                     },
                     {
@@ -56,7 +56,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 110000,
                         "product_off_percent": 0,
                         "inventory": 19,
-                        "upload": "null",
+                        "upload": "https://s28.picofile.com/file/8462477268/contentsArea_itemimg_16.jpg",
                         "shop_id": 4
                     }
                 ],
@@ -92,6 +92,7 @@ class TestShowProductsByShop(APITestCase):
 
         response = self.client.get(self.show_products_to_shop_urls, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_200_OK)
+        print(response.data)
         self.assertEqual(response.data, {
                 "products": [
                     {
@@ -100,7 +101,7 @@ class TestShowProductsByShop(APITestCase):
                     "product_price": 110000,
                     "product_off_percent": 88000.0,
                     "inventory": 17,
-                    "upload": "null",
+                    "upload": "https://s28.picofile.com/file/8462477250/contentsArea_itemimg_15.jpg",
                     "shop_id": 5
                 },
                     {
@@ -109,7 +110,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 110000,
                         "product_off_percent": 0,
                         "inventory": 20,
-                        "upload": "null",
+                        "upload": "https://s29.picofile.com/file/8462477242/91R2DALbF9L_AC_UL1500_.jpg",
                         "shop_id": 5
                     },
                     {
@@ -118,7 +119,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 550000,
                         "product_off_percent": 0,
                         "inventory": 0,
-                        "upload": "null",
+                        "upload": "https://s28.picofile.com/file/8462477118/8228022250_6_1_1.jpg",
                         "shop_id": 5
                     },
                     {
@@ -127,7 +128,7 @@ class TestShowProductsByShop(APITestCase):
                         "product_price": 2650000,
                         "product_off_percent": 0,
                         "inventory": 14,
-                        "upload": "null",
+                        "upload": "https://s29.picofile.com/file/8462477634/51MiK2fjBtL_AC_SX679_.jpg",
                         "shop_id": 5
                     }
                 ],

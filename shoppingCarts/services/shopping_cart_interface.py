@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 
-class UserShoppnigCart(ABC):
+class ShoppnigCartService(ABC):
+
     @abstractmethod
-    def get_user_shopping_cart(self, user_id):
+    def create_shopping_cart(self, user_id , product_id):
+        pass
+
+    @abstractmethod
+    def calculate_checkout_info(self , user_id):
         pass

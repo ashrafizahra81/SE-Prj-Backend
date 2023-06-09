@@ -21,7 +21,7 @@ class ShowGiftTest(APITestCase):
         
         #Arrange
         gift = Gift.objects.get(pk = 2)
-        gift.date = datetime.now() + timedelta(days=1)
+        gift.date = datetime.now() + timedelta(days=20)
         gift.save()
         #Act
         response = self.client.get(self.show_gift_url)
@@ -31,7 +31,7 @@ class ShowGiftTest(APITestCase):
                                             {
                                                 "description": "تخفیف 30 درصدی",
                                                 "score": 200,
-                                                "date": '2023-06-10'
+                                                "date": '2023-06-29'
                                             }
                                         ])
 
