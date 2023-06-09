@@ -8,3 +8,12 @@ class UserService(ABC):
     @abstractmethod
     def updateUserScore(self , score , email):
         pass
+    @abstractmethod
+    def updateUserIsValid(self, user, is_valid):
+        pass
+    @abstractmethod
+    def updateUserPassword(self, user, password):
+        pass
+    @abstractmethod
+    def updateUserCode(self, user, code):
+        pass
