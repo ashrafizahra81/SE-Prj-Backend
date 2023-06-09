@@ -38,35 +38,35 @@ class TestFilter(APITestCase):
                     "id": 3,
                     "product_name": "pants",
                     "product_price": 620000,
-                    "upload": "null",
+                    "upload": "https://s29.picofile.com/file/8462060092/images.jpg",
                     "shop_id": 4
                 },
                 {
                     "id": 4,
                     "product_name": "pants",
                     "product_price": 400000,
-                    "upload": "null",
+                    "upload": "https://s28.picofile.com/file/8462477126/DSC_7010_91576.jpg",
                     "shop_id": 4
                 },
                 {
                     "id": 8,
                     "product_name": "pants",
                     "product_price": 550000,
-                    "upload": "null",
+                    "upload": "https://s28.picofile.com/file/8462477118/8228022250_6_1_1.jpg",
                     "shop_id": 5
                 },
                 {
                     "id": 13,
                     "product_name": "pants",
                     "product_price": 3180000,
-                    "upload": "null",
+                    "upload": "https://s29.picofile.com/file/8462477084/2.jpg",
                     "shop_id": 6
                 },
                 {
                     "id": 14,
                     "product_name": "pants",
                     "product_price": 3880000,
-                    "upload": "null",
+                    "upload": "https://s28.picofile.com/file/8462477076/1.jpg",
                     "shop_id": 6
                 }
             ]

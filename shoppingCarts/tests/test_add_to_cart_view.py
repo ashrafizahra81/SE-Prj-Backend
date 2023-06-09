@@ -30,7 +30,7 @@ class TestAddToCart(APITestCase):
     
     def test_add_to_cart_should_succeed_when_with_authentication_and_non_existing_product(self):
 
-        data = {'data': 8}
+        data = {'data': 100}
 
         response = self.client.post(self.add_to_cart_url , data , format = 'json')
 

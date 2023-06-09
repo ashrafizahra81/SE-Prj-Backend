@@ -32,21 +32,21 @@ class TestAddProductToShop(APITestCase):
                 "inventory": "10"
                 }
         
-        response = self.client.post(self.add_product_to_shop_urls, data,  format = 'json')
+        response = self.client.post(self.add_product_to_shop_urls, data, format = 'json')
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
         self.assertEqual(response.data, {
-                                            "product_id": 15,
+                                            "id": 15,
                                             "product_name": "pants",
-                                            "product_price": "2330000",
+                                            "product_price": 2330000,
+                                            "inventory": 10,
                                             "product_size": "38",
                                             "product_group": "pants",
                                             "product_image": "https://s29.picofile.com/file/8462477084/2.jpg",
                                             "product_color": "light blue",
-                                            "product_height": "85",
+                                            "product_height": 85,
                                             "product_design": "plain",
                                             "product_material": "linen",
-                                            "product_country": "Iran",
-                                            "inventory": "10"
+                                            "product_country": "Iran"
                                         })
 
     def test_add_product_to_shop_should_raise_error_when_done_by_a_customer_not_a_shop_manager(self):

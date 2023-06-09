@@ -244,7 +244,6 @@ LOGGING = {
 }
 
 ORDER_SERVICE = 'orders.services.order_service.UserOrderService'
-GET_USER_SHOPPING_CART_SERVICE = 'shoppingCarts.services.shopping_cart_service.GetShoppingCartByUserId'
 PURCHASE_SERVICE = 'orders.services.order_service.Purchase'
 MAIL_SERVICE = 'accounts.services.mail_service.ConcreteMailService'
 UNIQUECODE_SERVICE = 'accounts.services.uniqueCode_service.ConcreteUniqueCodeService'
@@ -254,3 +253,8 @@ WALLET_SERVICE = 'wallets.services.wallet_service.ConcreteWalletService'
 REGISTER_FOR_EXISTED_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForExistedUser'
 REGISTER_FOR_NEW_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForNewUser'
 CREATE_ORDER_SERVICE = 'orders.services.order_service.ConcreteCreateOrder'
+UPDATE_PRODUCT_AFTER_DELETING_SERVICE = 'products.services.product_services.ConcreteUpdateProductForDeletedProduct'
+UPDATE_PRODUCT_FROM_EDITING_SERVICE = 'products.services.product_services.ConcreteUpdateProductByEditing'
+CREATE_PRODUCT_SERVICE = 'products.services.product_services.ConcreteCreateProduct' 
+FILTER_PRODUCT_SERVICE = 'products.services.product_services.ConcreteFilterProduct' 
+SHOPPING_CART_SERVICE = 'shoppingCarts.services.shopping_cart_service.ConcreteShoppingCart' 

@@ -31,7 +31,7 @@ class TestShowOrdersToShop(APITestCase):
                                                 "product_color": "multi color",
                                                 "product_price": 120000,
                                                 "inventory": 5,
-                                                "upload": "null",
+                                                "upload": "https://s28.picofile.com/file/8462477276/u1ktrbrvf0_rvca_f_4409_frt1.jpg",
                                                 "shop_id": 4
                                             }
                                         ])

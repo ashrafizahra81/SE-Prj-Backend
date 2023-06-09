@@ -64,7 +64,7 @@ class CheckoutShoppingCart(APIView):
         for o in user_cart:
             product = Product.objects.get(pk=o['product_id'])
             if product.is_deleted == False:
-                dependencies.cerate_order_service_instance(request.user , product, product.product_price ,price+30000 ,off_price+30000,"Accepted")
+                dependencies.cerate_order_service_instance.createOrder(request.user , product, product.product_price ,price+30000 ,off_price+30000,"Accepted")
             UserShoppingCart.objects.filter(user_id=request.user.id).delete()
         logger.info('order of user '+str(request.user.id)+' saved successfuly')
         dependencies.user_service_instance.updateUserScore(off_price / 100000 , request.user)
