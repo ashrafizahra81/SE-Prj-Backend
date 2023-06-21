@@ -31,7 +31,7 @@ class ShowGiftTest(APITestCase):
                                             {
                                                 "description": "تخفیف 30 درصدی",
                                                 "score": 200,
-                                                "date": '2023-06-29'
+                                                "date": (datetime.now() + timedelta(days=20)).strftime('%Y-%m-%d')
                                             }
                                         ])
 
