@@ -38,36 +38,14 @@ class UserRegister(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
 
         if(User.objects.filter(email=request.data['email']).exists()):
-            logger.info('This email already exists: ' + request.data['email'])
-            if(User.objects.get(email = request.data['email']).is_active == 1):
-                logger.info('This account is active: ' + request.data['email'])
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            if(codeForUsers_service_instance.hasExpired(request.data['email'])):
-                
-                
-                register_for_existed_user_service_instance.userRegister(request.data['email'])
-                return Response({"message":"کد جدید به ایمیل ارسال شد"},
-                        status=status.HTTP_201_CREATED)
-                
 
-            logger.info('User has valid code')
-            return Response({"message":"کد به ایمیل شما ارسال شده است"},
-                            status=status.HTTP_202_ACCEPTED)
-        data = {}
+            return Response({"message": dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["message"]}, status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
+            # return dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])
+
         logger.info('no user with this email exists: '+request.data['email'])
 
         if serialized_data.is_valid():
-            logger.info('Data entered is valid')
-            if(not(request.data['user_phone_number'].isdigit())):
-                logger.warn('user_phone_number is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            account = serialized_data.save()
-            account.is_active = 0
-            account.save()
-            register_for_new_user_service_instance.userRegister(request.data['email'])
-            return Response(data = data , status=status.HTTP_200_OK)
+            return dependencies.save_new_user_info_service_instance.saveNewUser(serialized_data, request.data['email'], request.data['user_phone_number'])
         
         logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors , status=status.HTTP_400_BAD_REQUEST)
@@ -115,16 +93,17 @@ class UserEditProfile(APIView):
 
         serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
         if serialized_data.is_valid():
-            if(not(request.data['user_postal_code'].isdigit())):
-                logger.warn('The user postal code entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            if(not(request.data['user_phone_number'].isdigit())):
-                logger.warn('The user phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            logger.info('Data entered is valid')
-            edited_user = serialized_data.save()
+            # if(not(request.data['user_postal_code'].isdigit())):
+            #     logger.warn('The user postal code entered is invalid')
+            #     return Response(status=status.HTTP_400_BAD_REQUEST)
+            # if(not(request.data['user_phone_number'].isdigit())):
+            #     logger.warn('The user phone number entered is invalid')
+            #     return Response(status=status.HTTP_400_BAD_REQUEST)
+            # logger.info('Data entered is valid')
+            # edited_user = serialized_data.save()
 
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+            # return Response(serialized_data.data, status=status.HTTP_200_OK)
+            return dependencies.edit_profile_info_service_instance.edit_profile(serialized_data)
         
         logger.warn('The data entered is invalid')
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -134,37 +113,15 @@ class ShopManagerRegister(APIView):
     def post(self, request):
         logger.info('request recieved from POST /accounts/create_shop/')
         serialized_data = ShopManagerRegisterSerializer(data=request.data)
-        if(User.objects.filter(email=request.data['email']).exists()):
-            logger.info('This email already exists: ' + request.data['email'])
-            if(User.objects.get(email = request.data['email']).is_active == 1):
-                logger.info('This account is active: ' + request.data['email'])
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            
-            if(codeForUsers_service_instance.hasExpired(request.data['email'])):
-                
-                register_for_existed_user_service_instance.userRegister(request.data['email'])
-                return Response({"message":"کد جدید به ایمیل ارسال شد"},
-                            status=status.HTTP_201_CREATED)
-              
-            
 
-            logger.info('User has valid code')
-            return Response({"message":"کد به ایمیل شما ارسال شده است"},
-                            status=status.HTTP_202_ACCEPTED)
-        data = {}
+        if(User.objects.filter(email=request.data['email']).exists()):
+           
+           return dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])
+
         logger.info('no user with this email exists: '+request.data['email'])
         if serialized_data.is_valid():
-            logger.info('Data entered is valid')
-            if(not(request.data['shop_phone_number'].isdigit())):
-                logger.warn('shop_phone_number is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            account = serialized_data.save()
-            account.is_active = 0
-            account.save()
-            register_for_new_user_service_instance.userRegister(request.data['email'])
-            return Response(data)
+            return dependencies.save_new_user_info_service_instance.saveNewUser(serialized_data, request.data['email'], request.data['shop_phone_number'])\
+        
         logger.warn('could not save new user due to invalid data')
         return Response(serialized_data.errors ,status=status.HTTP_400_BAD_REQUEST)
 
@@ -181,17 +138,18 @@ class EditShop(APIView):
         serialized_data = EditShopSerializer(data=request.data, instance=user, partial=True)
         data = {}
         if serialized_data.is_valid():
-            if(not(request.data['shop_phone_number'].isdigit())):
-                logger.warn('The shop phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            if(not(request.data['user_phone_number'].isdigit())):
-                logger.warn('The user phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+            # if(not(request.data['shop_phone_number'].isdigit())):
+            #     logger.warn('The shop phone number entered is invalid')
+            #     return Response(status=status.HTTP_400_BAD_REQUEST)
+            # if(not(request.data['user_phone_number'].isdigit())):
+            #     logger.warn('The user phone number entered is invalid')
+            #     return Response(status=status.HTTP_400_BAD_REQUEST)
             
-            logger.info('Data entered is valid')
-            edited_shop = serialized_data.save()
+            # logger.info('Data entered is valid')
+            # edited_shop = serialized_data.save()
 
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
+            # return Response(serialized_data.data, status=status.HTTP_200_OK)
+            return dependencies.edit_profile_info_service_instance.edit_profile(serialized_data)
         logger.warn('The data entered is invalid')
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
       
@@ -232,68 +190,116 @@ class show_score(APIView):
 def reset_password(request):
     
     if request.method =='POST':
-        logger.info('request recieved from POST /accounts/reset_password/')
-        data2 = request.data
-        token_recieved=data2['token']
-        password=data2['password']
-        password_again=data2['password2']
-        used = User.objects.get(id=request.user.id)
-        if int(token_recieved) !=used.random_integer:
-            logger.warn('token entered '+str(token_recieved)+' is not equal with '+str(used.random_integer))
-            return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
+        # logger.info('request recieved from POST /accounts/reset_password/')
+        # data2 = request.data
+        # token_recieved=data2['token']
+        # password=data2['password']
+        # password_again=data2['password2']
+        # used = User.objects.get(id=request.user.id)
+        # if int(token_recieved) !=used.random_integer:
+        #     logger.warn('token entered '+str(token_recieved)+' is not equal with '+str(used.random_integer))
+        #     return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
 
-        if password!=password_again:
-            logger.warn('password_again '+password_again+' is not equal with password'+password)
-            return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
+        # if password!=password_again:
+        #     logger.warn('password_again '+password_again+' is not equal with password'+password)
+        #     return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
 
-        dependencies.user_service_instance.updateUserPassword(used, password)
+        # dependencies.user_service_instance.updateUserPassword(used, password)
 
-        logger.info('password of user '+str(used.pk)+' changed successfuly')
-        return Response('Password changed successfully')
-    logger.info('request recieved from GET /accounts/reset_password/')
+        # logger.info('password of user '+str(used.pk)+' changed successfuly')
+        # return Response('Password changed successfully')
+        return dependencies.reset_password_info_service_instance.reset_password(request)
+    # logger.info('request recieved from GET /accounts/reset_password/')
 
-    used=User.objects.get(id=request.user.id)
-    token1 = mail_service_instance.sendEmail(used.email)
-    dependencies.user_service_instance.updateUserCode(used,token1)
+    # used=User.objects.get(id=request.user.id)
+    # token1 = mail_service_instance.sendEmail(used.email)
+    # dependencies.user_service_instance.updateUserCode(used,token1)
 
+    dependencies.reset_password_info_service_instance.update_user_code(request.user.id)
     return Response({'message':'a token was sent to the user'}, status=status.HTTP_200_OK)
 
 
 
 class ReceiveEmailForRecoverPassword(APIView):
     def post(self, request):
-
-        logger.info('request recieved from POST /accounts/receive_email_for_recover_password/')
-        data = request.data
-        email1 = data['email']
-
-        user = User.objects.get(email=email1)
-        token1 = mail_service_instance.sendEmail(user.email)
-
-        dependencies.user_service_instance.updateUserPassword(user, str(token1))    
-
-        data3 = {}
-        data3['id'] = user.id
         
-        return Response(data3, status=status.HTTP_200_OK)
+        token1 = dependencies.forget_password_info_service_instance.receiveEmailForRecoverPassword(request.data['email'])
+        dependencies.user_service_instance.updateUserPassword(request.data['email'], str(token1))    
 
-# class RecoverPassword(APIView):
-#     def post(self, request, pk):
-#         data2 = request.data
-#         token_recieved=data2['token']
-#         password=data2['password']
-#         password_again=data2['password2']
-#         user = CodesForUsers.objects.get(pk=pk)
-#         data3 = {}
-#         data3['code-id'] = user.id
-#         if token_recieved !=user.code:
-#             logger.warn('token entered '+token_recieved+' is not equal with '+user.code)
-#             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
-#         if password!=password_again:
-#             logger.warn('password_again '+password_again+' is not equal with password'+password)
-#             return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
-#         mainUser = User.objects.get(email=user.email)
-#         mainUser.password = make_password(password)
-#         mainUser.save()
-#         logger.info('password of user with email '+mainUser.email+' changed successfuly')
-#         return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
+        # data3 = {}
+        # data3['id'] = user.id
+        
+        return Response(status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from rest_framework.views import APIView
+
+# Abstract Factory
+class RegistrationFactory:
+    def create_serializer(self):
+        pass
+
+    def create_viewset(self):
+        pass
+# Concrete Factory for User Registration
+class UserRegistrationFactory(RegistrationFactory):
+    def create_serializer(self):
+        class UserRegisterSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = User
+                fields = '__all__'
+        return UserRegisterSerializer
+    def create_viewset(self):
+        class UserRegisterViewset(APIView):
+            serializer_class = self.create_serializer()
+            def post(self, request):
+                pass
+        return UserRegisterViewset
+# Concrete Factory for Shop Manager Registration
+class ShopManagerRegistrationFactory(RegistrationFactory):
+    def create_serializer(self):
+        class ShopManagerRegisterSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ShopManager
+                fields = '__all__'
+        return ShopManagerRegisterSerializer
+
+    def create_viewset(self):
+        class ShopManagerRegisterViewset(APIView):
+            serializer_class = self.create_serializer()
+
+            def post(self, request):
+                
+                pass
+        return ShopManagerRegisterViewset
+
+
+
+
+
+
+# Create an instance of User Registration Factory
+user_registration_factory = UserRegistrationFactory()
+user_register_serializer = user_registration_factory.create_serializer()
+user_register_viewset = user_registration_factory.create_viewset()
+
+# Create an instance of Shop Manager Registration Factory
+shop_manager_registration_factory = ShopManagerRegistrationFactory()
+shop_manager_register_serializer = shop_manager_registration_factory.create_serializer()
+shop_manager_register_viewset = shop_manager_registration_factory.create_viewset()

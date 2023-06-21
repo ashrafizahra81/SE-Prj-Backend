@@ -1,9 +1,13 @@
-from .register_interface import RegisterService
+from .register_interface import RegisterService, CheckEmailForRegister, SaveNewUser
 import logging
 from accounts.models import *
 from accounts.serializers import *
 from datetime import datetime
 from Backend import dependencies
+from rest_framework.response import Response
+from rest_framework import status
+
+
 
 user_service_instance = dependencies.user_service_instance
 wallet_service_instance = dependencies.wallet_service_instance
@@ -44,5 +48,43 @@ class ConcreteUserRegisterServiceForNewUser(RegisterService):
         wallet_service_instance.createWallet(account, 0)
 
         logger.info('User ' + str(account.pk)+ ' and its code stored in database')
-        
+    
 
+class ConcreteCheckEmailForRegister(CheckEmailForRegister):
+
+    def checkIfEmailExists(self, email):
+        
+        logger.info('This email already exists: ' + email)
+        if(User.objects.get(email = email).is_active == 1):
+            logger.info('This account is active: ' + email)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        if(codeForUsers_service_instance.hasExpired(email)):
+            
+            
+            dependencies.register_for_existed_user_service_instance.userRegister(email)
+            data = {}
+            data['message'] = "کد جدید به ایمیل ارسال شد"
+            data['status'] = status.HTTP_201_CREATED
+            # return Response({"message":"کد جدید به ایمیل ارسال شد"},
+            #         status=status.HTTP_201_CREATED)
+            return data
+            
+
+        logger.info('User has valid code')
+        return Response({"message":"کد به ایمیل شما ارسال شده است"},
+                        status=status.HTTP_202_ACCEPTED)
+
+class ConcreteSaveNewUserService(SaveNewUser):
+    
+    def saveNewUser(self, serialized_data, email, phone_number):
+        logger.info('Data entered is valid')
+        if(not(phone_number.isdigit())):
+            logger.warn('user_phone_number is invalid')
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        account = serialized_data.save()
+        account.is_active = 0
+        account.save()
+        dependencies.register_for_new_user_service_instance.userRegister(email)
+        return Response(data = {} , status=status.HTTP_200_OK)

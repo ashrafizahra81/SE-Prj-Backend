@@ -6,3 +6,13 @@ class FavoriteProductService(ABC):
     def create_favorite_product(self, user, product):
         pass
     
+class ShowFavoriteProductService(ABC):
+
+    def show_favorite_product(self, request):
+        pass
+
+class DeleteFromFavoriteProductsService(ABC):
+
+    @abstractmethod
+    def delete_from_favorite_product(self, request):
+        pass
