@@ -6,7 +6,7 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
-    path('register/', views.UserRegister.as_view(),name='register'),
+    path('register/<str:type>/', views.UserRegister.as_view(),name='register'),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('edit_profile/', views.UserEditProfile.as_view(), name="edit-profile"),
     path('create_shop/', views.ShopManagerRegister.as_view(), name="create_shop"),
@@ -18,4 +18,5 @@ urlpatterns = [
     path('receive_email_for_recover_password/', views.ReceiveEmailForRecoverPassword.as_view(), name='receive_email'),
     # path('recover_password/<int:pk>/', views.RecoverPassword.as_view(), name="recover_password"),
     path('verify_email/', views.verfyUserToResgister.as_view(), name='verify_email'),
+    # path('a/', views.a(), name='verify_email'),
 ]
