@@ -253,6 +253,11 @@ WALLET_SERVICE = 'wallets.services.wallet_service.ConcreteWalletService'
 REGISTER_FOR_EXISTED_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForExistedUser'
 REGISTER_FOR_NEW_USER_SERVICE = 'accounts.services.register_service.ConcreteUserRegisterServiceForNewUser'
 CREATE_ORDER_SERVICE = 'orders.services.order_service.ConcreteCreateOrder'
+CHECK_EMAIL_FOR_REGISTERATION_SERVICE = 'accounts.services.register_service.ConcreteCheckEmailForRegister'
+SAVE_NEW_USER_SERVICE = 'accounts.services.register_service.ConcreteSaveNewUserService'
+EDIT_PROFILE_SERVICE = 'accounts.services.editProfile_service.ConcreteEditProfileService'
+RESET_PASSWORD_SERVICE = 'accounts.services.resetPassword_service.ConcreteResetPasswordService'
+FORGET_PASSWORD_SERVICE = 'accounts.services.ReceiveEmailForRecoverPassword_service.ConcreteReceiveEmailForRecoverPasswordService'
 
 UPDATE_PRODUCT_AFTER_DELETING_SERVICE = 'products.services.product_services.ConcreteUpdateProductForDeletedProduct'
 UPDATE_PRODUCT_FROM_EDITING_SERVICE = 'products.services.product_services.ConcreteUpdateProductByEditing'
@@ -271,3 +276,6 @@ SHOW_SHOP_MANAGER_INFO_SERVICE = 'accounts.services.show_user_info_service.Concr
 SHOW_PRODUCTS_OF_SHOP_SERVICE = 'accounts.services.shop_service.ConcreteShopService'
 SHOW_ORDER_TO_SHOP_SERVICE = 'orders.services.order_service.ConcreteShopOrderService'
 
+ADD_TO_FAVORITE_PRODUCT_SERVICE = 'favoriteProducts.services.add_to_favorite_product_service.ConcreteAddToFavoriteProductService'
+SHOW_FAVORITE_PRODUCTS_PART_ONE_SERVICE = 'favoriteProducts.services.favorite_product_service.ConcreteShowFavoriteProductService'
+DELETE_FROM_FAVORITE_PRODUCT_SERVICE = 'favoriteProducts.services.favorite_product_service.ConcreteDeleteFromFavoriteProductsService'

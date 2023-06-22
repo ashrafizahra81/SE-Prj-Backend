@@ -7,6 +7,6 @@ class MailService(ABC):
         pass
 
     @abstractmethod
-    def sendEmail(self, email):
+    def propareEmailBody(self, email):
         pass
 

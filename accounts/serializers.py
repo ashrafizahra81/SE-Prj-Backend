@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError, UntypedTok
 
 from Backend import settings
 from .models import *
+from wallets.models import *
 
 import django.contrib.auth.password_validation as validators
 from rest_framework import generics
@@ -164,8 +165,25 @@ class CustomTokenVerifySerializer(TokenVerifySerializer):
 
 class ShowShopManagerInfoSerializer(serializers.ModelSerializer):
 
-     class Meta:
+    class Meta:
         model = User
         fields = (
             'email', 'username', 'user_phone_number', 'shop_name', 'shop_address',
             'shop_phone_number')
+
+class ShowUserInfoSerializer(serializers.ModelSerializer):
+
+    inventory = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        model_fields = [
+            'email', 'username', 'user_phone_number', 'user_postal_code', 'user_address',
+        ]
+        extra_fields = ['inventory']
+        fields = model_fields + extra_fields
+        
+    def get_inventory(self, obj):
+        # user_id = self.context.get("user")
+        wallet = Wallet.objects.get(user = obj)
+        return wallet.balance
+

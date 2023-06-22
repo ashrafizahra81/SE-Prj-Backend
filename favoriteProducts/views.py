@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from Backend import dependencies
+from .serializers import *
 import logging
 logger = logging.getLogger("django")
 # Create your views here.
@@ -41,7 +42,7 @@ class ShowFavoriteProduct(APIView):
             product_list.append(Product.objects.filter(id=i["product_id"]).values())
         data1 = list()
         if user_favorite_product:
-            data1 = dependencies.show_favorite_products_service_instance.show_favorite_products(product_list)
+            data = ShowFavoriteProductsSerializer(product_list , many = True).data
             return Response(data1, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -58,4 +59,5 @@ class DeleteFromFavoriteProducts(APIView):
         logger.info('product with id '+str(request.data['data'])+' deleted from favorite list')
         message = {"message": "محصول مورد نظر با موفقیت از لیست علاقه مندی حذف شد"}
         return Response(status=status.HTTP_200_OK, data=message)
+    
 
