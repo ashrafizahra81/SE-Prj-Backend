@@ -95,3 +95,11 @@ show_shop_manager_info_service_class_name = settings.SHOW_SHOP_MANAGER_INFO_SERV
 show_shop_manager_info_service_class = getattr(importlib.import_module(show_shop_manager_info_service_class_name.rsplit('.', 1)[0]), show_shop_manager_info_service_class_name.rsplit('.', 1)[1])
 show_shop_manager_info_service_instance = show_shop_manager_info_service_class()
 
+show_products_of_shop_service_class_name = settings.SHOW_PRODUCTS_OF_SHOP_SERVICE
+show_products_of_shop_service_class = getattr(importlib.import_module(show_products_of_shop_service_class_name.rsplit('.', 1)[0]), show_products_of_shop_service_class_name.rsplit('.', 1)[1])
+show_products_of_shop_service_instance = show_products_of_shop_service_class()
+
+
+show_order_to_shop_service_class_name = settings.SHOW_ORDER_TO_SHOP_SERVICE
+show_order_to_shop_service_class = getattr(importlib.import_module(show_order_to_shop_service_class_name.rsplit('.', 1)[0]), show_order_to_shop_service_class_name.rsplit('.', 1)[1])
+show_order_to_shop_service_instance = show_order_to_shop_service_class()

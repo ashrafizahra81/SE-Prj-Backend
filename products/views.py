@@ -80,17 +80,9 @@ class ShowProductsByShop(APIView):
         data = ProductOfShopSerializer(product_list , many = True).data
         if len(data) == 0:
             logger.info('shop '+str(request.user.id)+' has no products')
-
-        data2 = {}
-        data1 = []
-        for i in data:
-            data1.append(dict(i))
-        data2["products"] = data1
-        data2["shop_name"] = shop.shop_name
-        data2["shop_address"] = shop.shop_address
-        data2["shop_phone_number"] = shop.shop_phone_number
+        data = dependencies.show_products_of_shop_service_instance.get_shop_info(shop , data)
         logger.info('products of shop '+str(shop.id)+' found')
-        return Response(data2, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ShowAllProducts(APIView):
@@ -119,9 +111,7 @@ class Report(APIView):
         data1=[]
         for i in data:
             data1.append(dict(i))
-        totalPriceOfShop = 0
-        for product in product_list:
-            totalPriceOfShop = totalPriceOfShop + (product['initial_inventory'] - product['inventory']) * product['product_price']
+        totalPriceOfShop = dependencies.show_products_of_shop_service_instance.calculate_total_price(product_list)
         data1.append({'totalSell':totalPriceOfShop})
         logger.info('report of shop '+str(request.user.id)+' returned')
         return Response(data1, status=status.HTTP_200_OK)
