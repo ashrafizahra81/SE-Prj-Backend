@@ -11,6 +11,7 @@ from permissions import IsShopOwner , IsShopManager
 
 class ConcreteUserShowInfoFactory(ShowInfoFactory):
 
+
     def create_viewset(self):
         
         class UserShowInfoFactory(APIView):
@@ -23,18 +24,11 @@ class ConcreteUserShowInfoFactory(ShowInfoFactory):
                 logger.info('user found')
                 data = {}
 
-                # data = dependencies.show_user_info_service_instance.show_user_info(request.user.id)
                 user = ShowUserInfoSerializer(userObj)
                 data = user.data
 
                 return Response(data, status=status.HTTP_200_OK)
                     
-
-                data = dependencies.show_user_info_service_instance.show_user_info(request.user.id)
-
-                return Response(data, status=status.HTTP_200_OK)
-        
-
         return UserShowInfoFactory
 
 

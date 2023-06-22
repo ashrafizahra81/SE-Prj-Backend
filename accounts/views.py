@@ -42,6 +42,7 @@ class UserRegister(APIView):
             user_registration_factory = UserRegistrationFactory()
         elif (type == 'shop'):
             user_registration_factory = ShopManagerRegistrationFactory()
+        user_register_serializer = user_registration_factory.create_serializer()
         user_register_viewset = user_registration_factory.create_viewset()
         view = user_register_viewset.as_view()
         response = view(request = request._request)
