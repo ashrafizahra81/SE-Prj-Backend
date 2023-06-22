@@ -7,7 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
 
 class ScoreTest(APITestCase):
     fixtures = ['accounts' , 'wallets']
-    show_user_info_url = reverse('accounts:show_user_info')
+    show_user_info_url = reverse('accounts:show_user_info', kwargs={'type': "customer"})
+    show_shop_info_url = reverse('accounts:show_user_info', kwargs={'type': "shop"})
     def setUp(self):
 
         self.user = User.objects.get(id=1)
@@ -39,7 +40,7 @@ class ScoreTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
 
         #Act
-        response = self.client.get(self.show_user_info_url)
+        response = self.client.get(self.show_shop_info_url)
 
         #Assert
         self.assertEqual(response.status_code , status.HTTP_200_OK)

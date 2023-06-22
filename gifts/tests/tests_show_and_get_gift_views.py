@@ -31,7 +31,7 @@ class ShowGiftTest(APITestCase):
                                             {
                                                 "description": "تخفیف 30 درصدی",
                                                 "score": 200,
-                                                "date": '2023-06-29'
+                                                "date": '2023-07-12'
                                             }
                                         ])
 

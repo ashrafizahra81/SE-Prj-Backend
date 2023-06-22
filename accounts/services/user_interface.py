@@ -12,7 +12,7 @@ class UserService(ABC):
     def updateUserIsValid(self, user, is_valid):
         pass
     @abstractmethod
-    def updateUserPassword(self, user, password):
+    def updateUserPassword(self, email, password):
         pass
     @abstractmethod
     def updateUserCode(self, user, code):

@@ -41,7 +41,7 @@ class ConcreteMailService(MailService):
         server.quit()
 
  
-    def sendEmail(self, email):
+    def propareEmailBody(self, email):
     
         uniqueCode_service_instance = dependencies.uniqueCode_service_class
         

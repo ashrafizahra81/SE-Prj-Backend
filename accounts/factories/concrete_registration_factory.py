@@ -21,6 +21,11 @@ class UserRegistrationFactory(RegistrationFactory):
                 serialized_data = UserRegisterSerializer(data=request.data)
 
                 if (User.objects.filter(email=request.data['email']).exists()):
+
+
+                    return Response({"message": dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["message"]},
+                                     status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
+
                     logger.info('This email already exists: ' + request.data['email'])
                     if (User.objects.get(email=request.data['email']).is_active == 1):
                         logger.info('This account is active: ' + request.data['email'])
@@ -36,10 +41,15 @@ class UserRegistrationFactory(RegistrationFactory):
                     logger.info('User has valid code')
                     return Response({"message": "کد به ایمیل شما ارسال شده است"},
                                     status=status.HTTP_202_ACCEPTED)
+
                 data = {}
                 logger.info('no user with this email exists: '+request.data['email'])
 
                 if serialized_data.is_valid():
+
+                    return Response({"message":dependencies.save_new_user_info_service_instance.saveNewUser(serialized_data, request.data['email'], request.data['user_phone_number'])["message"]},
+                                     status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
+
                     logger.info('Data entered is valid')
                     if (not (request.data['user_phone_number'].isdigit())):
                         logger.warn('user_phone_number is invalid')
@@ -64,6 +74,26 @@ class ShopManagerRegistrationFactory(RegistrationFactory):
     def create_viewset(self):
         class ShopManagerRegisterViewset(APIView):
             def post(self, request):
+
+
+                logger.info('request recieved from POST /accounts/create_shop/')
+                serialized_data = ShopManagerRegisterSerializer(data=request.data)
+
+                if(User.objects.filter(email=request.data['email']).exists()):
+
+                    return Response({"message": dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["message"]},
+                                     status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
+                data = {}
+                logger.info('no user with this email exists: '+request.data['email'])
+
+                if serialized_data.is_valid():
+                    return Response({"message":dependencies.save_new_user_info_service_instance.saveNewUser(serialized_data, request.data['email'], request.data['user_phone_number'])["message"]},
+                                     status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
+                
+                logger.warn('could not save new user due to invalid data')
+                return Response(serialized_data.errors ,status=status.HTTP_400_BAD_REQUEST)
+            
+
                 logger.info('request recieved from POST /accounts/create_shop/')
                 serialized_data = ShopManagerRegisterSerializer(data=request.data)
                 if(User.objects.filter(email=request.data['email']).exists()):
@@ -99,4 +129,5 @@ class ShopManagerRegistrationFactory(RegistrationFactory):
                     return Response(data)
                 logger.warn('could not save new user due to invalid data')
                 return Response(serialized_data.errors ,status=status.HTTP_400_BAD_REQUEST)
+
         return ShopManagerRegisterViewset

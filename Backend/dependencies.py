@@ -95,3 +95,36 @@ show_shop_manager_info_service_class_name = settings.SHOW_SHOP_MANAGER_INFO_SERV
 show_shop_manager_info_service_class = getattr(importlib.import_module(show_shop_manager_info_service_class_name.rsplit('.', 1)[0]), show_shop_manager_info_service_class_name.rsplit('.', 1)[1])
 show_shop_manager_info_service_instance = show_shop_manager_info_service_class()
 
+check_email_for_registration_info_service_class_name = settings.CHECK_EMAIL_FOR_REGISTERATION_SERVICE
+check_email_for_registration_info_service_class = getattr(importlib.import_module(check_email_for_registration_info_service_class_name.rsplit('.', 1)[0]), check_email_for_registration_info_service_class_name.rsplit('.', 1)[1])
+check_email_for_registration_info_service_instance = check_email_for_registration_info_service_class()
+
+save_new_user_info_service_class_name = settings.SAVE_NEW_USER_SERVICE
+save_new_user_info_service_class = getattr(importlib.import_module(save_new_user_info_service_class_name.rsplit('.', 1)[0]), save_new_user_info_service_class_name.rsplit('.', 1)[1])
+save_new_user_info_service_instance = save_new_user_info_service_class()
+
+edit_profile_info_service_class_name = settings.EDIT_PROFILE_SERVICE
+edit_profile_info_service_class = getattr(importlib.import_module(edit_profile_info_service_class_name.rsplit('.', 1)[0]), edit_profile_info_service_class_name.rsplit('.', 1)[1])
+edit_profile_info_service_instance = edit_profile_info_service_class()
+
+reset_password_info_service_class_name = settings.RESET_PASSWORD_SERVICE
+reset_password_info_service_class = getattr(importlib.import_module(reset_password_info_service_class_name.rsplit('.', 1)[0]), reset_password_info_service_class_name.rsplit('.', 1)[1])
+reset_password_info_service_instance = reset_password_info_service_class()
+
+forget_password_info_service_class_name = settings.FORGET_PASSWORD_SERVICE
+forget_password_info_service_class = getattr(importlib.import_module(forget_password_info_service_class_name.rsplit('.', 1)[0]), forget_password_info_service_class_name.rsplit('.', 1)[1])
+forget_password_info_service_instance = forget_password_info_service_class()
+
+add_to_favorite_product_info_service_class_name = settings.ADD_TO_FAVORITE_PRODUCT_SERVICE
+add_to_favorite_product_info_service_class = getattr(importlib.import_module(add_to_favorite_product_info_service_class_name.rsplit('.', 1)[0]), add_to_favorite_product_info_service_class_name.rsplit('.', 1)[1])
+add_to_favorite_product_info_service_instance = add_to_favorite_product_info_service_class()
+
+show_favorite_product_part_one_info_service_class_name = settings.SHOW_FAVORITE_PRODUCTS_PART_ONE_SERVICE
+show_favorite_product_part_one_info_service_class = getattr(importlib.import_module(show_favorite_product_part_one_info_service_class_name.rsplit('.', 1)[0]), show_favorite_product_part_one_info_service_class_name.rsplit('.', 1)[1])
+show_favorite_product_part_one_info_service_instance = show_favorite_product_part_one_info_service_class()
+
+delete_from_favorite_product_info_service_class_name = settings.DELETE_FROM_FAVORITE_PRODUCT_SERVICE
+delete_from_favorite_product_info_service_class = getattr(importlib.import_module(delete_from_favorite_product_info_service_class_name.rsplit('.', 1)[0]), delete_from_favorite_product_info_service_class_name.rsplit('.', 1)[1])
+delete_from_favorite_product_info_service_instance = delete_from_favorite_product_info_service_class()
+
+

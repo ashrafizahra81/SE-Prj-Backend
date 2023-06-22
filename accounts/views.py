@@ -20,7 +20,9 @@ from Backend import dependencies
 from accounts.factories.concrete_registration_factory import *
 from accounts.factories.concrete_edit_factory import *
 from accounts.factories.concrete_show_info_factory import *
+
 from django.http import HttpRequest
+
 mail_service_instance = dependencies.mail_service_instance
 uniqueCode_service_instance = dependencies.uniqueCode_service_instance
 codeForUsers_service_instance = dependencies.codeForUsers_service_instance
@@ -62,16 +64,12 @@ class verfyUserToResgister(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    # Replace the serializer with your custom
+
     serializer_class = CustomTokenObtainPairSerializer
     
 
 
 class TokenVerifyView(TokenViewBase):
-    """
-    Takes a token and indicates if it is valid.  This view provides no
-    information about a token's fitness for a particular use.
-    """
     
     serializer_class = CustomTokenVerifySerializer
 
@@ -139,50 +137,26 @@ def reset_password(request):
 
         logger.info('password of user '+str(used.pk)+' changed successfuly')
         return Response('Password changed successfully')
+        
     logger.info('request recieved from GET /accounts/reset_password/')
 
     used=User.objects.get(id=request.user.id)
-    token1 = mail_service_instance.sendEmail(used.email)
+    token1 = mail_service_instance.propareEmailBody(used.email)
     dependencies.user_service_instance.updateUserCode(used,token1)
+    # return dependencies.reset_password_info_service_instance.reset_password(request)
 
+    dependencies.reset_password_info_service_instance.update_user_code(request.user.id)
     return Response({'message':'a token was sent to the user'}, status=status.HTTP_200_OK)
-
 
 
 class ReceiveEmailForRecoverPassword(APIView):
     def post(self, request):
-
-        logger.info('request recieved from POST /accounts/receive_email_for_recover_password/')
-        data = request.data
-        email1 = data['email']
-
-        user = User.objects.get(email=email1)
-        token1 = mail_service_instance.sendEmail(user.email)
-
-        dependencies.user_service_instance.updateUserPassword(user, str(token1))    
-
-        data3 = {}
-        data3['id'] = user.id
         
-        return Response(data3, status=status.HTTP_200_OK)
+        token1 = dependencies.forget_password_info_service_instance.receiveEmailForRecoverPassword(request.data['email'])
+        dependencies.user_service_instance.updateUserPassword(request.data['email'], str(token1))    
 
-# class RecoverPassword(APIView):
-#     def post(self, request, pk):
-#         data2 = request.data
-#         token_recieved=data2['token']
-#         password=data2['password']
-#         password_again=data2['password2']
-#         user = CodesForUsers.objects.get(pk=pk)
-#         data3 = {}
-#         data3['code-id'] = user.id
-#         if token_recieved !=user.code:
-#             logger.warn('token entered '+token_recieved+' is not equal with '+user.code)
-#             return Response({'message':'Invalid Token'} , status=status.HTTP_400_BAD_REQUEST)
-#         if password!=password_again:
-#             logger.warn('password_again '+password_again+' is not equal with password'+password)
-#             return Response({'message':'Passwords should match'} , status=status.HTTP_400_BAD_REQUEST)
-#         mainUser = User.objects.get(email=user.email)
-#         mainUser.password = make_password(password)
-#         mainUser.save()
-#         logger.info('password of user with email '+mainUser.email+' changed successfuly')
-#         return Response({'message':'Password changed successfully'} , status=status.HTTP_200_OK)
+        # data3 = {}
+        # data3['id'] = user.id
+        
+        return Response(status=status.HTTP_200_OK)
+

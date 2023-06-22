@@ -21,8 +21,9 @@ class ConcreteUserService(UserService):
         user.is_active = is_valid
         user.save()
     
-    def updateUserPassword(self, user, password):
+    def updateUserPassword(self, email, password):
 
+        user = User.objects.get(email=email)
         user.random_integer=None
         user.password = make_password(password)
         user.save()

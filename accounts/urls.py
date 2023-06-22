@@ -19,4 +19,7 @@ urlpatterns = [
     # path('recover_password/<int:pk>/', views.RecoverPassword.as_view(), name="recover_password"),
     path('verify_email/', views.verfyUserToResgister.as_view(), name='verify_email'),
     # path('a/', views.a(), name='verify_email'),
+
 ]
+
+

@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
 
 class CustomerEditProfileTest(APITestCase):
     fixtures = ['accounts']
-    edit_profile_url = reverse('accounts:edit-profile')
+    edit_profile_url = reverse('accounts:edit-profile', kwargs={'type': "customer"})
     def setUp(self):
 
         self.user = User.objects.get(id=1)
