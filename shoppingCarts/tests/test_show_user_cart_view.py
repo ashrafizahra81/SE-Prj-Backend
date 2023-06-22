@@ -30,7 +30,7 @@ class TestShowUserCart(APITestCase):
                                                     "product_color": "ice blue",
                                                     "product_price": 620000,
                                                     "is_available": True,
-                                                    "upload": "null",
+                                                    "upload": None,
                                                     "shop_id": 4,
                                                     "product_off_percent": 620000.0
                                                 }

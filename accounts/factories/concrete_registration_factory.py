@@ -47,6 +47,7 @@ class UserRegistrationFactory(RegistrationFactory):
 
                 if serialized_data.is_valid():
 
+
                     return Response({"message":dependencies.save_new_user_info_service_instance.saveNewUser(serialized_data, request.data['email'], request.data['user_phone_number'])["message"]},
                                      status = dependencies.check_email_for_registration_info_service_instance.checkIfEmailExists(request.data['email'])["status"])
 
@@ -93,6 +94,7 @@ class ShopManagerRegistrationFactory(RegistrationFactory):
                 logger.warn('could not save new user due to invalid data')
                 return Response(serialized_data.errors ,status=status.HTTP_400_BAD_REQUEST)
             
+
 
                 logger.info('request recieved from POST /accounts/create_shop/')
                 serialized_data = ShopManagerRegisterSerializer(data=request.data)

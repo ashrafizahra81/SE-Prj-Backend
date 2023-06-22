@@ -16,6 +16,8 @@ class ConcreteShoppingCart(ShoppnigCartService):
             return True
         return False
     
+
+
     def calculate_checkout_info(self, user_id):
         user_cart = list(UserShoppingCart.objects.filter(user_id=user_id).values())
         off_price = 0
@@ -31,3 +33,24 @@ class ConcreteShoppingCart(ShoppnigCartService):
         data["shippingPrice"] = 30000
         return data
         
+
+    def calculate_shopping_cart_info(self, products):
+        total_price = 0
+        total_price_with_discount = 0
+        product = []
+        for i in products:
+            total_price += i['product_price']
+            total_price_with_discount += i['product_off_percent']
+            product.append(dict(i))
+        data = {}
+        data["products"] = product
+        data["total_price"] = total_price
+        data["total_price_with_discount"] = total_price_with_discount
+        return data
+    
+    def get_products_of_shop(self, user_id):
+        user_cart = list(UserShoppingCart.objects.filter(user_id=user_id).values())
+        product_list = list()
+        for i in user_cart:
+            product_list.append(Product.objects.filter(id=i["product_id"] , is_deleted = 0).values()[0])
+        return product_list

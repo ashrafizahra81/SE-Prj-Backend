@@ -15,3 +15,6 @@ class ConcreteWalletService(WalletService):
         wallet = Wallet.objects.get(user=user)
         wallet.balance += float(insert)
         wallet.save()
+        data = {}
+        data['balance'] = wallet.balance
+        return data

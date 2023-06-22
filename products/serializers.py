@@ -103,3 +103,17 @@ class FilterSerializer(serializers.ModelSerializer):
     def get_upload(self , obj):
             return obj['product_image']
 
+class ShoppingCartProductsSerializer(serializers.ModelSerializer):
+    is_available = serializers.SerializerMethodField()
+    product_off_percent = serializers.SerializerMethodField()
+    class Meta:
+        model = Product
+        fields = ['id','product_name', 'product_size','product_color','product_price','is_available','upload','shop_id','product_off_percent']
+
+    def get_is_available(self , obj):
+            return obj['inventory'] > 0
+    
+    def get_product_off_percent(self , obj):
+            price_off = ((100 - int(obj['product_off_percent'])) / 100) * int(obj['product_price'])
+            return price_off
+    

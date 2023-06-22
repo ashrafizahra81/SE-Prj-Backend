@@ -14,16 +14,10 @@ class ChargeWallet(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self , request):
         logger.info('request recieved from POST /wallets/charge_wallet/')
-        data2 = request.data
-        data = {}
-
-        data = dependencies.charge_wallet_service_instance.check_money_in_wallet(data2['insert'])
-        if data:
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        dependencies.wallet_service_instance.updateWallet(request.user, data2['insert'])
-        data = {}
-        wallet = Wallet.objects.get(user=request.user)
-        data['balance'] = wallet.balance
-        logger.info('amount of '+str(request.data['insert'])+' added to wallet of user '+str(request.user.id))
-        return Response(data, status=status.HTTP_200_OK)
+        data = dependencies.charge_wallet_service_instance.check_money_in_wallet(request.data['insert'])
+        if not data:
+            balance = dependencies.wallet_service_instance.updateWallet(request.user, request.data['insert'])
+            logger.info('amount of '+str(request.data['insert'])+' added to wallet of user '+str(request.user.id))
+            return Response(balance, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 

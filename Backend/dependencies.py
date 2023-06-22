@@ -95,6 +95,16 @@ show_shop_manager_info_service_class_name = settings.SHOW_SHOP_MANAGER_INFO_SERV
 show_shop_manager_info_service_class = getattr(importlib.import_module(show_shop_manager_info_service_class_name.rsplit('.', 1)[0]), show_shop_manager_info_service_class_name.rsplit('.', 1)[1])
 show_shop_manager_info_service_instance = show_shop_manager_info_service_class()
 
+
+show_products_of_shop_service_class_name = settings.SHOW_PRODUCTS_OF_SHOP_SERVICE
+show_products_of_shop_service_class = getattr(importlib.import_module(show_products_of_shop_service_class_name.rsplit('.', 1)[0]), show_products_of_shop_service_class_name.rsplit('.', 1)[1])
+show_products_of_shop_service_instance = show_products_of_shop_service_class()
+
+
+show_order_to_shop_service_class_name = settings.SHOW_ORDER_TO_SHOP_SERVICE
+show_order_to_shop_service_class = getattr(importlib.import_module(show_order_to_shop_service_class_name.rsplit('.', 1)[0]), show_order_to_shop_service_class_name.rsplit('.', 1)[1])
+show_order_to_shop_service_instance = show_order_to_shop_service_class()
+
 check_email_for_registration_info_service_class_name = settings.CHECK_EMAIL_FOR_REGISTERATION_SERVICE
 check_email_for_registration_info_service_class = getattr(importlib.import_module(check_email_for_registration_info_service_class_name.rsplit('.', 1)[0]), check_email_for_registration_info_service_class_name.rsplit('.', 1)[1])
 check_email_for_registration_info_service_instance = check_email_for_registration_info_service_class()
@@ -126,5 +136,6 @@ show_favorite_product_part_one_info_service_instance = show_favorite_product_par
 delete_from_favorite_product_info_service_class_name = settings.DELETE_FROM_FAVORITE_PRODUCT_SERVICE
 delete_from_favorite_product_info_service_class = getattr(importlib.import_module(delete_from_favorite_product_info_service_class_name.rsplit('.', 1)[0]), delete_from_favorite_product_info_service_class_name.rsplit('.', 1)[1])
 delete_from_favorite_product_info_service_instance = delete_from_favorite_product_info_service_class()
+
 
 

@@ -273,6 +273,8 @@ SHOW_FAVORITE_PRODUCTS_SERVICE = 'favoriteProducts.services.show_favorite_produc
 VERIFY_USER_TO_REGISTER_SERVICE = 'accounts.services.verify_user_to_register_service.ConcreteVerfyUserToResgisterService'
 SHOW_USER_INFO_SERVICE = 'accounts.services.show_user_info_service.ConcreteShowUserInfoService'
 SHOW_SHOP_MANAGER_INFO_SERVICE = 'accounts.services.show_user_info_service.ConcreteShowShopManagerInfoService'
+SHOW_PRODUCTS_OF_SHOP_SERVICE = 'accounts.services.shop_service.ConcreteShopService'
+SHOW_ORDER_TO_SHOP_SERVICE = 'orders.services.order_service.ConcreteShopOrderService'
 
 ADD_TO_FAVORITE_PRODUCT_SERVICE = 'favoriteProducts.services.add_to_favorite_product_service.ConcreteAddToFavoriteProductService'
 SHOW_FAVORITE_PRODUCTS_PART_ONE_SERVICE = 'favoriteProducts.services.favorite_product_service.ConcreteShowFavoriteProductService'
