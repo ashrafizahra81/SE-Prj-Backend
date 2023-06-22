@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken , AccessToken
 
 class SellerEditProfileTest(APITestCase):
     fixtures = ['accounts']
-    edit_shop_url = reverse('accounts:edit_shop')
+    edit_shop_url = reverse('accounts:edit-profile', kwargs={'type': "shop"})
     def setUp(self):
 
         self.user = User.objects.get(id=4)

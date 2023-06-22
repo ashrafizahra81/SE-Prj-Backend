@@ -12,5 +12,5 @@ class ConcreteReceiveEmailForRecoverPasswordService(ReceiveEmailForRecoverPasswo
         logger.info('request recieved from POST /accounts/receive_email_for_recover_password/')
 
         user = User.objects.get(email=email)
-        token1 = dependencies.mail_service_instance.sendEmail(user.email)
+        token1 = dependencies.mail_service_instance.propareEmailBody(user.email)
         return token1
