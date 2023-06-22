@@ -18,6 +18,8 @@ from permissions import IsShopOwner , IsShopManager
 import logging
 from Backend import dependencies
 from accounts.factories.concrete_registration_factory import *
+from accounts.factories.concrete_edit_factory import *
+from accounts.factories.concrete_show_info_factory import *
 from django.http import HttpRequest
 mail_service_instance = dependencies.mail_service_instance
 uniqueCode_service_instance = dependencies.uniqueCode_service_instance
@@ -36,14 +38,12 @@ class UserRegister(APIView):
     def post(self, request , type):
         if(type == 'customer'):
             user_registration_factory = UserRegistrationFactory()
-        else:
+        elif (type == 'shop'):
             user_registration_factory = ShopManagerRegistrationFactory()
         user_register_viewset = user_registration_factory.create_viewset()
         view = user_register_viewset.as_view()
-        print('0')
-        print(view(request = request._request))
-        # print("a")
-        return Response()
+        response = view(request = request._request)
+        return response
 
 class verfyUserToResgister(APIView):
     def post(self , request):
@@ -77,76 +77,32 @@ class TokenVerifyView(TokenViewBase):
 
 
 class UserEditProfile(APIView):
-    permission_classes = [IsAuthenticated, ]
-    serializer_class = UserEditProfileSerializer
-    def post(self, request):
-        logger.info('request recieved from POST /accounts/edit_profile/')
-        user = User.objects.get(id=request.user.id)
-        logger.info('user found')
 
-        data = {}
+    def post(self, request , type):
+        if(type == 'customer'):
+            edit_factory = ConcreteCustomerEditFactory()
+        elif (type == 'shop'):
+            edit_factory = ConcreteShopEditFactory()
+        edit_viewset = edit_factory.create_viewset()
+        view = edit_viewset.as_view()
+        response = view(request = request._request)
+        return response
 
-        serialized_data = UserEditProfileSerializer(instance=user, data=request.data, partial=True)
-        if serialized_data.is_valid():
-            if(not(request.data['user_postal_code'].isdigit())):
-                logger.warn('The user postal code entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            if(not(request.data['user_phone_number'].isdigit())):
-                logger.warn('The user phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            logger.info('Data entered is valid')
-            edited_user = serialized_data.save()
-
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
-        
-        logger.warn('The data entered is invalid')
-        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class EditShop(APIView):
-    permission_classes = [IsAuthenticated ,IsShopManager]
-    serializer_class = EditShopSerializer
-    def post(self, request):
-        logger.info('request recieved from POST /accounts/edit_shop/')
-        self.check_object_permissions(request, request.user)
-        logger.info('The user is a shop owner')
-        user = User.objects.get(id=request.user.id)
-
-        serialized_data = EditShopSerializer(data=request.data, instance=user, partial=True)
-        data = {}
-        if serialized_data.is_valid():
-            if(not(request.data['shop_phone_number'].isdigit())):
-                logger.warn('The shop phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            if(not(request.data['user_phone_number'].isdigit())):
-                logger.warn('The user phone number entered is invalid')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            logger.info('Data entered is valid')
-            edited_shop = serialized_data.save()
-
-            return Response(serialized_data.data, status=status.HTTP_200_OK)
-        logger.warn('The data entered is invalid')
-        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-      
 
 class ShowUserInfo(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request):
-        logger.info('request recieved from GET /accounts/show_user_info/')
-        userObj = User.objects.get(id=request.user.id)
-        logger.info('user found')
-        data = {}
-        if userObj.shop_name == None:
-            data = dependencies.show_user_info_service_instance.show_user_info(request.user.id)
-        else:
-            # data = dependencies.show_shop_manager_info_service_instance.show_user_info(request.user.id)
+    def get(self, request, type):
 
-            shop = ShowShopManagerInfoSerializer(userObj)
-            data = shop.data
+        if(type == 'customer'):
+            show_info_factory = ConcreteUserShowInfoFactory()
+        elif (type == 'shop'):
+            show_info_factory = ConcreteShopShowInfoFactory()
+        edit_viewset = show_info_factory.create_viewset()
+        view = edit_viewset.as_view()
+        response = view(request = request._request)
+        return response
 
-
-        return Response(data, status=status.HTTP_200_OK)
 
 
 class show_score(APIView):
