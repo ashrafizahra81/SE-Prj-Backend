@@ -21,6 +21,8 @@ from accounts.factories.concrete_registration_factory import *
 from accounts.factories.concrete_edit_factory import *
 from accounts.factories.concrete_show_info_factory import *
 
+from django.http import HttpRequest
+
 mail_service_instance = dependencies.mail_service_instance
 uniqueCode_service_instance = dependencies.uniqueCode_service_instance
 codeForUsers_service_instance = dependencies.codeForUsers_service_instance
@@ -98,6 +100,7 @@ class ShowUserInfo(APIView):
         view = edit_viewset.as_view()
         response = view(request = request._request)
         return response
+
 
 
 class show_score(APIView):
